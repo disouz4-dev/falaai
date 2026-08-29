@@ -37,6 +37,13 @@ export default function App() {
     api.get("/api/version").then(setUpdate).catch(() => {});
   }, []);
 
+  const [checking, setChecking] = useState(false);
+  async function recheck() {
+    setChecking(true);
+    try { setUpdate(await api.get("/api/version?force=true")); } catch {}
+    setChecking(false);
+  }
+
   // PT-BR: atualiza (git pull + rebuild) e espera o servidor voltar, então recarrega.
   // EN: update (git pull + rebuild), wait for the server to come back, then reload.
   async function doUpdate() {
@@ -100,7 +107,9 @@ export default function App() {
 
       <main id="app">
         {screen === "home" && (
-          <Home nav={nav} profile={profile} deferredInstall={deferredInstall} onInstall={doInstall} />
+          <Home nav={nav} profile={profile} deferredInstall={deferredInstall} onInstall={doInstall}
+            update={update} checking={checking} recheck={recheck}
+            isLocalhost={isLocalhost} updating={updating} onUpdate={doUpdate} />
         )}
         {(screen === "test-intro" || screen === "test" || screen === "result") && (
           <Placement screen={screen} nav={nav} />

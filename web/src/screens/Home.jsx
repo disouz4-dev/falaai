@@ -1,6 +1,9 @@
 import React from "react";
 
-export default function Home({ nav, profile, deferredInstall, onInstall }) {
+export default function Home({
+  nav, profile, deferredInstall, onInstall,
+  update, checking, recheck, isLocalhost, updating, onUpdate,
+}) {
   return (
     <section className="screen active">
       <div className="hero">
@@ -35,6 +38,31 @@ export default function Home({ nav, profile, deferredInstall, onInstall }) {
       {deferredInstall && (
         <button className="install-btn" onClick={onInstall}>⬇️ Instalar o OpenLingo</button>
       )}
+
+      {/* PT-BR: status de versão sempre visível. EN: always-visible version status. */}
+      <div className="version-box">
+        {!update ? (
+          <span className="ver-line">Verificando versão…</span>
+        ) : update.update_available ? (
+          <div className="ver-line ver-update">
+            <span>🎉 Nova versão <strong>{update.latest}</strong> disponível (você tem a {update.current})</span>
+            {isLocalhost ? (
+              <button className="update-btn" disabled={updating} onClick={onUpdate}>
+                {updating ? "Atualizando…" : "Atualizar"}
+              </button>
+            ) : (
+              <span className="update-hint">Atualize pelo computador que roda o servidor.</span>
+            )}
+          </div>
+        ) : (
+          <span className="ver-line ver-ok">
+            ✓ OpenLingo <strong>v{update.current}</strong> — você está na versão mais atual
+          </span>
+        )}
+        <button className="ver-check" disabled={checking} onClick={recheck}>
+          {checking ? "verificando…" : "Verificar atualizações"}
+        </button>
+      </div>
     </section>
   );
 }

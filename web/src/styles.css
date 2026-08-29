@@ -53,6 +53,15 @@ body {
 .update-btn:active { transform: translateY(2px); box-shadow: none; }
 .update-btn:disabled { opacity: .6; box-shadow: none; }
 .update-hint { font-size: 12px; opacity: .85; }
+
+/* ---------- Status de versão na Home / version status ---------- */
+.version-box { margin-top: 28px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.ver-line { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.ver-ok { color: var(--green-dark); font-weight: 700; }
+.ver-update { background: #e5ffd6; color: var(--green-dark); padding: 10px 14px; border-radius: 12px; border: 2px solid var(--green); }
+.ver-check { border: none; background: none; color: var(--blue); font-weight: 700; font-size: 12px; cursor: pointer; padding: 4px; }
+.ver-check:disabled { opacity: .6; }
+@media (prefers-color-scheme: dark) { .ver-update { background: #1c2b12; } }
 @media (prefers-color-scheme: dark) {
   .update-bar { background: #1c2b12; }
 }
