@@ -263,16 +263,19 @@ const talk = {
         const { value, done } = await reader.read();
         if (done) break;
         full += dec.decode(value, { stream: true });
-        bubble.textContent = full;
+        bubble._txt.textContent = full; // PT-BR: atualiza só o texto. EN: update text only.
         $("#talk-log").scrollTop = $("#talk-log").scrollHeight;
       }
     } catch (e) {
       full = "[erro de conexão]";
-      bubble.textContent = full;
+      bubble._txt.textContent = full;
     }
     this.history.push({ role: "assistant", content: full });
     btn.classList.remove("thinking");
     $("#talk-hint").textContent = "Toque no microfone e fale em inglês";
+    // PT-BR: TEXTO + ÁUDIO juntos — fala a resposta e deixa o botão 🔊 para reouvir.
+    // EN: TEXT + AUDIO together — speak the reply and add the 🔊 replay button.
+    this.addPlayButton(bubble, full);
     this.speak(full);
   },
 
@@ -280,14 +283,20 @@ const talk = {
     // PT-BR: A VOZ DO PROFESSOR — fala a resposta em inglês (não é só transcrição).
     // EN: THE TEACHER'S VOICE — speaks the reply in English (not just transcription).
     if (!window.speechSynthesis || !text) return;
-    const u = new SpeechSynthesisUtterance(text.replace(/[*_`#]/g, ""));
-    u.lang = "en-US";
-    u.rate = 0.95;
-    u.pitch = 1.0;
-    const v = pickEnglishVoice();
-    if (v) u.voice = v;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
+    const clean = text.replace(/[*_`#>_~]/g, "").trim();
+    if (!clean) return;
+    const synth = window.speechSynthesis;
+    const doSpeak = () => {
+      const u = new SpeechSynthesisUtterance(clean);
+      u.lang = "en-US"; u.rate = 0.95; u.pitch = 1.0;
+      const v = pickEnglishVoice();
+      if (v) u.voice = v;
+      synth.speak(u);
+      synth.resume(); // PT-BR: contorna a pausa automática do Chrome. EN: Chrome auto-pause workaround.
+    };
+    synth.cancel();
+    // PT-BR: pequeno atraso evita o bug de cancel()+speak() no Android. EN: avoids Android cancel+speak bug.
+    setTimeout(doSpeak, 70);
   },
 
   addUser(text) {
@@ -297,14 +306,32 @@ const talk = {
     $("#talk-log").appendChild(b);
     $("#talk-log").scrollTop = $("#talk-log").scrollHeight;
   },
+  // PT-BR: bolha do professor = TEXTO + botão de áudio 🔊 (fala automática + reouvir).
+  // EN: teacher bubble = TEXT + audio button 🔊 (auto speech + replay).
   addBot(text) {
     const b = document.createElement("div");
     b.className = "bubble bot";
-    b.textContent = text;
+    const span = document.createElement("span");
+    span.className = "btxt";
+    span.textContent = text || "";
+    b.appendChild(span);
+    b._txt = span;
     $("#talk-log").appendChild(b);
     $("#talk-log").scrollTop = $("#talk-log").scrollHeight;
-    if (text) this.speak(text);
+    if (text) { this.addPlayButton(b, text); this.speak(text); }
     return b;
+  },
+  // PT-BR: adiciona/atualiza o botão 🔊 que reproduz o texto da bolha. EN: add/refresh the 🔊 replay button.
+  addPlayButton(bubble, text) {
+    let btn = bubble.querySelector(".replay");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.className = "replay";
+      btn.textContent = "🔊";
+      btn.title = "Ouvir";
+      bubble.appendChild(btn);
+    }
+    btn.onclick = () => this.speak(text);
   },
 };
 
@@ -627,6 +654,21 @@ function pickEnglishVoice() {
   const pref = en.find((v) => /US|United States/i.test(v.lang + v.name) && /female|Google|Samantha|Zira|Aria/i.test(v.name));
   return pref || en.find((v) => /US/i.test(v.lang)) || en[0];
 }
+
+// PT-BR: destrava o áudio (navegadores mobile só falam depois de um toque do usuário).
+// EN: unlock audio (mobile browsers only speak after a user gesture).
+let ttsUnlocked = false;
+function unlockTTS() {
+  if (ttsUnlocked || !window.speechSynthesis) return;
+  try {
+    const u = new SpeechSynthesisUtterance(" ");
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+    window.speechSynthesis.resume();
+    ttsUnlocked = true;
+  } catch { /* ignore */ }
+}
+document.addEventListener("pointerdown", unlockTTS);
 
 /* ---------- Utilidades / Utils ---------- */
 function skillLabel(s) {
