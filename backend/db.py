@@ -59,6 +59,17 @@ def init_db():
                 detail TEXT
             )
         """)
+        # PT-BR: conclusão de lições do curso. EN: course lesson completion.
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS lesson_progress (
+                lesson_id TEXT,
+                profile_id INTEGER,
+                status TEXT,
+                score INTEGER,
+                completed_at TEXT,
+                PRIMARY KEY (lesson_id, profile_id)
+            )
+        """)
 
 
 # --------------------------------------------------------------------------- #
@@ -130,3 +141,27 @@ def practice_count():
             "SELECT COUNT(*) n FROM practice WHERE profile_id=?", (PROFILE_ID,)
         ).fetchone()
     return row["n"] if row else 0
+
+
+# --------------------------------------------------------------------------- #
+# PT-BR: Progresso no curso (lições concluídas). EN: Course progress (lessons done).
+# --------------------------------------------------------------------------- #
+def get_lesson_progress():
+    with _conn() as c:
+        rows = c.execute(
+            "SELECT lesson_id, status, score FROM lesson_progress WHERE profile_id=?",
+            (PROFILE_ID,),
+        ).fetchall()
+    return {r["lesson_id"]: {"status": r["status"], "score": r["score"]} for r in rows}
+
+
+def complete_lesson(lesson_id, score):
+    now = datetime.utcnow().isoformat()
+    with _conn() as c:
+        c.execute(
+            "INSERT INTO lesson_progress (lesson_id, profile_id, status, score, completed_at) "
+            "VALUES (?,?,?,?,?) "
+            "ON CONFLICT(lesson_id, profile_id) DO UPDATE SET status=excluded.status, "
+            "score=MAX(lesson_progress.score, excluded.score), completed_at=excluded.completed_at",
+            (lesson_id, PROFILE_ID, "done", int(score), now),
+        )

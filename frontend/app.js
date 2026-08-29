@@ -16,6 +16,7 @@ function nav(name) {
   if (name === "talk") talk.enter();
   if (name === "profile") profile.load();
   if (name === "progress") progressPage.load();
+  if (name === "course") courseView.load();
 }
 document.addEventListener("click", (e) => {
   const t = e.target.closest("[data-nav]");
@@ -308,6 +309,211 @@ const talk = {
 };
 
 /* =======================================================================
+   CURSO / COURSE (módulos, lições PPP, tarefas TBLT)
+   ======================================================================= */
+const courseView = {
+  async load() {
+    const box = $("#modules-list");
+    box.innerHTML = '<p class="course-intro">Carregando…</p>';
+    let d;
+    try { d = await (await fetch(API + "/api/course")).json(); }
+    catch { box.innerHTML = '<p class="course-intro">Erro ao carregar o curso.</p>'; return; }
+    box.innerHTML = "";
+    d.modules.forEach((m) => box.appendChild(this.moduleEl(m)));
+  },
+
+  moduleEl(m) {
+    const el = document.createElement("div");
+    el.className = "module" + (m.locked ? " locked" : "");
+    const pct = m.total ? Math.round((m.done / m.total) * 100) : 0;
+    let lessons = "";
+    if (m.coming_soon) {
+      lessons = `<div class="coming-soon">🚧 Em breve</div>`;
+    } else if (m.locked) {
+      lessons = `<div class="module-locked-msg">🔒 ${escapeHTML(m.locked_hint || "Bloqueado")}</div>`;
+    } else {
+      lessons = `<div class="lesson-list">` + m.lessons.map((l) =>
+        `<button class="lesson-item" data-lesson="${l.id}">
+           <span class="lesson-dot ${l.done ? "done" : ""}">${l.done ? "✓" : "▶"}</span>
+           <span class="lesson-meta">
+             <span class="lm-title">${escapeHTML(l.title)}</span>
+             <span class="lm-sub">${escapeHTML(l.method)} · ${l.minutes} min · ${escapeHTML(l.can_do)}</span>
+           </span>
+         </button>`).join("") + `</div>`;
+    }
+    el.innerHTML =
+      `<div class="module-head" style="background:${m.color}">
+         <div class="mh-top"><span>MÓDULO · ${m.cefr}</span><span>${m.done}/${m.total}</span></div>
+         <h3>${escapeHTML(m.title)}</h3>
+         <div class="mh-sub">${escapeHTML(m.subtitle)}</div>
+         <div class="module-bar"><div style="width:${pct}%"></div></div>
+       </div>${lessons}`;
+    el.querySelectorAll("[data-lesson]").forEach((b) =>
+      b.addEventListener("click", () => lesson.open(b.dataset.lesson)));
+    return el;
+  },
+};
+
+const lesson = {
+  data: null,
+  stages: [],
+  idx: 0,
+
+  async open(id) {
+    try { this.data = await (await fetch(API + "/api/course/lesson/" + id)).json(); }
+    catch { return; }
+    this.score = 0; // PT-BR: zera o placar de exercícios. EN: reset exercise score.
+    // PT-BR: monta as etapas (PPP): material -> prática -> produção (tarefa).
+    // EN: build stages (PPP): presentation -> practice -> production (task).
+    this.stages = ["material", ...this.data.exercises.map((_, i) => "ex" + i), "task"];
+    this.idx = 0;
+    nav("lesson");
+    this.render();
+  },
+
+  render() {
+    const total = this.stages.length;
+    $("#lesson-progress-fill").style.width = ((this.idx) / total) * 100 + "%";
+    $("#lesson-step-chip").textContent = `${this.idx + 1}/${total}`;
+    const stage = this.stages[this.idx];
+    if (stage === "material") this.renderMaterial();
+    else if (stage === "task") this.renderTask();
+    else this.renderExercise(parseInt(stage.slice(2), 10));
+  },
+
+  next() {
+    this.idx++;
+    if (this.idx >= this.stages.length) return this.finish();
+    this.render();
+  },
+
+  renderMaterial() {
+    const d = this.data;
+    const vocab = d.vocab.map((v) =>
+      `<div class="vocab-card"><div class="v-en">${escapeHTML(v.en)}</div><div class="v-pt">${escapeHTML(v.pt)}</div></div>`).join("");
+    $("#lesson-body").innerHTML =
+      `<div class="lesson-stage">
+         <div class="stage-tag">📖 Material · ${escapeHTML(d.method)}</div>
+         <h2>${escapeHTML(d.title)}</h2>
+         <div class="material">${mdBlock(d.material_pt)}</div>
+         <h3 style="margin-top:18px">🗂️ Vocabulário</h3>
+         <div class="vocab-grid">${vocab}</div>
+         <button class="btn-primary" id="lesson-next">Praticar</button>
+       </div>`;
+    $("#lesson-next").onclick = () => this.next();
+  },
+
+  renderExercise(i) {
+    const ex = this.data.exercises[i];
+    let answered = false;
+    $("#lesson-body").innerHTML =
+      `<div class="lesson-stage">
+         <div class="stage-tag">✏️ Prática ${i + 1}</div>
+         <h2 class="q-text">${escapeHTML(ex.question)}</h2>
+         <div class="options" id="lesson-opts"></div>
+         <div id="lesson-fb" class="feedback hidden"></div>
+       </div>`;
+    const box = $("#lesson-opts");
+    ex.options.forEach((opt, oi) => {
+      const b = document.createElement("button");
+      b.className = "opt"; b.textContent = opt;
+      b.onclick = () => {
+        if (answered) return;
+        answered = true;
+        $$("#lesson-opts .opt").forEach((x) => (x.disabled = true));
+        const opts = $$("#lesson-opts .opt");
+        opts[ex.answer].classList.add("correct");
+        if (oi !== ex.answer) opts[oi].classList.add("wrong");
+        const correct = oi === ex.answer;
+        if (correct) this.score = (this.score || 0) + 1;
+        const fb = $("#lesson-fb");
+        fb.className = "feedback " + (correct ? "ok" : "no");
+        fb.innerHTML =
+          `<div class="feedback-title">${correct ? "✓ Correto!" : "✗ Quase!"}</div>
+           <div class="feedback-exp">${escapeHTML(ex.explanation)}</div>
+           <button class="btn-primary" id="lesson-next">Continuar</button>`;
+        $("#lesson-next").onclick = () => this.next();
+      };
+      box.appendChild(b);
+    });
+  },
+
+  renderTask() {
+    const t = this.data.task;
+    $("#lesson-body").innerHTML =
+      `<div class="lesson-stage">
+         <div class="stage-tag">🎯 Tarefa (produção)</div>
+         <h2>Sua vez de usar!</h2>
+         <div class="task-box">
+           <div class="task-label">Tarefa</div>
+           <div>${escapeHTML(t.prompt_pt)}</div>
+           <div class="task-en">${escapeHTML(t.prompt_en)}</div>
+         </div>
+         <button class="mic-inline" id="task-mic">🎤 Falar resposta</button>
+         <textarea class="task-answer" id="task-answer" placeholder="…ou escreva sua resposta em inglês aqui"></textarea>
+         <div id="task-fb"></div>
+         <button class="btn-primary" id="task-submit">Enviar para o professor</button>
+       </div>`;
+    // PT-BR: ditar a resposta pela voz (opcional). EN: dictate answer by voice (optional).
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const micBtn = $("#task-mic");
+    if (SR) {
+      const rec = new SR(); rec.lang = "en-US"; rec.interimResults = false;
+      rec.onresult = (e) => {
+        $("#task-answer").value = ($("#task-answer").value + " " + e.results[0][0].transcript).trim();
+        micBtn.classList.remove("listening"); micBtn.textContent = "🎤 Falar resposta";
+      };
+      rec.onend = () => { micBtn.classList.remove("listening"); micBtn.textContent = "🎤 Falar resposta"; };
+      micBtn.onclick = () => { try { rec.start(); micBtn.classList.add("listening"); micBtn.textContent = "🔴 Ouvindo…"; } catch {} };
+    } else {
+      micBtn.style.display = "none";
+    }
+    $("#task-submit").onclick = () => this.submitTask();
+  },
+
+  async submitTask() {
+    const answer = $("#task-answer").value.trim();
+    if (!answer) { $("#task-fb").innerHTML = '<div class="task-feedback">Escreva ou fale sua resposta primeiro.</div>'; return; }
+    $("#task-fb").innerHTML = '<div class="task-feedback">O professor está avaliando…</div>';
+    $("#task-submit").disabled = true;
+    let fb = "";
+    try {
+      const r = await fetch(API + "/api/course/task-feedback", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lesson_id: this.data.id, transcript: answer }),
+      });
+      fb = (await r.json()).feedback;
+    } catch { fb = "Não foi possível avaliar agora."; }
+    $("#task-fb").innerHTML = `<div class="task-feedback">🧑‍🏫 ${mdLite(fb)}</div>`;
+    if (window.speechSynthesis) talk.speak(fb.replace(/[^A-Za-z0-9 .,!?']/g, " "));
+    $("#task-submit").textContent = "Concluir lição";
+    $("#task-submit").disabled = false;
+    $("#task-submit").onclick = () => this.next();
+  },
+
+  async finish() {
+    const total = this.data.exercises.length;
+    const score = Math.round(((this.score || 0) / (total || 1)) * 100);
+    try {
+      await fetch(API + "/api/course/lesson/" + this.data.id + "/complete", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ score }),
+      });
+    } catch {}
+    this.score = 0;
+    $("#lesson-progress-fill").style.width = "100%";
+    $("#lesson-body").innerHTML =
+      `<div class="lesson-done-card">
+         <div class="big-emoji">🎉</div>
+         <h2>Lição concluída!</h2>
+         <p class="result-score">Você acertou ${score}% dos exercícios.</p>
+         <button class="btn-primary" data-nav="course">Voltar ao curso</button>
+         <button class="btn-ghost" data-nav="talk">Praticar conversando</button>
+       </div>`;
+  },
+};
+
+/* =======================================================================
    PROGRESSO / CURVA DE APRENDIZADO (relatórios gráficos em SVG)
    LEARNING CURVE / PROGRESS (graphical SVG reports)
    ======================================================================= */
@@ -434,6 +640,31 @@ function escapeHTML(str) {
 // PT-BR: markdown mínimo (**negrito**). EN: minimal markdown (**bold**).
 function mdLite(str) {
   return escapeHTML(str).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+}
+
+// PT-BR: renderiza um bloco de material (títulos, negrito, itálico, listas, parágrafos).
+// EN: render a material block (headings, bold, italic, lists, paragraphs).
+function mdBlock(str) {
+  const lines = str.split("\n");
+  let html = "", inList = false;
+  const inline = (s) => escapeHTML(s)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^\*])\*([^\*]+?)\*/g, "$1<em>$2</em>");
+  for (let raw of lines) {
+    const line = raw.trim();
+    if (!line) { if (inList) { html += "</ul>"; inList = false; } continue; }
+    if (/^-\s+/.test(line)) {
+      if (!inList) { html += "<ul>"; inList = true; }
+      html += "<li>" + inline(line.replace(/^-\s+/, "")) + "</li>";
+    } else {
+      if (inList) { html += "</ul>"; inList = false; }
+      if (/^###\s/.test(line)) html += "<h3>" + inline(line.slice(4)) + "</h3>";
+      else if (/^##\s/.test(line)) html += "<h3>" + inline(line.slice(3)) + "</h3>";
+      else html += "<p>" + inline(line) + "</p>";
+    }
+  }
+  if (inList) html += "</ul>";
+  return html;
 }
 
 /* ---------- Boot ---------- */

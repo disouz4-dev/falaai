@@ -34,7 +34,12 @@
         <p class="subtitle">IA local · seu nível medido com métodos reais (CEFR)</p>
       </div>
       <div class="cards">
-        <button class="big-card primary" data-nav="test-intro">
+        <button class="big-card primary" data-nav="course">
+          <span class="bc-icon">📚</span>
+          <span class="bc-title">Curso</span>
+          <span class="bc-sub">Módulos, lições e tarefas com métodos reais</span>
+        </button>
+        <button class="big-card" data-nav="test-intro">
           <span class="bc-icon">🎯</span>
           <span class="bc-title">Descobrir meu nível</span>
           <span class="bc-sub">Teste adaptativo de 20 questões</span>
@@ -120,6 +125,28 @@
         <div id="talk-hint" class="talk-hint">Toque no microfone e fale em inglês</div>
         <button id="mic-btn" class="mic-btn" title="Falar">🎤</button>
       </div>
+    </section>
+
+    <!-- ============ CURSO (MÓDULOS) ============ -->
+    <section id="screen-course" class="screen">
+      <div class="talk-header">
+        <button class="icon-btn" data-nav="home" title="Voltar">✕</button>
+        <div class="talk-title">📚 Curso de Inglês</div>
+      </div>
+      <p class="course-intro">Baseado em métodos reais: CEFR · Comunicativo (CLT) · Task-Based · Abordagem Lexical · Repetição Espaçada.</p>
+      <div id="modules-list" class="modules-list"></div>
+    </section>
+
+    <!-- ============ LIÇÃO ============ -->
+    <section id="screen-lesson" class="screen">
+      <div class="test-header">
+        <button class="icon-btn" data-nav="course" title="Sair">✕</button>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div id="lesson-progress-fill" class="progress-fill"></div></div>
+        </div>
+        <div id="lesson-step-chip" class="level-chip">1/3</div>
+      </div>
+      <div id="lesson-body" class="lesson-body"></div>
     </section>
 
     <!-- ============ PERFIL ============ -->

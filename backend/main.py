@@ -33,6 +33,11 @@ START_THETA = -1.0  # PT-BR: começa fácil e sobe progressivamente. EN: start e
 with open(ITEMS_PATH, encoding="utf-8") as f:
     ITEM_BANK = json.load(f)["items"]
 
+# PT-BR: Carrega o currículo do curso. EN: Load the course curriculum.
+COURSE_PATH = BASE_DIR / "data" / "course.json"
+with open(COURSE_PATH, encoding="utf-8") as f:
+    COURSE = json.load(f)["modules"]
+
 # PT-BR: Estado das sessões em memória. EN: In-memory session state.
 SESSIONS = {}
 
@@ -67,6 +72,15 @@ class ProfileIn(BaseModel):
     native_lang: str = "Português (Brasil)"
     goal: str = ""
     interests: str = ""
+
+
+class CompleteIn(BaseModel):
+    score: int = 100
+
+
+class TaskFeedbackIn(BaseModel):
+    lesson_id: str
+    transcript: str
 
 
 def _public_item(item):
@@ -383,6 +397,95 @@ def chat(body: ChatIn):
             yield f"\n[erro: {e}]"
 
     return StreamingResponse(gen(), media_type="text/plain; charset=utf-8")
+
+
+# --------------------------------------------------------------------------- #
+# PT-BR: CURSO — módulos, lições, material didático e tarefas. EN: COURSE.
+# --------------------------------------------------------------------------- #
+def _find_lesson(lesson_id):
+    for m in COURSE:
+        for les in m["lessons"]:
+            if les["id"] == lesson_id:
+                return m, les
+    return None, None
+
+
+@app.get("/api/course")
+def course():
+    """PT-BR: Estrutura do curso + progresso + travas de módulo. EN: Course structure + progress + locks."""
+    done = db.get_lesson_progress()
+    modules_out = []
+    prev_all_done = True  # PT-BR: 1º módulo sempre liberado. EN: first module always unlocked.
+    for m in COURSE:
+        lesson_ids = [l["id"] for l in m["lessons"]]
+        completed = [lid for lid in lesson_ids if lid in done]
+        has_content = len(lesson_ids) > 0
+        locked = not prev_all_done or not has_content
+        modules_out.append({
+            "id": m["id"], "title": m["title"], "cefr": m["cefr"],
+            "subtitle": m["subtitle"], "color": m.get("color", "#58cc02"),
+            "locked": locked, "coming_soon": not has_content,
+            "locked_hint": m.get("locked_hint", ""),
+            "total": len(lesson_ids), "done": len(completed),
+            "lessons": [
+                {"id": l["id"], "title": l["title"], "method": l["method"],
+                 "minutes": l["minutes"], "can_do": l["can_do"],
+                 "done": l["id"] in done, "score": done.get(l["id"], {}).get("score")}
+                for l in m["lessons"]
+            ],
+        })
+        # PT-BR: próximo módulo libera quando este é 100% concluído.
+        # EN: next module unlocks when this one is fully complete.
+        prev_all_done = has_content and len(completed) == len(lesson_ids)
+    return {"modules": modules_out}
+
+
+@app.get("/api/course/lesson/{lesson_id}")
+def course_lesson(lesson_id: str):
+    """PT-BR: Conteúdo completo da lição (material, vocabulário, exercícios, tarefa). EN: full lesson."""
+    _, les = _find_lesson(lesson_id)
+    if not les:
+        raise HTTPException(404, "Lição não encontrada / Lesson not found")
+    return les
+
+
+@app.post("/api/course/lesson/{lesson_id}/complete")
+def course_complete(lesson_id: str, body: CompleteIn):
+    """PT-BR: Marca a lição como concluída. EN: Mark the lesson as completed."""
+    _, les = _find_lesson(lesson_id)
+    if not les:
+        raise HTTPException(404, "Lição não encontrada / Lesson not found")
+    db.complete_lesson(lesson_id, body.score)
+    return {"ok": True}
+
+
+@app.post("/api/course/task-feedback")
+def course_task_feedback(body: TaskFeedbackIn):
+    """PT-BR: A IA avalia a TAREFA comunicativa do aluno (Task-Based Learning) e dá feedback.
+    EN: The AI evaluates the learner's communicative TASK (TBLT) and gives feedback."""
+    _, les = _find_lesson(body.lesson_id)
+    if not les:
+        raise HTTPException(404, "Lição não encontrada / Lesson not found")
+    task = les.get("task", {})
+    prompt = (
+        f"You are an English teacher grading a spoken/written TASK from a Brazilian learner.\n"
+        f"Task (level {les.get('method','')}): {task.get('prompt_en','')}\n"
+        f"Success criteria: {task.get('criteria','')}\n"
+        f"Learner's answer: \"{body.transcript}\"\n\n"
+        f"Reply in Brazilian Portuguese, max 80 words, in this structure:\n"
+        f"1) One encouraging sentence. 2) Corrija 1-2 erros mostrando a forma certa em inglês. "
+        f"3) Diga se a tarefa foi cumprida (sim/parcialmente). Write ONLY the feedback, no preamble."
+    )
+    try:
+        ok, _ = ollama_client.is_available()
+        if not ok:
+            raise RuntimeError("offline")
+        fb = ollama_client.chat_once(
+            [{"role": "system", "content": "You are a warm, precise English teacher."},
+             {"role": "user", "content": prompt}], temperature=0.5).strip()
+    except Exception:
+        fb = "Bom trabalho! (Feedback detalhado da IA indisponível — verifique o Ollama.)"
+    return {"feedback": fb}
 
 
 # --------------------------------------------------------------------------- #

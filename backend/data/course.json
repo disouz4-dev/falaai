@@ -1,0 +1,144 @@
+{
+  "_meta": {
+    "description_pt": "Currículo do OpenLingo. Estrutura: módulos (por nível CEFR) -> lições no formato PPP (Presentation-Practice-Production). Métodos: CEFR, Aprendizagem Comunicativa (CLT), Task-Based Learning (TBLT), abordagem lexical e repetição espaçada.",
+    "methods_ref": ["CEFR", "CLT (Communicative Language Teaching)", "TBLT (Task-Based)", "PPP", "Lexical Approach", "Spaced Repetition"]
+  },
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Fundamentos",
+      "cefr": "A1",
+      "subtitle": "Primeiros passos: se apresentar e falar do dia a dia",
+      "color": "#58cc02",
+      "lessons": [
+        {
+          "id": "m1l1",
+          "title": "Verbo TO BE",
+          "method": "PPP · Comunicativo",
+          "minutes": 8,
+          "can_do": "Consigo dizer quem sou e de onde sou.",
+          "material_pt": "O verbo **to be** (ser/estar) é a base do inglês. Ele muda conforme o sujeito:\n\n- I **am** (eu sou/estou)\n- You **are** (você é/está)\n- He / She / It **is**\n- We / You / They **are**\n\nNa fala usamos as formas contraídas: I'm, you're, she's, they're.\n\n**Exemplos reais:**\n- I **am** Brazilian. → Eu sou brasileiro.\n- She **is** a teacher. → Ela é professora.\n- We **are** at home. → Nós estamos em casa.\n\n💡 Dica: para perguntar, inverta — *Are you ready?* / *Is she here?*",
+          "vocab": [
+            {"en": "name", "pt": "nome"},
+            {"en": "from", "pt": "de (origem)"},
+            {"en": "teacher", "pt": "professor(a)"},
+            {"en": "friend", "pt": "amigo(a)"},
+            {"en": "ready", "pt": "pronto(a)"}
+          ],
+          "exercises": [
+            {"question": "I ___ a student.", "options": ["am", "is", "are", "be"], "answer": 0, "explanation": "Com 'I' usa-se 'am'. / With 'I' we use 'am'."},
+            {"question": "She ___ from Brazil.", "options": ["am", "are", "is", "be"], "answer": 2, "explanation": "3ª pessoa (she) usa 'is'. / Third person uses 'is'."},
+            {"question": "___ you ready?", "options": ["Am", "Is", "Are", "Do"], "answer": 2, "explanation": "Pergunta com 'you' → 'Are you...?'."},
+            {"question": "We ___ friends.", "options": ["is", "am", "be", "are"], "answer": 3, "explanation": "Com 'we' usa-se 'are'."}
+          ],
+          "task": {
+            "type": "speaking",
+            "prompt_pt": "Se apresente para o professor: diga seu nome, de onde você é e o que você faz. Use o verbo to be.",
+            "prompt_en": "Introduce yourself: say your name, where you are from, and what you do.",
+            "criteria": "Uses 'to be' correctly for at least 3 facts about themselves."
+          }
+        },
+        {
+          "id": "m1l2",
+          "title": "Present Simple",
+          "method": "PPP · Abordagem lexical",
+          "minutes": 10,
+          "can_do": "Consigo falar sobre minha rotina.",
+          "material_pt": "Usamos o **present simple** para rotinas e fatos.\n\n- I / you / we / they + **verbo** → *I work*, *they play*.\n- he / she / it + **verbo + s** → *she work**s***, *he play**s***.\n\n**Negativa e pergunta** usam o auxiliar *do/does*:\n- I **don't** like coffee.\n- **Does** she work here?\n\n**Chunks úteis (aprenda a frase inteira):**\n- *I usually wake up at 7.*\n- *She goes to work by bus.*\n- *We don't have time.*",
+          "vocab": [
+            {"en": "wake up", "pt": "acordar"},
+            {"en": "work", "pt": "trabalhar"},
+            {"en": "usually", "pt": "geralmente"},
+            {"en": "every day", "pt": "todo dia"},
+            {"en": "breakfast", "pt": "café da manhã"}
+          ],
+          "exercises": [
+            {"question": "He ___ to work by bus.", "options": ["go", "goes", "going", "does go"], "answer": 1, "explanation": "3ª pessoa → 'goes'."},
+            {"question": "I ___ like tea.", "options": ["doesn't", "not", "don't", "am not"], "answer": 2, "explanation": "Negativa com 'I' → don't."},
+            {"question": "___ she live here?", "options": ["Do", "Does", "Is", "Are"], "answer": 1, "explanation": "Pergunta 3ª pessoa → 'Does'."},
+            {"question": "We ___ breakfast at 8.", "options": ["has", "haves", "have", "having"], "answer": 2, "explanation": "Com 'we' o verbo fica na base: 'have'."}
+          ],
+          "task": {
+            "type": "speaking",
+            "prompt_pt": "Conte sua rotina de um dia normal: 3 coisas que você faz todo dia, com horários.",
+            "prompt_en": "Describe your daily routine: 3 things you do every day, with times.",
+            "criteria": "Uses present simple with correct 3rd person and time expressions."
+          }
+        },
+        {
+          "id": "m1l3",
+          "title": "Falando de quantidades",
+          "method": "CLT · Comunicativo",
+          "minutes": 9,
+          "can_do": "Consigo pedir coisas e falar sobre o que tenho.",
+          "material_pt": "Para quantidades, o inglês separa **contáveis** de **incontáveis**.\n\n- Contáveis (plural): *apples, books* → **many**, **some/any**, **a few**.\n- Incontáveis: *water, money, time* → **much**, **some/any**, **a little**.\n\n**Regra prática:**\n- Afirmativa: *some* → *I have **some** water.*\n- Negativa/pergunta: *any* → *Is there **any** milk?* / *I don't have **any** money.*\n\n**Frases do dia a dia:**\n- *How much is it?* (Quanto custa?)\n- *Can I have some water, please?*",
+          "vocab": [
+            {"en": "water", "pt": "água"},
+            {"en": "money", "pt": "dinheiro"},
+            {"en": "some", "pt": "algum/um pouco"},
+            {"en": "any", "pt": "algum (neg./perg.)"},
+            {"en": "How much?", "pt": "Quanto?"}
+          ],
+          "exercises": [
+            {"question": "How ___ apples do you want?", "options": ["much", "many", "some", "any"], "answer": 1, "explanation": "Contável no plural → 'many'."},
+            {"question": "There isn't ___ milk.", "options": ["some", "many", "any", "much of"], "answer": 2, "explanation": "Negativa → 'any'."},
+            {"question": "Can I have ___ water?", "options": ["any", "many", "some", "a"], "answer": 2, "explanation": "Pedido afirmativo → 'some'."},
+            {"question": "How ___ is this shirt?", "options": ["many", "much", "some", "any"], "answer": 1, "explanation": "Preço/incontável → 'much'."}
+          ],
+          "task": {
+            "type": "speaking",
+            "prompt_pt": "Imagine que está numa cafeteria. Peça duas coisas e pergunte o preço, em inglês.",
+            "prompt_en": "You're at a café. Order two things and ask for the price.",
+            "criteria": "Uses some/any and 'how much' appropriately in a request."
+          }
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Comunicação do dia a dia",
+      "cefr": "A2",
+      "subtitle": "Passado, planos e comparações",
+      "color": "#1cb0f6",
+      "locked_hint": "Conclua o Módulo 1 para desbloquear.",
+      "lessons": [
+        {
+          "id": "m2l1",
+          "title": "Past Simple",
+          "method": "PPP · Task-Based",
+          "minutes": 12,
+          "can_do": "Consigo contar o que fiz no fim de semana.",
+          "material_pt": "O **past simple** conta ações terminadas no passado.\n\n- Regulares: verbo + **-ed** → *work → worked*, *play → played*.\n- Irregulares (decore os principais): *go → went*, *have → had*, *see → saw*, *do → did*.\n\n**Negativa e pergunta** usam **did**:\n- I **didn't** go. / **Did** you see it?\n\n**Chunks:** *Last weekend I went to...*, *It was great.*",
+          "vocab": [
+            {"en": "yesterday", "pt": "ontem"},
+            {"en": "last weekend", "pt": "fim de semana passado"},
+            {"en": "went", "pt": "fui/foi (go)"},
+            {"en": "saw", "pt": "vi/viu (see)"},
+            {"en": "had", "pt": "tive/teve (have)"}
+          ],
+          "exercises": [
+            {"question": "Yesterday I ___ to the park.", "options": ["go", "goed", "went", "gone"], "answer": 2, "explanation": "Passado irregular de 'go' → 'went'."},
+            {"question": "She ___ her friends last night.", "options": ["see", "saw", "seen", "sawed"], "answer": 1, "explanation": "Passado de 'see' → 'saw'."},
+            {"question": "We ___ watch TV.", "options": ["don't", "didn't", "wasn't", "not"], "answer": 1, "explanation": "Negativa no passado → 'didn't'."},
+            {"question": "___ you like the movie?", "options": ["Do", "Are", "Did", "Was"], "answer": 2, "explanation": "Pergunta no passado → 'Did'."}
+          ],
+          "task": {
+            "type": "speaking",
+            "prompt_pt": "Conte 3 coisas que você fez no fim de semana passado.",
+            "prompt_en": "Tell me 3 things you did last weekend.",
+            "criteria": "Uses past simple (regular and irregular) correctly."
+          }
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Inglês para o trabalho",
+      "cefr": "B1",
+      "subtitle": "Reuniões, e-mails e entrevistas",
+      "color": "#ce82ff",
+      "locked_hint": "Conclua o Módulo 2 para desbloquear.",
+      "lessons": []
+    }
+  ]
+}
