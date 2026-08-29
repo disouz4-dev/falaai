@@ -242,21 +242,26 @@ body {
 /* ---------- Dark mode ---------- */
 @media (prefers-color-scheme: dark) {
   :root { --ink:#f2f2f2; --muted:#b0b0b0; --bg:#131313; --panel:#242424; --line:#3a3a3a; }
-  /* PT-BR: botões com superfície CLARA/elevada e borda visível (não somem no fundo escuro).
-     EN: buttons with a LIGHT/elevated surface and visible border (don't vanish on the dark bg). */
+  /* PT-BR: BOTÕES BRANCOS no modo escuro (com texto escuro), destacando do fundo preto.
+     EN: WHITE buttons in dark mode (with dark text), standing out from the black background. */
   .big-card, .opt, .lesson-list, .lesson-item, .coming-soon, .module-locked-msg {
-    background: #2e2e2e; border-color: #4d4d4d;
+    background: #ffffff; border-color: #d9d9d9;
   }
-  .big-card { border-bottom-color: #5c5c5c; }
-  .opt { border-bottom-color: #5c5c5c; }
-  .big-card:active, .opt:active { background: #383838; }
-  .big-card.primary { background: #22371a; border-color: #3f7222; }
-  .opt.selected { background: #123a52; border-color: var(--blue); }
-  .opt.correct { background: #1f4d12; border-color: var(--green); }
-  .opt.wrong { background: #4d1f1f; border-color: var(--red); }
-  .lesson-item:active { background: #383838; }
-  .lesson-dot { background: #3d3d3d; }
-  .level-select, .field input, .task-answer { background:#2e2e2e; color:var(--ink); border-color:#4d4d4d; }
+  /* PT-BR: texto escuro dentro dos botões brancos. EN: dark text inside the white buttons. */
+  .big-card, .opt, .big-card .bc-title, .lesson-item .lm-title,
+  .lesson-list, .coming-soon { color: #2b2b2b; }
+  .big-card .bc-sub, .lesson-item .lm-sub, .module-locked-msg { color: #6b6b6b; }
+  .big-card { border-bottom-color: #cfcfcf; }
+  .opt { border-bottom-color: #cfcfcf; color: #2b2b2b; }
+  .big-card:active, .opt:active, .lesson-item:active { background: #eef0f2; }
+  .big-card.primary { background: #ffffff; border-color: var(--green); }
+  /* PT-BR: estados de resposta usam as cores claras padrão (verde/vermelho suaves).
+     EN: answer states use the default light tints. */
+  .opt.selected { background: #ddf4ff; border-color: var(--blue); color: #123a52; }
+  .opt.correct { background: #d7ffb8; border-color: var(--green); color: #2b2b2b; }
+  .opt.wrong { background: #ffdfe0; border-color: var(--red); color: #2b2b2b; }
+  .lesson-dot { background: #eaeaea; }
+  .level-select, .field input, .task-answer { background:#ffffff; color:#2b2b2b; border-color:#d9d9d9; }
   .stat { background: #242424; }
   .chart-box, .report-card, .panel { background: #1e1e1e; }
   .task-box { background:#33300f; border-color:#7a6a1a; }
