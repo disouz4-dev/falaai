@@ -14,6 +14,17 @@ source .venv/bin/activate
 echo "==> Instalando dependências…"
 pip install -q -r backend/requirements.txt
 
+# PT-BR: build do frontend React se necessário (senão, usa o frontend legado automaticamente).
+# EN: build the React frontend if needed (otherwise it falls back to the legacy frontend).
+if [ -f web/package.json ] && [ ! -d web/dist ]; then
+  if command -v npm >/dev/null 2>&1; then
+    echo "==> Compilando o frontend (React/Vite)…"
+    (cd web && npm install --silent && npm run build >/dev/null)
+  else
+    echo "==> (Node/npm ausente — usando o frontend clássico. Instale o Node p/ o React.)"
+  fi
+fi
+
 HOST="0.0.0.0"
 PORT="8000"
 # PT-BR: detecta o IP local (Linux e macOS). EN: detect LAN IP (Linux and macOS).

@@ -1,0 +1,185 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { api, mdBlock, mdLite } from "../api.js";
+import { speak } from "../speech.js";
+
+export default function Lesson({ nav, lessonId }) {
+  const [data, setData] = useState(null);
+  const [idx, setIdx] = useState(0);
+  const [answered, setAnswered] = useState(null); // índice escolhido no exercício
+  const [taskAnswer, setTaskAnswer] = useState("");
+  const [taskFb, setTaskFb] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [taskDone, setTaskDone] = useState(false);
+  const [finished, setFinished] = useState(null); // score final
+  const [listening, setListening] = useState(false);
+  const scoreRef = useRef(0);
+
+  useEffect(() => {
+    scoreRef.current = 0;
+    setIdx(0); setAnswered(null); setTaskAnswer(""); setTaskFb(""); setTaskDone(false); setFinished(null);
+    api.get("/api/course/lesson/" + lessonId).then(setData).catch(() => {});
+  }, [lessonId]);
+
+  const stages = useMemo(
+    () => (data ? ["material", ...data.exercises.map((_, i) => "ex" + i), "task"] : []),
+    [data]
+  );
+
+  if (!data) return <section className="screen active"><p className="course-intro">Carregando…</p></section>;
+
+  const total = stages.length;
+  const stage = stages[idx];
+  const pct = (idx / total) * 100;
+
+  function next() {
+    setAnswered(null);
+    if (idx + 1 >= total) return finish();
+    setIdx(idx + 1);
+  }
+
+  async function finish() {
+    const score = Math.round((scoreRef.current / (data.exercises.length || 1)) * 100);
+    try {
+      await api.post("/api/course/lesson/" + data.id + "/complete", { score });
+    } catch {}
+    setFinished(score);
+  }
+
+  function answerExercise(i, oi) {
+    if (answered !== null) return;
+    setAnswered(oi);
+    if (oi === data.exercises[i].answer) scoreRef.current += 1;
+  }
+
+  // PT-BR: ditar a resposta da tarefa por voz. EN: dictate the task answer by voice.
+  function dictate() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    const rec = new SR();
+    rec.lang = "en-US"; rec.interimResults = false;
+    rec.onresult = (e) =>
+      setTaskAnswer((t) => (t + " " + e.results[0][0].transcript).trim());
+    rec.onend = () => setListening(false);
+    try { rec.start(); setListening(true); } catch {}
+  }
+
+  async function submitTask() {
+    if (!taskAnswer.trim()) { setTaskFb("Escreva ou fale sua resposta primeiro."); return; }
+    setSubmitting(true);
+    setTaskFb("O professor está avaliando…");
+    let fb = "";
+    try {
+      const d = await api.post("/api/course/task-feedback", {
+        lesson_id: data.id, transcript: taskAnswer.trim(),
+      });
+      fb = d.feedback;
+    } catch { fb = "Não foi possível avaliar agora."; }
+    setTaskFb(fb);
+    setTaskDone(true);
+    setSubmitting(false);
+    if (window.speechSynthesis) speak(fb.replace(/[^A-Za-z0-9 .,!?']/g, " "));
+  }
+
+  if (finished !== null) {
+    return (
+      <section className="screen active">
+        <div className="lesson-done-card">
+          <div className="big-emoji">🎉</div>
+          <h2>Lição concluída!</h2>
+          <p className="result-score">Você acertou {finished}% dos exercícios.</p>
+          <button className="btn-primary" onClick={() => nav("course")}>Voltar ao curso</button>
+          <button className="btn-ghost" onClick={() => nav("talk")}>Praticar conversando</button>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="screen active">
+      <div className="test-header">
+        <button className="icon-btn" title="Sair" onClick={() => nav("course")}>✕</button>
+        <div className="progress-wrap">
+          <div className="progress-bar"><div className="progress-fill" style={{ width: pct + "%" }} /></div>
+        </div>
+        <div className="level-chip">{idx + 1}/{total}</div>
+      </div>
+
+      <div className="lesson-body">
+        {stage === "material" && (
+          <div className="lesson-stage">
+            <div className="stage-tag">📖 Material · {data.method}</div>
+            <h2>{data.title}</h2>
+            <div className="material" dangerouslySetInnerHTML={{ __html: mdBlock(data.material_pt) }} />
+            <h3 style={{ marginTop: 18 }}>🗂️ Vocabulário</h3>
+            <div className="vocab-grid">
+              {data.vocab.map((v, i) => (
+                <div className="vocab-card" key={i}>
+                  <div className="v-en">{v.en}</div>
+                  <div className="v-pt">{v.pt}</div>
+                </div>
+              ))}
+            </div>
+            <button className="btn-primary" onClick={next}>Praticar</button>
+          </div>
+        )}
+
+        {stage?.startsWith("ex") && (() => {
+          const i = parseInt(stage.slice(2), 10);
+          const ex = data.exercises[i];
+          const correct = answered !== null && answered === ex.answer;
+          return (
+            <div className="lesson-stage">
+              <div className="stage-tag">✏️ Prática {i + 1}</div>
+              <h2 className="q-text">{ex.question}</h2>
+              <div className="options">
+                {ex.options.map((opt, oi) => {
+                  let cls = "opt";
+                  if (answered !== null) {
+                    if (oi === ex.answer) cls += " correct";
+                    else if (oi === answered) cls += " wrong";
+                  }
+                  return (
+                    <button key={oi} className={cls} disabled={answered !== null}
+                      onClick={() => answerExercise(i, oi)}>{opt}</button>
+                  );
+                })}
+              </div>
+              {answered !== null && (
+                <div className={"feedback " + (correct ? "ok" : "no")}>
+                  <div className="feedback-title">{correct ? "✓ Correto!" : "✗ Quase!"}</div>
+                  <div className="feedback-exp">{ex.explanation}</div>
+                  <button className="btn-primary" onClick={next}>Continuar</button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {stage === "task" && (
+          <div className="lesson-stage">
+            <div className="stage-tag">🎯 Tarefa (produção)</div>
+            <h2>Sua vez de usar!</h2>
+            <div className="task-box">
+              <div className="task-label">Tarefa</div>
+              <div>{data.task.prompt_pt}</div>
+              <div className="task-en">{data.task.prompt_en}</div>
+            </div>
+            <button className={"mic-inline" + (listening ? " listening" : "")} onClick={dictate}>
+              {listening ? "🔴 Ouvindo…" : "🎤 Falar resposta"}
+            </button>
+            <textarea className="task-answer" placeholder="…ou escreva sua resposta em inglês aqui"
+              value={taskAnswer} onChange={(e) => setTaskAnswer(e.target.value)} />
+            {taskFb && <div className="task-feedback" dangerouslySetInnerHTML={{ __html: "🧑‍🏫 " + mdLite(taskFb) }} />}
+            {taskDone ? (
+              <button className="btn-primary" onClick={next}>Concluir lição</button>
+            ) : (
+              <button className="btn-primary" disabled={submitting} onClick={submitTask}>
+                Enviar para o professor
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}

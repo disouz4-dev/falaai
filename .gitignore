@@ -15,3 +15,7 @@ desktop/node_modules/
 frontend/openlingo-ca.crt
 # PT-BR: vault de memoria do aluno (dados pessoais). EN: student memory vault (personal data).
 backend/data/memory/
+
+# PT-BR: React/Vite. EN: React/Vite.
+web/node_modules/
+web/dist/

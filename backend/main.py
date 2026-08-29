@@ -34,7 +34,10 @@ GPU_INFO = gpu.apply_env()
 print(f"[OpenLingo] Aceleração: {GPU_INFO['device'].upper()} — {GPU_INFO['reason']}")
 
 BASE_DIR = Path(__file__).resolve().parent
-FRONTEND_DIR = BASE_DIR.parent / "frontend"
+# PT-BR: prefere o build do React (web/dist); se não houver, usa o frontend vanilla legado.
+# EN: prefer the React build (web/dist); fall back to the legacy vanilla frontend.
+_WEB_DIST = BASE_DIR.parent / "web" / "dist"
+FRONTEND_DIR = _WEB_DIST if _WEB_DIST.exists() else (BASE_DIR.parent / "frontend")
 ITEMS_PATH = BASE_DIR / "data" / "items.json"
 
 TEST_LENGTH = 20  # PT-BR: nº de questões do teste. EN: number of questions in the test.
