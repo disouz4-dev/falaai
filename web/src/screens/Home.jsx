@@ -28,6 +28,11 @@ export default function Home({
           <span className="bc-title">Conversar (voz)</span>
           <span className="bc-sub">Fale com o professor de IA em tempo real</span>
         </button>
+        <button className="big-card" onClick={() => nav("practice")}>
+          <span className="bc-icon">🏋️</span>
+          <span className="bc-title">Praticar</span>
+          <span className="bc-sub">Revisão (SRS), ditado, pronúncia, roleplay e histórias</span>
+        </button>
         <button className="big-card" onClick={() => nav("progress")}>
           <span className="bc-icon">📈</span>
           <span className="bc-title">Meu progresso</span>

@@ -26,6 +26,7 @@ import irt
 import mdns
 import memory
 import ollama_client
+import srs
 import tts
 import version
 
@@ -229,6 +230,15 @@ def placement_answer(ans: AnswerIn):
         raise HTTPException(404, "Item inexistente / Unknown item")
 
     correct = ans.choice == item["answer"]
+    # PT-BR: registra o erro para o hub de revisão. EN: log the mistake for the review hub.
+    if not correct:
+        try:
+            db.log_mistake("teste", item["skill"], item["question"],
+                           item["options"][item["answer"]],
+                           item["options"][ans.choice] if 0 <= ans.choice < len(item["options"]) else "",
+                           item.get("explanation_pt", ""))
+        except Exception:
+            pass
     session["responses"].append({"b": item["b"], "correct": correct})
     session["used_ids"].append(item["id"])
     session["history"].append({
@@ -560,6 +570,11 @@ def course_complete(lesson_id: str, body: CompleteIn):
     if not les:
         raise HTTPException(404, "Lição não encontrada / Lesson not found")
     db.complete_lesson(lesson_id, body.score)
+    # PT-BR: adiciona o vocabulário da lição ao SRS (repetição espaçada). EN: add vocab to SRS.
+    try:
+        srs.seed_lesson_vocab(les)
+    except Exception:
+        pass
     return {"ok": True}
 
 
@@ -590,6 +605,282 @@ def course_task_feedback(body: TaskFeedbackIn):
     except Exception:
         fb = "Bom trabalho! (Feedback detalhado da IA indisponível — verifique o Ollama.)"
     return {"feedback": fb}
+
+
+# =========================================================================== #
+# PT-BR: FEATURES ESTILO DUOLINGO — SRS, explicar erro, ditado, roleplay,
+#        histórias, hub de erros e pronúncia. EN: Duolingo-style features.
+# =========================================================================== #
+import re as _re
+import difflib
+
+
+def _norm(s):
+    """PT-BR: normaliza texto p/ comparar (minúsculas, sem pontuação). EN: normalize text for compare."""
+    return _re.sub(r"[^a-z0-9' ]", "", (s or "").lower()).strip()
+
+
+def _similarity(a, b):
+    """PT-BR: similaridade 0-100 entre duas frases (por palavra). EN: 0-100 word similarity."""
+    wa, wb = _norm(a).split(), _norm(b).split()
+    if not wa and not wb:
+        return 100
+    ratio = difflib.SequenceMatcher(None, wa, wb).ratio()
+    return round(ratio * 100)
+
+
+# ---------- SRS de vocabulário ----------
+class SrsReviewIn(BaseModel):
+    term: str
+    correct: bool
+
+
+@app.get("/api/srs")
+def srs_due():
+    """PT-BR: cartões de vocabulário a revisar agora + estatísticas. EN: due SRS cards + stats."""
+    return {"cards": srs.due_cards(limit=20), "stats": db.srs_stats()}
+
+
+@app.post("/api/srs/review")
+def srs_review(r: SrsReviewIn):
+    """PT-BR: registra a revisão de um cartão (acertou/errou). EN: record a card review."""
+    return srs.review(r.term, r.correct)
+
+
+# ---------- Explique meu erro ----------
+class ExplainIn(BaseModel):
+    question: str
+    correct: str
+    given: str = ""
+    level: str = "B1"
+
+
+@app.post("/api/explain")
+def explain_answer(x: ExplainIn):
+    """PT-BR: a IA explica em profundidade por que a resposta certa é aquela. EN: AI 'explain my answer'."""
+    prompt = (
+        f"An English learner (CEFR {x.level}) answered a question.\n"
+        f"Question: {x.question}\nCorrect answer: {x.correct}\n"
+        + (f"Their answer: {x.given}\n" if x.given else "")
+        + "Explain in Brazilian Portuguese (max 90 words), warmly and clearly: WHY the correct "
+        "answer is right (the grammar/vocabulary rule), and if their answer is given, why it's "
+        "wrong. End with a tiny example in English. Write only the explanation."
+    )
+    try:
+        ok, _ = ollama_client.is_available()
+        if not ok:
+            raise RuntimeError("offline")
+        txt = ollama_client.chat_once(
+            [{"role": "system", "content": "You are a clear, kind English teacher."},
+             {"role": "user", "content": prompt}], temperature=0.5).strip()
+    except Exception:
+        txt = "Explicação da IA indisponível — verifique se o Ollama está rodando."
+    return {"explanation": txt}
+
+
+# ---------- Ditado / escuta (Listen & Type) ----------
+_LISTEN_BANK = {
+    "A1": ["My name is Anna.", "I have two cats.", "She is from Brazil.", "We go to school.",
+           "The book is on the table.", "I like coffee in the morning."],
+    "A2": ["Yesterday I went to the park.", "She is taller than her brother.",
+           "We are going to travel next week.", "I have never eaten sushi."],
+    "B1": ["If it rains, we will stay at home.", "I have been working here for five years.",
+           "She said she would call me later.", "You should try to speak every day."],
+    "B2": ["The bridge was built more than a century ago.", "Had I known, I would have helped you.",
+           "Despite the rain, they finished the hike.", "The report will be sent tomorrow."],
+    "C1": ["Never have I seen such a beautiful sunset.", "What we need is a little more time.",
+           "The evidence lends weight to his theory.", "Were I you, I would apologise."],
+    "C2": ["The negotiations reached an impasse neither side could break.",
+           "For all his talent, he never fulfilled his promise."],
+}
+
+
+@app.get("/api/listen/new")
+def listen_new(level: str = "B1"):
+    """PT-BR: sorteia uma frase para ditado (o áudio vem de /api/tts). EN: pick a dictation sentence."""
+    import random
+    bank = _LISTEN_BANK.get(level) or _LISTEN_BANK["B1"]
+    return {"text": random.choice(bank), "level": level}
+
+
+class ListenCheckIn(BaseModel):
+    target: str
+    typed: str
+
+
+@app.post("/api/listen/check")
+def listen_check(c: ListenCheckIn):
+    """PT-BR: compara o que o aluno digitou com a frase falada. EN: compare typed vs spoken sentence."""
+    sim = _similarity(c.target, c.typed)
+    correct = sim >= 90
+    if not correct:
+        db.log_mistake("ditado", "listening", c.target, c.target, c.typed, "")
+    return {"similarity": sim, "correct": correct, "target": c.target}
+
+
+# ---------- Roleplay (cenários) ----------
+_SCENARIOS = [
+    {"id": "cafe", "emoji": "☕", "title": "Pedir num café", "level": "A2",
+     "setting": "You are a friendly barista at a coffee shop in London. The learner is a customer.",
+     "goal": "order a drink and something to eat, and ask the price",
+     "opening": "Hi there! Welcome to the café. What can I get for you today?"},
+    {"id": "hotel", "emoji": "🏨", "title": "Check-in no hotel", "level": "B1",
+     "setting": "You are a hotel receptionist. The learner is a guest checking in.",
+     "goal": "check in, give their name, and ask about breakfast and wifi",
+     "opening": "Good evening, welcome to the Grand Hotel! Do you have a reservation with us?"},
+    {"id": "interview", "emoji": "💼", "title": "Entrevista de emprego", "level": "B2",
+     "setting": "You are a hiring manager interviewing the learner for a job.",
+     "goal": "introduce themselves, talk about their experience and answer questions",
+     "opening": "Thanks for coming in today. So, tell me a little about yourself and your background."},
+    {"id": "directions", "emoji": "🗺️", "title": "Pedir informação na rua", "level": "A2",
+     "setting": "You are a local on the street. The learner is a tourist who is lost.",
+     "goal": "ask for directions to a place and understand the answer",
+     "opening": "Hello! You look a bit lost — do you need any help finding something?"},
+]
+
+
+@app.get("/api/roleplay/scenarios")
+def roleplay_scenarios():
+    return {"scenarios": [{k: s[k] for k in ("id", "emoji", "title", "level")} for s in _SCENARIOS]}
+
+
+class RoleplayIn(BaseModel):
+    scenario_id: str
+    messages: list = []
+    level: str = "B1"
+
+
+def _scenario(sid):
+    return next((s for s in _SCENARIOS if s["id"] == sid), None)
+
+
+@app.post("/api/roleplay/chat")
+def roleplay_chat(body: RoleplayIn):
+    """PT-BR: conversa de roleplay em streaming, no papel do cenário. EN: streaming roleplay chat."""
+    sc = _scenario(body.scenario_id)
+    if not sc:
+        raise HTTPException(404, "Cenário não encontrado / Scenario not found")
+    system = (
+        f"You are roleplaying. {sc['setting']} Stay fully in character and speak only English at "
+        f"the learner's CEFR level ({body.level}). Keep replies short (1-2 sentences) and natural, "
+        f"and guide the learner toward the goal: they should {sc['goal']}. Do not break character."
+    )
+    messages = [{"role": "system", "content": system}] + body.messages
+
+    def gen():
+        try:
+            for chunk in ollama_client.chat_stream(messages, temperature=0.6):
+                yield chunk
+        except Exception as e:
+            yield f"\n[erro: {e}]"
+    return StreamingResponse(gen(), media_type="text/plain; charset=utf-8")
+
+
+@app.post("/api/roleplay/feedback")
+def roleplay_feedback(body: RoleplayIn):
+    """PT-BR: feedback da IA ao fim do roleplay (precisão, vocabulário, dica). EN: end-of-roleplay feedback."""
+    sc = _scenario(body.scenario_id)
+    convo = "\n".join(f"{m.get('role')}: {m.get('content')}" for m in body.messages
+                      if m.get("role") in ("user", "assistant"))
+    prompt = (
+        f"A learner just finished a roleplay ({sc['title'] if sc else ''}). Conversation:\n{convo}\n\n"
+        "Give short feedback in Brazilian Portuguese (max 90 words): 1) one thing they did well, "
+        "2) correct 1-2 important mistakes (show the right English), 3) whether they achieved the goal. "
+        "Write only the feedback."
+    )
+    try:
+        ok, _ = ollama_client.is_available()
+        if not ok:
+            raise RuntimeError("offline")
+        fb = ollama_client.chat_once(
+            [{"role": "system", "content": "You are a warm English teacher."},
+             {"role": "user", "content": prompt}], temperature=0.5).strip()
+    except Exception:
+        fb = "Bom trabalho! (Feedback da IA indisponível.)"
+    return {"feedback": fb}
+
+
+@app.get("/api/roleplay/opening/{sid}")
+def roleplay_opening(sid: str):
+    sc = _scenario(sid)
+    if not sc:
+        raise HTTPException(404, "Cenário não encontrado")
+    return {"opening": sc["opening"], "title": sc["title"], "goal": sc["goal"]}
+
+
+# ---------- Histórias com áudio (Stories / DuoRadio) ----------
+@app.get("/api/story")
+def story(level: str = "B1", topic: str = ""):
+    """PT-BR: a IA cria uma mini-história no nível + perguntas de compreensão. EN: AI mini-story + questions."""
+    prof = db.get_profile()
+    interests = (prof or {}).get("interests", "")
+    theme = topic or interests or "everyday life"
+    prompt = (
+        f"Write a SHORT, simple English story (CEFR {level}, 5-7 sentences) about {theme}. "
+        "Then write 3 comprehension questions about it. Return ONLY strict JSON: "
+        '{"title": "...", "text": "...", "questions": [{"q":"...","options":["..","..","..",".."],"answer":0}]}. '
+        "Options in English; 'answer' is the index of the correct option."
+    )
+    try:
+        ok, _ = ollama_client.is_available()
+        if not ok:
+            raise RuntimeError("offline")
+        raw = ollama_client.chat_once(
+            [{"role": "system", "content": "You write graded readers and output strict JSON."},
+             {"role": "user", "content": prompt}], temperature=0.7)
+        raw = _re.sub(r"^```(json)?|```$", "", raw.strip(), flags=_re.MULTILINE).strip()
+        s, e = raw.find("{"), raw.rfind("}")
+        data = json.loads(raw[s:e + 1])
+        data.setdefault("questions", [])
+        return data
+    except Exception:
+        return {"title": "História indisponível",
+                "text": "Não foi possível gerar a história agora (verifique o Ollama).",
+                "questions": []}
+
+
+# ---------- Hub de revisão de erros ----------
+class MistakeIn(BaseModel):
+    source: str = "lição"
+    skill: str = "grammar"
+    question: str
+    correct: str
+    given: str = ""
+    explanation: str = ""
+
+
+@app.post("/api/mistakes/log")
+def mistakes_log(m: MistakeIn):
+    """PT-BR: registra um erro (chamado pelas lições no cliente). EN: log a mistake (called by lessons)."""
+    db.log_mistake(m.source, m.skill, m.question, m.correct, m.given, m.explanation)
+    return {"ok": True}
+
+
+@app.get("/api/mistakes")
+def mistakes_list():
+    return {"mistakes": db.list_mistakes(limit=30), "count": db.mistakes_count()}
+
+
+@app.post("/api/mistakes/{mid}/resolve")
+def mistakes_resolve(mid: int):
+    db.resolve_mistake(mid)
+    return {"ok": True}
+
+
+# ---------- Nota de pronúncia ----------
+class PronounceIn(BaseModel):
+    target: str
+    heard: str
+
+
+@app.post("/api/pronounce/check")
+def pronounce_check(p: PronounceIn):
+    """PT-BR: pontua a pronúncia comparando a frase-alvo com o que foi reconhecido. EN: pronunciation score."""
+    score = _similarity(p.target, p.heard)
+    tw, hw = _norm(p.target).split(), _norm(p.heard).split()
+    hset = set(hw)
+    missed = [w for w in tw if w not in hset]  # PT-BR: palavras não reconhecidas. EN: words not recognized.
+    return {"score": score, "missed": missed, "target": p.target, "heard": p.heard}
 
 
 # --------------------------------------------------------------------------- #

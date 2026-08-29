@@ -70,6 +70,36 @@ def init_db():
                 PRIMARY KEY (lesson_id, profile_id)
             )
         """)
+        # PT-BR: SRS de vocabulário (half-life regression). Guarda a meia-vida de memória.
+        # EN: vocabulary SRS (half-life regression). Stores the memory half-life per word.
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS srs (
+                profile_id INTEGER,
+                term TEXT,
+                translation TEXT,
+                reps INTEGER DEFAULT 0,
+                correct INTEGER DEFAULT 0,
+                half_life REAL DEFAULT 0.5,
+                last_review TEXT,
+                next_due TEXT,
+                PRIMARY KEY (profile_id, term)
+            )
+        """)
+        # PT-BR: erros do aluno (teste + lições) para o hub de revisão. EN: mistakes for the review hub.
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS mistakes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                profile_id INTEGER,
+                created_at TEXT,
+                source TEXT,
+                skill TEXT,
+                question TEXT,
+                correct_answer TEXT,
+                given_answer TEXT,
+                explanation TEXT,
+                resolved INTEGER DEFAULT 0
+            )
+        """)
 
 
 # --------------------------------------------------------------------------- #
@@ -165,3 +195,85 @@ def complete_lesson(lesson_id, score):
             "score=MAX(lesson_progress.score, excluded.score), completed_at=excluded.completed_at",
             (lesson_id, PROFILE_ID, "done", int(score), now),
         )
+
+
+# --------------------------------------------------------------------------- #
+# PT-BR: SRS de vocabulário (repetição espaçada). EN: vocabulary SRS.
+# --------------------------------------------------------------------------- #
+def srs_upsert(term, translation):
+    """PT-BR: cadastra uma palavra no SRS (se ainda não existe). EN: register a word in SRS if new."""
+    now = datetime.utcnow().isoformat()
+    with _conn() as c:
+        c.execute(
+            "INSERT OR IGNORE INTO srs (profile_id, term, translation, next_due, last_review) "
+            "VALUES (?,?,?,?,?)",
+            (PROFILE_ID, term, translation, now, now),
+        )
+
+
+def srs_due(limit=20):
+    """PT-BR: palavras a revisar agora (vencidas). EN: words due for review now."""
+    now = datetime.utcnow().isoformat()
+    with _conn() as c:
+        rows = c.execute(
+            "SELECT term, translation, reps, correct, half_life FROM srs "
+            "WHERE profile_id=? AND next_due<=? ORDER BY next_due ASC LIMIT ?",
+            (PROFILE_ID, now, limit),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def srs_update(term, half_life, correct, next_due):
+    """PT-BR: atualiza a meia-vida e o próximo vencimento após revisar. EN: update half-life/next due."""
+    now = datetime.utcnow().isoformat()
+    with _conn() as c:
+        c.execute(
+            "UPDATE srs SET reps=reps+1, correct=correct+?, half_life=?, last_review=?, next_due=? "
+            "WHERE profile_id=? AND term=?",
+            (1 if correct else 0, half_life, now, next_due, PROFILE_ID, term),
+        )
+
+
+def srs_stats():
+    """PT-BR: contagem total e vencidas. EN: total and due counts."""
+    now = datetime.utcnow().isoformat()
+    with _conn() as c:
+        total = c.execute("SELECT COUNT(*) n FROM srs WHERE profile_id=?", (PROFILE_ID,)).fetchone()["n"]
+        due = c.execute("SELECT COUNT(*) n FROM srs WHERE profile_id=? AND next_due<=?",
+                        (PROFILE_ID, now)).fetchone()["n"]
+    return {"total": total, "due": due}
+
+
+# --------------------------------------------------------------------------- #
+# PT-BR: Erros do aluno (hub de revisão). EN: student mistakes (review hub).
+# --------------------------------------------------------------------------- #
+def log_mistake(source, skill, question, correct_answer, given_answer, explanation=""):
+    now = datetime.utcnow().isoformat()
+    with _conn() as c:
+        c.execute(
+            "INSERT INTO mistakes (profile_id, created_at, source, skill, question, "
+            "correct_answer, given_answer, explanation) VALUES (?,?,?,?,?,?,?,?)",
+            (PROFILE_ID, now, source, skill, question, correct_answer, given_answer, explanation),
+        )
+
+
+def list_mistakes(limit=30):
+    with _conn() as c:
+        rows = c.execute(
+            "SELECT id, source, skill, question, correct_answer, given_answer, explanation "
+            "FROM mistakes WHERE profile_id=? AND resolved=0 ORDER BY created_at DESC LIMIT ?",
+            (PROFILE_ID, limit),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def resolve_mistake(mistake_id):
+    with _conn() as c:
+        c.execute("UPDATE mistakes SET resolved=1 WHERE profile_id=? AND id=?",
+                  (PROFILE_ID, mistake_id))
+
+
+def mistakes_count():
+    with _conn() as c:
+        return c.execute("SELECT COUNT(*) n FROM mistakes WHERE profile_id=? AND resolved=0",
+                         (PROFILE_ID,)).fetchone()["n"]

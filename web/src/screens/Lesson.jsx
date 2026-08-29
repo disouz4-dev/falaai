@@ -12,6 +12,8 @@ export default function Lesson({ nav, lessonId }) {
   const [taskDone, setTaskDone] = useState(false);
   const [finished, setFinished] = useState(null); // score final
   const [listening, setListening] = useState(false);
+  const [explain, setExplain] = useState(null);
+  const [explaining, setExplaining] = useState(false);
   const scoreRef = useRef(0);
 
   useEffect(() => {
@@ -33,8 +35,20 @@ export default function Lesson({ nav, lessonId }) {
 
   function next() {
     setAnswered(null);
+    setExplain(null);
     if (idx + 1 >= total) return finish();
     setIdx(idx + 1);
+  }
+
+  async function askExplain(ex, given) {
+    setExplaining(true);
+    try {
+      const d = await api.post("/api/explain", {
+        question: ex.question, correct: ex.options[ex.answer], given: ex.options[given], level: data.method,
+      });
+      setExplain(d.explanation);
+    } catch { setExplain("Não foi possível explicar agora."); }
+    setExplaining(false);
   }
 
   async function finish() {
@@ -48,7 +62,15 @@ export default function Lesson({ nav, lessonId }) {
   function answerExercise(i, oi) {
     if (answered !== null) return;
     setAnswered(oi);
-    if (oi === data.exercises[i].answer) scoreRef.current += 1;
+    const ex = data.exercises[i];
+    if (oi === ex.answer) scoreRef.current += 1;
+    else {
+      // PT-BR: registra o erro no hub de revisão. EN: log the mistake for the review hub.
+      api.post("/api/mistakes/log", {
+        source: "lição", skill: "grammar", question: ex.question,
+        correct: ex.options[ex.answer], given: ex.options[oi], explanation: ex.explanation || "",
+      }).catch(() => {});
+    }
   }
 
   // PT-BR: ditar a resposta da tarefa por voz. EN: dictate the task answer by voice.
@@ -148,6 +170,14 @@ export default function Lesson({ nav, lessonId }) {
                 <div className={"feedback " + (correct ? "ok" : "no")}>
                   <div className="feedback-title">{correct ? "✓ Correto!" : "✗ Quase!"}</div>
                   <div className="feedback-exp">{ex.explanation}</div>
+                  {explain && (
+                    <div className="task-feedback" dangerouslySetInnerHTML={{ __html: "🧑‍🏫 " + mdLite(explain) }} />
+                  )}
+                  {!correct && !explain && (
+                    <button className="btn-ghost" disabled={explaining} onClick={() => askExplain(ex, answered)}>
+                      {explaining ? "Explicando…" : "💡 Explique meu erro"}
+                    </button>
+                  )}
                   <button className="btn-primary" onClick={next}>Continuar</button>
                 </div>
               )}

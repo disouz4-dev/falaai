@@ -7,6 +7,7 @@ import Course from "./screens/Course.jsx";
 import Lesson from "./screens/Lesson.jsx";
 import Profile from "./screens/Profile.jsx";
 import Progress from "./screens/Progress.jsx";
+import Practice from "./screens/practice/Practice.jsx";
 
 export default function App() {
   const [screen, setScreen] = useState("home");
@@ -119,6 +120,7 @@ export default function App() {
         {screen === "lesson" && <Lesson nav={nav} lessonId={lessonId} />}
         {screen === "profile" && <Profile nav={nav} profile={profile} setProfile={setProfile} />}
         {screen === "progress" && <Progress nav={nav} />}
+        {screen === "practice" && <Practice nav={nav} profile={profile} />}
       </main>
     </>
   );

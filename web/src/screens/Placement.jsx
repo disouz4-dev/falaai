@@ -9,6 +9,22 @@ export default function Placement({ nav }) {
   const [feedback, setFeedback] = useState(null); // {correct, correct_index, explanation_pt/en, done, next_question}
   const [selected, setSelected] = useState(null);
   const [result, setResult] = useState(null);
+  const [explain, setExplain] = useState(null);
+  const [explaining, setExplaining] = useState(false);
+
+  async function askExplain() {
+    setExplaining(true);
+    try {
+      const d = await api.post("/api/explain", {
+        question: question.question,
+        correct: question.options[feedback.correct_index],
+        given: question.options[selected],
+        level: progress.level && progress.level !== "—" ? progress.level : "B1",
+      });
+      setExplain(d.explanation);
+    } catch { setExplain("Não foi possível explicar agora."); }
+    setExplaining(false);
+  }
 
   async function start() {
     const d = await api.post("/api/placement/start");
@@ -36,6 +52,7 @@ export default function Placement({ nav }) {
     setQuestion(feedback.next_question);
     setFeedback(null);
     setSelected(null);
+    setExplain(null);
   }
 
   async function finish() {
@@ -107,6 +124,14 @@ export default function Placement({ nav }) {
               <br />
               <span className="en">{feedback.explanation_en}</span>
             </div>
+            {explain && (
+              <div className="task-feedback" dangerouslySetInnerHTML={{ __html: "🧑‍🏫 " + mdLite(explain) }} />
+            )}
+            {!feedback.correct && !explain && (
+              <button className="btn-ghost" disabled={explaining} onClick={askExplain}>
+                {explaining ? "Explicando…" : "💡 Explique meu erro"}
+              </button>
+            )}
             <button className="btn-primary" onClick={next}>Continuar</button>
           </div>
         )}
