@@ -1,0 +1,6 @@
+# PT-BR: Arquivos ignorados pelo git. EN: Git-ignored files.
+.venv/
+certs/
+__pycache__/
+*.pyc
+.DS_Store

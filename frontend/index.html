@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+  PT-BR: OpenLingo — PWA de ensino de inglês (teste de nivelamento adaptativo + conversação por voz).
+  EN:    OpenLingo — English-learning PWA (adaptive placement test + voice conversation).
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#58cc02" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>OpenLingo</title>
+</head>
+<body>
+  <!-- PT-BR: Cabeçalho. EN: Header. -->
+  <header class="topbar">
+    <div class="brand" data-nav="home">🦜 <span>OpenLingo</span></div>
+    <div id="ollama-status" class="status-pill" title="Estado do Ollama">···</div>
+  </header>
+
+  <main id="app">
+
+    <!-- ============ TELA INICIAL / HOME ============ -->
+    <section id="screen-home" class="screen active">
+      <div class="hero">
+        <div class="hero-mascot">🦜</div>
+        <h1>Aprenda inglês do seu jeito</h1>
+        <p class="subtitle">IA local · seu nível medido com métodos reais (CEFR)</p>
+      </div>
+      <div class="cards">
+        <button class="big-card primary" data-nav="test-intro">
+          <span class="bc-icon">🎯</span>
+          <span class="bc-title">Descobrir meu nível</span>
+          <span class="bc-sub">Teste adaptativo de 20 questões</span>
+        </button>
+        <button class="big-card" data-nav="talk">
+          <span class="bc-icon">🎙️</span>
+          <span class="bc-title">Conversar (voz)</span>
+          <span class="bc-sub">Fale com o professor de IA em tempo real</span>
+        </button>
+      </div>
+      <p id="saved-level" class="saved-level hidden"></p>
+    </section>
+
+    <!-- ============ INTRO DO TESTE ============ -->
+    <section id="screen-test-intro" class="screen">
+      <div class="panel">
+        <h2>🎯 Teste de nivelamento</h2>
+        <p>São <strong>20 questões</strong> que se ajustam ao seu desempenho: acertou, fica mais difícil; errou, fica mais fácil. Ao final você recebe seu nível <strong>CEFR (A1 a C2)</strong> e um plano de estudo da IA.</p>
+        <ul class="method-list">
+          <li>📐 Baseado em <strong>Teoria de Resposta ao Item (Rasch)</strong></li>
+          <li>🌍 Escala oficial <strong>CEFR</strong> (Quadro Europeu Comum)</li>
+          <li>🧠 Mede gramática, vocabulário e leitura</li>
+        </ul>
+        <button class="btn-primary" id="btn-start-test">Começar</button>
+        <button class="btn-ghost" data-nav="home">Voltar</button>
+      </div>
+    </section>
+
+    <!-- ============ TELA DO TESTE ============ -->
+    <section id="screen-test" class="screen">
+      <div class="test-header">
+        <button class="icon-btn" data-nav="home" title="Sair">✕</button>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+        </div>
+        <div id="level-chip" class="level-chip">—</div>
+      </div>
+      <div class="test-body">
+        <div id="q-skill" class="q-skill"></div>
+        <h2 id="q-text" class="q-text"></h2>
+        <div id="q-options" class="options"></div>
+      </div>
+      <div id="feedback" class="feedback hidden">
+        <div id="feedback-title" class="feedback-title"></div>
+        <div id="feedback-exp" class="feedback-exp"></div>
+        <button class="btn-primary" id="btn-continue">Continuar</button>
+      </div>
+    </section>
+
+    <!-- ============ RESULTADO ============ -->
+    <section id="screen-result" class="screen">
+      <div class="result-body">
+        <div class="cefr-badge" id="cefr-badge">--</div>
+        <h2 id="result-title">Seu nível</h2>
+        <p id="result-score" class="result-score"></p>
+        <div id="skill-bars" class="skill-bars"></div>
+        <div class="report-card">
+          <h3>📋 Plano da IA</h3>
+          <div id="report-text" class="report-text">Gerando relatório…</div>
+        </div>
+        <button class="btn-primary" data-nav="talk">🎙️ Praticar conversando</button>
+        <button class="btn-ghost" data-nav="test-intro">Refazer teste</button>
+      </div>
+    </section>
+
+    <!-- ============ CONVERSAÇÃO POR VOZ ============ -->
+    <section id="screen-talk" class="screen">
+      <div class="talk-header">
+        <button class="icon-btn" data-nav="home" title="Sair">✕</button>
+        <div class="talk-title">🎙️ Conversação</div>
+        <select id="talk-level" class="level-select" title="Seu nível">
+          <option>A1</option><option>A2</option><option selected>B1</option>
+          <option>B2</option><option>C1</option><option>C2</option>
+        </select>
+      </div>
+      <div id="talk-log" class="talk-log"></div>
+      <div class="talk-controls">
+        <div id="talk-hint" class="talk-hint">Toque no microfone e fale em inglês</div>
+        <button id="mic-btn" class="mic-btn" title="Falar">🎤</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
