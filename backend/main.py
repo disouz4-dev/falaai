@@ -68,6 +68,8 @@ FRIENDLY_URL = None
 def _start_mdns():
     """PT-BR: anuncia 'openlingo.local' na rede via mDNS. EN: advertise 'openlingo.local' via mDNS."""
     global FRIENDLY_URL
+    if os.environ.get("OPENLINGO_MDNS", "1") == "0":
+        return  # PT-BR: mDNS desativado (ex.: ambientes restritos). EN: mDNS disabled.
     port = int(os.environ.get("OPENLINGO_PORT", "8000"))
     https = os.environ.get("OPENLINGO_HTTPS", "0") == "1"
     FRIENDLY_URL = mdns.start(port=port, https=https)
