@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "description_pt": "Currículo do OpenLingo. Estrutura: módulos (por nível CEFR) -> lições no formato PPP (Presentation-Practice-Production). Métodos: CEFR, Aprendizagem Comunicativa (CLT), Task-Based Learning (TBLT), abordagem lexical e repetição espaçada.",
+    "description_pt": "Currículo completo do OpenLingo (A1–C2). Estrutura: módulos (por nível CEFR) -> lições no formato PPP (Presentation-Practice-Production). Métodos: CEFR, Aprendizagem Comunicativa (CLT), Task-Based Learning (TBLT), abordagem lexical e repetição espaçada. Syllabus gramatical/funcional real de cada nível.",
     "methods_ref": ["CEFR", "CLT (Communicative Language Teaching)", "TBLT (Task-Based)", "PPP", "Lexical Approach", "Spaced Repetition"]
   },
   "modules": [
@@ -31,12 +31,7 @@
             {"question": "___ you ready?", "options": ["Am", "Is", "Are", "Do"], "answer": 2, "explanation": "Pergunta com 'you' → 'Are you...?'."},
             {"question": "We ___ friends.", "options": ["is", "am", "be", "are"], "answer": 3, "explanation": "Com 'we' usa-se 'are'."}
           ],
-          "task": {
-            "type": "speaking",
-            "prompt_pt": "Se apresente para o professor: diga seu nome, de onde você é e o que você faz. Use o verbo to be.",
-            "prompt_en": "Introduce yourself: say your name, where you are from, and what you do.",
-            "criteria": "Uses 'to be' correctly for at least 3 facts about themselves."
-          }
+          "task": {"type": "speaking", "prompt_pt": "Se apresente para o professor: diga seu nome, de onde você é e o que você faz. Use o verbo to be.", "prompt_en": "Introduce yourself: say your name, where you are from, and what you do.", "criteria": "Uses 'to be' correctly for at least 3 facts about themselves."}
         },
         {
           "id": "m1l2",
@@ -58,12 +53,7 @@
             {"question": "___ she live here?", "options": ["Do", "Does", "Is", "Are"], "answer": 1, "explanation": "Pergunta 3ª pessoa → 'Does'."},
             {"question": "We ___ breakfast at 8.", "options": ["has", "haves", "have", "having"], "answer": 2, "explanation": "Com 'we' o verbo fica na base: 'have'."}
           ],
-          "task": {
-            "type": "speaking",
-            "prompt_pt": "Conte sua rotina de um dia normal: 3 coisas que você faz todo dia, com horários.",
-            "prompt_en": "Describe your daily routine: 3 things you do every day, with times.",
-            "criteria": "Uses present simple with correct 3rd person and time expressions."
-          }
+          "task": {"type": "speaking", "prompt_pt": "Conte sua rotina de um dia normal: 3 coisas que você faz todo dia, com horários.", "prompt_en": "Describe your daily routine: 3 things you do every day, with times.", "criteria": "Uses present simple with correct 3rd person and time expressions."}
         },
         {
           "id": "m1l3",
@@ -85,12 +75,51 @@
             {"question": "Can I have ___ water?", "options": ["any", "many", "some", "a"], "answer": 2, "explanation": "Pedido afirmativo → 'some'."},
             {"question": "How ___ is this shirt?", "options": ["many", "much", "some", "any"], "answer": 1, "explanation": "Preço/incontável → 'much'."}
           ],
-          "task": {
-            "type": "speaking",
-            "prompt_pt": "Imagine que está numa cafeteria. Peça duas coisas e pergunte o preço, em inglês.",
-            "prompt_en": "You're at a café. Order two things and ask for the price.",
-            "criteria": "Uses some/any and 'how much' appropriately in a request."
-          }
+          "task": {"type": "speaking", "prompt_pt": "Imagine que está numa cafeteria. Peça duas coisas e pergunte o preço, em inglês.", "prompt_en": "You're at a café. Order two things and ask for the price.", "criteria": "Uses some/any and 'how much' appropriately in a request."}
+        },
+        {
+          "id": "m1l4",
+          "title": "Artigos e plurais",
+          "method": "PPP · Gramática em contexto",
+          "minutes": 8,
+          "can_do": "Consigo descrever objetos e lugares corretamente.",
+          "material_pt": "**Artigos:**\n- **a / an** = um/uma (coisa não específica). Use *an* antes de som de vogal: *a car*, *an apple*, *an hour*.\n- **the** = o/a específico, único ou já conhecido: *the sun*, *the book on the table*.\n\n**Plurais:**\n- Regra geral: + **s** → *cars*, *books*.\n- Termina em -s, -sh, -ch, -x → + **es** → *box → boxes*, *watch → watches*.\n- Termina em consoante + y → **-ies** → *city → cities*.\n- Irregulares: *child → children*, *man → men*, *foot → feet*.",
+          "vocab": [
+            {"en": "a / an", "pt": "um / uma"},
+            {"en": "the", "pt": "o / a (específico)"},
+            {"en": "city → cities", "pt": "cidade → cidades"},
+            {"en": "box → boxes", "pt": "caixa → caixas"},
+            {"en": "child → children", "pt": "criança → crianças"}
+          ],
+          "exercises": [
+            {"question": "I want to eat ___ apple.", "options": ["a", "an", "the", "-"], "answer": 1, "explanation": "Som de vogal → 'an apple'."},
+            {"question": "___ sun is very hot today.", "options": ["A", "An", "The", "-"], "answer": 2, "explanation": "Único no mundo → 'The sun'."},
+            {"question": "The plural of 'city' is ___.", "options": ["citys", "cityes", "cities", "cityies"], "answer": 2, "explanation": "Consoante + y → -ies: cities."},
+            {"question": "There are three ___ in the park.", "options": ["child", "childs", "children", "childrens"], "answer": 2, "explanation": "Plural irregular: child → children."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Descreva o cômodo onde você está: cite 4 objetos usando a/an/the e pelo menos um plural.", "prompt_en": "Describe the room you're in: name 4 objects using a/an/the and at least one plural.", "criteria": "Uses articles and plurals correctly to describe objects."}
+        },
+        {
+          "id": "m1l5",
+          "title": "Preposições: in, on, at",
+          "method": "CLT · Abordagem lexical",
+          "minutes": 8,
+          "can_do": "Consigo dizer onde e quando as coisas acontecem.",
+          "material_pt": "As três preposições mais usadas seguem uma lógica de 'zoom':\n\n**Tempo:**\n- **at** = horas e pontos exatos → *at 7 o'clock*, *at night*.\n- **on** = dias e datas → *on Monday*, *on July 5th*.\n- **in** = meses, anos, períodos longos → *in July*, *in 2026*, *in the morning*.\n\n**Lugar:**\n- **at** = ponto específico → *at the door*, *at home*.\n- **on** = sobre uma superfície → *on the table*, *on the wall*.\n- **in** = dentro de um espaço → *in the box*, *in Brazil*.",
+          "vocab": [
+            {"en": "at", "pt": "em (ponto/hora)"},
+            {"en": "on", "pt": "em (dia/superfície)"},
+            {"en": "in", "pt": "em (dentro/mês/ano)"},
+            {"en": "o'clock", "pt": "em ponto (hora)"},
+            {"en": "morning", "pt": "manhã"}
+          ],
+          "exercises": [
+            {"question": "The meeting is ___ 3 o'clock.", "options": ["in", "on", "at", "to"], "answer": 2, "explanation": "Hora exata → 'at'."},
+            {"question": "My birthday is ___ July.", "options": ["in", "on", "at", "of"], "answer": 0, "explanation": "Mês → 'in'."},
+            {"question": "I go to school ___ Monday.", "options": ["in", "at", "on", "by"], "answer": 2, "explanation": "Dia da semana → 'on'."},
+            {"question": "The keys are ___ the table.", "options": ["in", "at", "on", "to"], "answer": 2, "explanation": "Sobre a superfície → 'on'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Descreva sua agenda: diga uma coisa que você faz em um horário, uma em um dia e uma em um mês, usando at/on/in.", "prompt_en": "Describe your schedule using at/on/in for a time, a day and a month.", "criteria": "Uses in/on/at correctly for time and place."}
         }
       ]
     },
@@ -122,12 +151,95 @@
             {"question": "We ___ watch TV.", "options": ["don't", "didn't", "wasn't", "not"], "answer": 1, "explanation": "Negativa no passado → 'didn't'."},
             {"question": "___ you like the movie?", "options": ["Do", "Are", "Did", "Was"], "answer": 2, "explanation": "Pergunta no passado → 'Did'."}
           ],
-          "task": {
-            "type": "speaking",
-            "prompt_pt": "Conte 3 coisas que você fez no fim de semana passado.",
-            "prompt_en": "Tell me 3 things you did last weekend.",
-            "criteria": "Uses past simple (regular and irregular) correctly."
-          }
+          "task": {"type": "speaking", "prompt_pt": "Conte 3 coisas que você fez no fim de semana passado.", "prompt_en": "Tell me 3 things you did last weekend.", "criteria": "Uses past simple (regular and irregular) correctly."}
+        },
+        {
+          "id": "m2l2",
+          "title": "Futuro: going to & will",
+          "method": "PPP · Comunicativo",
+          "minutes": 10,
+          "can_do": "Consigo falar sobre planos e previsões.",
+          "material_pt": "Duas formas principais de futuro:\n\n- **be going to** = plano ou intenção já decidida, e previsão com evidência: *I'm going to study tonight.* / *Look at the clouds — it's going to rain.*\n- **will** = decisão na hora, promessa ou previsão sem evidência: *I'm tired. I think I'll go to bed.* / *Maybe it will be sunny.*\n\n**Resumo:** decidiu antes → *going to*; decidiu agora → *will*.",
+          "vocab": [
+            {"en": "tomorrow", "pt": "amanhã"},
+            {"en": "next week", "pt": "semana que vem"},
+            {"en": "plan", "pt": "plano"},
+            {"en": "maybe", "pt": "talvez"},
+            {"en": "promise", "pt": "prometer/promessa"}
+          ],
+          "exercises": [
+            {"question": "I'm tired. I think I ___ go to bed.", "options": ["am going to", "will", "go", "going to"], "answer": 1, "explanation": "Decisão na hora → 'will'."},
+            {"question": "Look at the clouds! It ___ rain.", "options": ["will", "is going to", "goes to", "rains"], "answer": 1, "explanation": "Previsão com evidência → 'is going to'."},
+            {"question": "We ___ visit Paris next summer. (plano)", "options": ["will", "going to", "are going to", "go"], "answer": 2, "explanation": "Plano decidido → 'are going to'."},
+            {"question": "Maybe I ___ call her later.", "options": ["am going to", "will", "going", "call"], "answer": 1, "explanation": "Previsão incerta → 'will'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Fale sobre seus planos para o próximo fim de semana usando 'going to' e faça uma previsão com 'will'.", "prompt_en": "Talk about your plans for next weekend using 'going to' and make a prediction with 'will'.", "criteria": "Distinguishes 'going to' (plans) from 'will' (predictions/decisions)."}
+        },
+        {
+          "id": "m2l3",
+          "title": "Comparativos e superlativos",
+          "method": "PPP · Gramática em contexto",
+          "minutes": 9,
+          "can_do": "Consigo comparar pessoas, lugares e coisas.",
+          "material_pt": "**Comparativos** (comparar duas coisas):\n- Adjetivos curtos + **-er** + *than* → *cheap → cheaper than*.\n- Adjetivos longos → **more** + adjetivo + *than* → *more expensive than*.\n\n**Superlativos** (o mais de todos):\n- Curtos → **the** + adjetivo + **-est** → *the cheapest*.\n- Longos → **the most** + adjetivo → *the most expensive*.\n\n**Irregulares:** *good → better → the best*; *bad → worse → the worst*.",
+          "vocab": [
+            {"en": "big → bigger", "pt": "grande → maior"},
+            {"en": "cheap", "pt": "barato"},
+            {"en": "expensive", "pt": "caro"},
+            {"en": "better", "pt": "melhor"},
+            {"en": "the worst", "pt": "o pior"}
+          ],
+          "exercises": [
+            {"question": "This phone is ___ than that one.", "options": ["cheap", "cheaper", "cheapest", "more cheap"], "answer": 1, "explanation": "Adjetivo curto + -er → 'cheaper'."},
+            {"question": "It's the ___ film I've ever seen.", "options": ["good", "better", "best", "most good"], "answer": 2, "explanation": "Superlativo irregular → 'best'."},
+            {"question": "Health is ___ important than money.", "options": ["more", "most", "much", "the more"], "answer": 0, "explanation": "Adjetivo longo → 'more important than'."},
+            {"question": "Today is ___ than yesterday.", "options": ["hot", "hotter", "hottest", "more hot"], "answer": 1, "explanation": "Curto (dobra o t) → 'hotter'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Compare duas cidades que você conhece: qual é maior, mais barata e melhor para morar?", "prompt_en": "Compare two cities you know: which is bigger, cheaper and the best to live in?", "criteria": "Uses comparatives and at least one superlative correctly."}
+        },
+        {
+          "id": "m2l4",
+          "title": "Present Continuous",
+          "method": "CLT · Comunicativo",
+          "minutes": 9,
+          "can_do": "Consigo descrever o que está acontecendo agora.",
+          "material_pt": "O **present continuous** descreve ações acontecendo **agora** ou temporárias.\n\nFórmula: **am / is / are + verbo-ing**\n- *I am working.* / *She is sleeping.* / *They are playing.*\n\n**Present simple vs continuous:**\n- Rotina → present simple: *I watch TV every night.*\n- Agora → continuous: *I am watching TV now.*\n\nMarcadores de 'agora': *now, right now, at the moment, look!, listen!*",
+          "vocab": [
+            {"en": "now", "pt": "agora"},
+            {"en": "at the moment", "pt": "neste momento"},
+            {"en": "wear", "pt": "vestir/usar"},
+            {"en": "look!", "pt": "olha!"},
+            {"en": "wait", "pt": "esperar"}
+          ],
+          "exercises": [
+            {"question": "Be quiet! The baby ___.", "options": ["sleeps", "is sleeping", "sleep", "sleeping"], "answer": 1, "explanation": "Ação agora → 'is sleeping'."},
+            {"question": "Look! It ___ outside.", "options": ["rains", "is raining", "rain", "rained"], "answer": 1, "explanation": "'Look!' pede continuous → 'is raining'."},
+            {"question": "I ___ TV every evening.", "options": ["am watching", "watch", "watching", "watches"], "answer": 1, "explanation": "Rotina → present simple 'watch'."},
+            {"question": "They ___ for the bus right now.", "options": ["wait", "waits", "are waiting", "waiting"], "answer": 2, "explanation": "'Right now' → 'are waiting'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Descreva o que as pessoas (ou você) estão fazendo agora à sua volta.", "prompt_en": "Describe what people (or you) are doing right now around you.", "criteria": "Uses present continuous for actions happening now."}
+        },
+        {
+          "id": "m2l5",
+          "title": "Present Perfect (introdução)",
+          "method": "PPP · Abordagem lexical",
+          "minutes": 11,
+          "can_do": "Consigo falar de experiências de vida.",
+          "material_pt": "O **present perfect** liga passado e presente. Fórmula: **have / has + particípio**.\n\nUsos comuns no A2:\n- **Experiências** (quando não importa o momento exato): *I have visited Japan.*\n- Com **ever / never**: *Have you **ever** been to London?* / *I've **never** eaten sushi.*\n- Com **just / already / yet**: *I've **just** arrived.* / *She's **already** left.* / *They haven't finished **yet**.*",
+          "vocab": [
+            {"en": "ever", "pt": "alguma vez"},
+            {"en": "never", "pt": "nunca"},
+            {"en": "already", "pt": "já"},
+            {"en": "yet", "pt": "ainda (neg./perg.)"},
+            {"en": "just", "pt": "acabou de"}
+          ],
+          "exercises": [
+            {"question": "Have you ___ been to London?", "options": ["ever", "never", "yet", "just"], "answer": 0, "explanation": "Pergunta de experiência → 'ever'."},
+            {"question": "I have ___ finished my homework.", "options": ["yet", "already", "ever", "since"], "answer": 1, "explanation": "Concluído antes do esperado → 'already'."},
+            {"question": "She has ___ eaten sushi.", "options": ["just", "ever", "never", "yet"], "answer": 2, "explanation": "Experiência negativa → 'never'."},
+            {"question": "They haven't arrived ___.", "options": ["already", "yet", "just", "ever"], "answer": 1, "explanation": "Negativa → 'yet' (ainda não)."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Diga 3 coisas que você já fez na vida e 1 coisa que você nunca fez.", "prompt_en": "Say 3 things you have done in your life and 1 thing you have never done.", "criteria": "Uses present perfect with ever/never for experiences."}
         }
       ]
     },
@@ -138,7 +250,390 @@
       "subtitle": "Reuniões, e-mails e entrevistas",
       "color": "#ce82ff",
       "locked_hint": "Conclua o Módulo 2 para desbloquear.",
-      "lessons": []
+      "lessons": [
+        {
+          "id": "m3l1",
+          "title": "Present Perfect vs Past Simple",
+          "method": "PPP · Gramática em contexto",
+          "minutes": 11,
+          "can_do": "Consigo falar da minha experiência profissional.",
+          "material_pt": "A diferença é o **tempo**:\n\n- **Past simple** = momento definido e terminado: *I saw him **yesterday**.* / *We launched it **in 2020**.*\n- **Present perfect** = momento indefinido ou com relevância agora: *I **have** worked here for 5 years.* (ainda trabalho)\n\n**for vs since:**\n- **for** + período → *for 3 years*, *for two months*.\n- **since** + ponto no tempo → *since 2020*, *since Monday*.",
+          "vocab": [
+            {"en": "for", "pt": "durante (período)"},
+            {"en": "since", "pt": "desde (ponto)"},
+            {"en": "ago", "pt": "atrás (tempo)"},
+            {"en": "experience", "pt": "experiência"},
+            {"en": "recently", "pt": "recentemente"}
+          ],
+          "exercises": [
+            {"question": "I ___ him yesterday.", "options": ["have seen", "saw", "seen", "have saw"], "answer": 1, "explanation": "'Yesterday' = tempo definido → past simple 'saw'."},
+            {"question": "She has lived here ___ 2015.", "options": ["for", "since", "ago", "from"], "answer": 1, "explanation": "Ponto no tempo → 'since 2015'."},
+            {"question": "We ___ this product last week.", "options": ["have launched", "launched", "launch", "has launched"], "answer": 1, "explanation": "'Last week' → past simple 'launched'."},
+            {"question": "I've known her ___ ten years.", "options": ["since", "for", "ago", "during"], "answer": 1, "explanation": "Período → 'for ten years'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Fale da sua experiência de trabalho/estudo: há quanto tempo você faz o que faz (present perfect) e um projeto específico que terminou (past simple).", "prompt_en": "Talk about your work/study experience: how long you've done it (present perfect) and one finished project (past simple).", "criteria": "Contrasts present perfect and past simple correctly, with for/since."}
+        },
+        {
+          "id": "m3l2",
+          "title": "Condicionais: 1ª e 2ª",
+          "method": "PPP · Task-Based",
+          "minutes": 12,
+          "can_do": "Consigo falar de possibilidades reais e hipotéticas.",
+          "material_pt": "**Primeira condicional** (situação real, provável):\n- *If* + presente, ... *will* + verbo → *If it rains, we **will** stay home.*\n\n**Segunda condicional** (hipótese improvável/imaginária):\n- *If* + passado, ... *would* + verbo → *If I **had** more time, I **would** travel.*\n- Com o verbo *to be*, use **were** para todas as pessoas: *If I **were** you...*\n\n**Zero condicional** (fato/verdade geral): *If you heat ice, it **melts**.*",
+          "vocab": [
+            {"en": "if", "pt": "se"},
+            {"en": "would", "pt": "-ia (condicional)"},
+            {"en": "unless", "pt": "a menos que"},
+            {"en": "might", "pt": "poderia/talvez"},
+            {"en": "wish", "pt": "desejar/gostaria"}
+          ],
+          "exercises": [
+            {"question": "If it rains, we ___ inside.", "options": ["stay", "will stay", "would stay", "stayed"], "answer": 1, "explanation": "1ª condicional: if + presente, will + verbo."},
+            {"question": "If I ___ rich, I would travel the world.", "options": ["am", "was", "were", "will be"], "answer": 2, "explanation": "2ª condicional com to be → 'were'."},
+            {"question": "She would help you if she ___ time.", "options": ["has", "had", "have", "will have"], "answer": 1, "explanation": "2ª condicional: if + passado → 'had'."},
+            {"question": "If you heat ice, it ___.", "options": ["melts", "will melt", "would melt", "melted"], "answer": 0, "explanation": "Fato geral → zero condicional 'melts'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Responda: o que você faria se ganhasse na loteria? Use a 2ª condicional.", "prompt_en": "Answer: what would you do if you won the lottery? Use the 2nd conditional.", "criteria": "Uses second conditional (if + past, would) correctly."}
+        },
+        {
+          "id": "m3l3",
+          "title": "Modais: should / must / have to",
+          "method": "CLT · Comunicativo",
+          "minutes": 10,
+          "can_do": "Consigo dar conselhos e falar de obrigações.",
+          "material_pt": "**should** = conselho/recomendação: *You **should** rest.*\n**must** = obrigação forte (interna) ou certeza: *I **must** finish this today.*\n**have to** = obrigação externa (regra): *I **have to** wear a uniform.*\n\n**Cuidado com as negativas:**\n- **mustn't** = proibido: *You **mustn't** smoke here.*\n- **don't have to** = não é necessário: *It's Sunday, so I **don't have to** work.*",
+          "vocab": [
+            {"en": "should", "pt": "deveria"},
+            {"en": "must", "pt": "dever (forte)"},
+            {"en": "have to", "pt": "ter que"},
+            {"en": "mustn't", "pt": "não pode (proibido)"},
+            {"en": "advice", "pt": "conselho"}
+          ],
+          "exercises": [
+            {"question": "You look tired. You ___ rest.", "options": ["must", "should", "have to", "mustn't"], "answer": 1, "explanation": "Conselho → 'should'."},
+            {"question": "I ___ wear a uniform at work. (regra)", "options": ["should", "have to", "mustn't", "could"], "answer": 1, "explanation": "Obrigação externa → 'have to'."},
+            {"question": "You ___ smoke here. It's forbidden.", "options": ["don't have to", "mustn't", "should", "needn't"], "answer": 1, "explanation": "Proibição → 'mustn't'."},
+            {"question": "It's Sunday, so I ___ get up early.", "options": ["mustn't", "don't have to", "shouldn't", "can't"], "answer": 1, "explanation": "Sem necessidade → 'don't have to'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Dê 3 conselhos para alguém que vai visitar sua cidade, usando should, must e have to.", "prompt_en": "Give 3 pieces of advice to someone visiting your city, using should, must and have to.", "criteria": "Uses should/must/have to appropriately for advice and obligation."}
+        },
+        {
+          "id": "m3l4",
+          "title": "Discurso indireto (Reported Speech)",
+          "method": "PPP · Gramática em contexto",
+          "minutes": 11,
+          "can_do": "Consigo relatar o que outra pessoa disse.",
+          "material_pt": "No **discurso indireto**, o verbo geralmente 'volta um tempo':\n- present → past: *\"I **am** tired\"* → *He said he **was** tired.*\n- will → would: *\"I **will** call\"* → *She said she **would** call.*\n- can → could; present perfect → past perfect.\n\n**say vs tell:**\n- **tell** precisa de objeto: *She **told me** that...*\n- **say** não: *She **said** that...*\n\n**Perguntas sim/não** viram *if / whether*: *\"Are you ready?\"* → *He asked **if** I was ready.*",
+          "vocab": [
+            {"en": "said", "pt": "disse (say)"},
+            {"en": "told", "pt": "disse/contou (tell)"},
+            {"en": "asked", "pt": "perguntou"},
+            {"en": "whether", "pt": "se (ou não)"},
+            {"en": "explain", "pt": "explicar"}
+          ],
+          "exercises": [
+            {"question": "He said he ___ tired. (direto: \"I am tired\")", "options": ["is", "was", "be", "been"], "answer": 1, "explanation": "present → past: 'was'."},
+            {"question": "She ___ me that she liked it.", "options": ["said", "told", "say", "tell"], "answer": 1, "explanation": "Com objeto (me) → 'told'."},
+            {"question": "They said they ___ finish the next day.", "options": ["will", "would", "will to", "are"], "answer": 1, "explanation": "will → would."},
+            {"question": "He asked me ___ I was ready.", "options": ["that", "if", "what", "so"], "answer": 1, "explanation": "Pergunta sim/não → 'if'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Relate o que um amigo ou colega te disse recentemente, usando 'said' e 'told'.", "prompt_en": "Report what a friend or colleague told you recently, using 'said' and 'told'.", "criteria": "Uses reported speech with backshift and say/tell correctly."}
+        },
+        {
+          "id": "m3l5",
+          "title": "Phrasal verbs no trabalho",
+          "method": "Abordagem lexical · Task-Based",
+          "minutes": 10,
+          "can_do": "Consigo falar de tarefas e processos no trabalho.",
+          "material_pt": "Phrasal verbs são muito comuns no inglês profissional. Aprenda pelo significado:\n\n- **set up** = montar, criar → *set up a meeting/system*.\n- **carry out** = executar, realizar → *carry out a task*.\n- **deal with** = lidar com, resolver → *deal with a problem*.\n- **put off** = adiar → *put off the meeting*.\n- **follow up** = dar continuidade, retomar contato → *I'll follow up by email*.",
+          "vocab": [
+            {"en": "set up", "pt": "montar/criar"},
+            {"en": "carry out", "pt": "executar/realizar"},
+            {"en": "deal with", "pt": "lidar com"},
+            {"en": "put off", "pt": "adiar"},
+            {"en": "follow up", "pt": "dar continuidade"}
+          ],
+          "exercises": [
+            {"question": "We need to ___ the meeting to Friday.", "options": ["put off", "put on", "put up", "put in"], "answer": 0, "explanation": "Adiar → 'put off'."},
+            {"question": "Can you ___ this problem?", "options": ["deal with", "deal to", "deal in", "deal on"], "answer": 0, "explanation": "Lidar com → 'deal with'."},
+            {"question": "They will ___ a new system next month.", "options": ["set up", "set off", "set in", "set out"], "answer": 0, "explanation": "Criar/montar → 'set up'."},
+            {"question": "I'll ___ with you after the call.", "options": ["follow up", "follow on", "follow out", "follow in"], "answer": 0, "explanation": "Retomar contato → 'follow up'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Descreva uma tarefa que você realizou no trabalho usando pelo menos 2 phrasal verbs desta lição.", "prompt_en": "Describe a task you carried out at work using at least 2 phrasal verbs from this lesson.", "criteria": "Uses at least two work phrasal verbs correctly."}
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Fluência",
+      "cefr": "B2",
+      "subtitle": "Estruturas complexas e argumentação",
+      "color": "#ff9600",
+      "locked_hint": "Conclua o Módulo 3 para desbloquear.",
+      "lessons": [
+        {
+          "id": "m4l1",
+          "title": "Voz passiva",
+          "method": "PPP · Gramática em contexto",
+          "minutes": 11,
+          "can_do": "Consigo descrever processos e fatos com foco na ação.",
+          "material_pt": "A **voz passiva** foca na ação, não em quem faz. Fórmula: **be + particípio**.\n\n- Presente: *English **is spoken** here.*\n- Passado: *The bridge **was built** in 1932.*\n- Futuro: *The report **will be written** tomorrow.*\n\nUsamos passiva quando o agente é óbvio, desconhecido ou irrelevante. Para citar o agente, use **by**: *It was painted **by** Leonardo.*",
+          "vocab": [
+            {"en": "made", "pt": "feito"},
+            {"en": "built", "pt": "construído"},
+            {"en": "designed", "pt": "projetado"},
+            {"en": "discovered", "pt": "descoberto"},
+            {"en": "by", "pt": "por (agente)"}
+          ],
+          "exercises": [
+            {"question": "This house ___ in 1900.", "options": ["built", "was built", "is building", "has built"], "answer": 1, "explanation": "Passiva no passado → 'was built'."},
+            {"question": "English ___ all over the world.", "options": ["speaks", "is spoken", "spoken", "is speaking"], "answer": 1, "explanation": "Passiva no presente → 'is spoken'."},
+            {"question": "The report ___ by the manager tomorrow.", "options": ["will write", "will be written", "is writing", "wrote"], "answer": 1, "explanation": "Passiva no futuro → 'will be written'."},
+            {"question": "The Mona Lisa ___ by Leonardo.", "options": ["painted", "was painting", "was painted", "is painted"], "answer": 2, "explanation": "Passiva no passado → 'was painted'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Explique como um produto que você conhece é feito, usando a voz passiva.", "prompt_en": "Explain how a product you know is made, using the passive voice.", "criteria": "Uses passive voice correctly to describe a process."}
+        },
+        {
+          "id": "m4l2",
+          "title": "3ª condicional e mistas",
+          "method": "PPP · Comunicativo",
+          "minutes": 12,
+          "can_do": "Consigo falar de arrependimentos e situações imaginárias no passado.",
+          "material_pt": "**Terceira condicional** = passado irreal (algo que NÃO aconteceu):\n- *If* + **past perfect**, ... **would have** + particípio\n- *If I **had left** earlier, I **wouldn't have missed** the train.*\n\n**Condicional mista** = causa no passado, resultado no presente:\n- *If I **had saved** money, I **would be** rich now.*\n\nUse para falar de arrependimentos: *If only I had known...*",
+          "vocab": [
+            {"en": "had left", "pt": "tivesse saído"},
+            {"en": "would have", "pt": "teria"},
+            {"en": "otherwise", "pt": "caso contrário"},
+            {"en": "regret", "pt": "arrependimento"},
+            {"en": "mistake", "pt": "erro"}
+          ],
+          "exercises": [
+            {"question": "If I ___ earlier, I wouldn't have missed the train.", "options": ["left", "had left", "have left", "would leave"], "answer": 1, "explanation": "3ª condicional: if + past perfect → 'had left'."},
+            {"question": "She would have passed if she ___ harder.", "options": ["studied", "had studied", "has studied", "study"], "answer": 1, "explanation": "3ª condicional → 'had studied'."},
+            {"question": "If they had known, they ___ come.", "options": ["would", "would have", "will have", "had"], "answer": 1, "explanation": "Resultado no passado → 'would have come'."},
+            {"question": "If I had saved money, I ___ rich now. (mista)", "options": ["would be", "would have been", "will be", "am"], "answer": 0, "explanation": "Resultado no presente → 'would be'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Fale de uma decisão do passado e imagine como sua vida seria diferente se você tivesse escolhido outra coisa.", "prompt_en": "Talk about a past decision and imagine how your life would be different if you had chosen otherwise.", "criteria": "Uses third/mixed conditional correctly."}
+        },
+        {
+          "id": "m4l3",
+          "title": "Orações relativas",
+          "method": "PPP · Gramática em contexto",
+          "minutes": 10,
+          "can_do": "Consigo dar detalhes e definir pessoas, coisas e lugares.",
+          "material_pt": "**Orações relativas** ligam informação usando pronomes:\n- **who** (pessoas), **which** (coisas), **that** (ambos, informal), **whose** (posse), **where** (lugar).\n\n**Defining** (essencial, sem vírgula): *The man **who** called is my boss.*\n\n**Non-defining** (extra, com vírgulas, nunca use *that*): *My phone, **which** is new, isn't working.*",
+          "vocab": [
+            {"en": "who", "pt": "que/quem (pessoa)"},
+            {"en": "which", "pt": "que/o qual (coisa)"},
+            {"en": "whose", "pt": "cujo/cuja"},
+            {"en": "where", "pt": "onde"},
+            {"en": "whom", "pt": "quem (objeto, formal)"}
+          ],
+          "exercises": [
+            {"question": "The man ___ called you is my boss.", "options": ["which", "who", "whose", "where"], "answer": 1, "explanation": "Pessoa → 'who'."},
+            {"question": "This is the town ___ I was born.", "options": ["which", "who", "where", "that"], "answer": 2, "explanation": "Lugar → 'where'."},
+            {"question": "That's the woman ___ car was stolen.", "options": ["who", "which", "whose", "whom"], "answer": 2, "explanation": "Posse → 'whose'."},
+            {"question": "My phone, ___ is new, isn't working.", "options": ["that", "which", "who", "where"], "answer": 1, "explanation": "Non-defining (com vírgula) → 'which', nunca 'that'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Descreva uma pessoa importante e um lugar especial para você, usando orações relativas (who, where, whose).", "prompt_en": "Describe an important person and a special place using relative clauses (who, where, whose).", "criteria": "Uses defining and non-defining relative clauses correctly."}
+        },
+        {
+          "id": "m4l4",
+          "title": "Conectivos e colocações",
+          "method": "Abordagem lexical · Task-Based",
+          "minutes": 11,
+          "can_do": "Consigo argumentar e conectar ideias com naturalidade.",
+          "material_pt": "**Conectivos de contraste:**\n- **although / though** + oração → *Although it was raining, we went out.*\n- **despite / in spite of** + substantivo/-ing → *Despite the rain, we went out.*\n- **however / nevertheless** (entre frases) → *He's rich; **however**, he isn't happy.*\n\n**Colocações fortes** (aprenda o par certo): *make a decision*, *do research*, *take a risk*, *have an impact*.",
+          "vocab": [
+            {"en": "however", "pt": "no entanto"},
+            {"en": "although", "pt": "embora"},
+            {"en": "despite", "pt": "apesar de"},
+            {"en": "in spite of", "pt": "apesar de"},
+            {"en": "nevertheless", "pt": "mesmo assim"}
+          ],
+          "exercises": [
+            {"question": "___ the rain, we went out.", "options": ["Although", "Despite", "However", "Because"], "answer": 1, "explanation": "'Despite' + substantivo (the rain)."},
+            {"question": "___ it was raining, we went out.", "options": ["Despite", "In spite of", "Although", "However"], "answer": 2, "explanation": "'Although' + oração (it was raining)."},
+            {"question": "He's rich; ___, he isn't happy.", "options": ["although", "despite", "however", "whereas"], "answer": 2, "explanation": "Entre frases → 'however'."},
+            {"question": "I need to ___ a decision soon.", "options": ["do", "make", "take", "have"], "answer": 1, "explanation": "Colocação: 'make a decision'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Dê sua opinião sobre home office: um ponto a favor e um contra, usando 'although' e 'however'.", "prompt_en": "Give your opinion on remote work: one point for and one against, using 'although' and 'however'.", "criteria": "Uses contrast linkers and strong collocations correctly."}
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Domínio",
+      "cefr": "C1",
+      "subtitle": "Ênfase, elegância e registro formal",
+      "color": "#ff4b4b",
+      "locked_hint": "Conclua o Módulo 4 para desbloquear.",
+      "lessons": [
+        {
+          "id": "m5l1",
+          "title": "Inversão para ênfase",
+          "method": "PPP · Gramática avançada",
+          "minutes": 12,
+          "can_do": "Consigo dar ênfase de forma sofisticada.",
+          "material_pt": "Quando começamos a frase com um **advérbio negativo/restritivo**, invertemos sujeito e auxiliar (como numa pergunta).\n\nGatilhos: *Never, Rarely, Seldom, Hardly, No sooner, Not only, Little*.\n\n- *Never **have I seen** such a view.* (não: *Never I have seen*)\n- *No sooner **had I sat** down than the phone rang.*\n- *Not only **was he** late, but he also forgot the files.*\n\nÉ formal e enfático — comum em discursos e textos.",
+          "vocab": [
+            {"en": "rarely", "pt": "raramente"},
+            {"en": "hardly", "pt": "mal/dificilmente"},
+            {"en": "no sooner", "pt": "mal (tinha)"},
+            {"en": "seldom", "pt": "raramente"},
+            {"en": "scarcely", "pt": "mal/apenas"}
+          ],
+          "exercises": [
+            {"question": "Never ___ such a beautiful sunset.", "options": ["I have seen", "have I seen", "I saw", "did I saw"], "answer": 1, "explanation": "Inversão após 'Never' → 'have I seen'."},
+            {"question": "No sooner ___ down than the phone rang.", "options": ["I had sat", "had I sat", "I sat", "did I sit"], "answer": 1, "explanation": "Inversão → 'had I sat'."},
+            {"question": "Not only ___ late, but he also forgot the files.", "options": ["he was", "was he", "he is", "is he"], "answer": 1, "explanation": "Inversão após 'Not only' → 'was he'."},
+            {"question": "Rarely ___ so moved by a film.", "options": ["I have been", "have I been", "I was been", "was I be"], "answer": 1, "explanation": "Inversão após 'Rarely' → 'have I been'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Enfatize três conquistas suas usando inversão (comece com Never, Not only, Rarely).", "prompt_en": "Emphasise three of your achievements using inversion (start with Never, Not only, Rarely).", "criteria": "Uses subject-auxiliary inversion after negative adverbials correctly."}
+        },
+        {
+          "id": "m5l2",
+          "title": "Orações clivadas (cleft)",
+          "method": "PPP · Comunicativo",
+          "minutes": 11,
+          "can_do": "Consigo destacar exatamente a informação que importa.",
+          "material_pt": "**Cleft sentences** dividem a frase para dar ênfase a um elemento.\n\n**It-cleft:** *It was **John** who broke the window.* (foco: John)\n\n**What-cleft:** *What I need is **more time**.* / *What she likes is **the challenge**.*\n\nÚtil para corrigir, contrastar ou enfatizar: *All I want is peace.* / *The reason **why** I called is to thank you.*",
+          "vocab": [
+            {"en": "exactly", "pt": "exatamente"},
+            {"en": "precisely", "pt": "precisamente"},
+            {"en": "the thing (is)", "pt": "o que acontece (é)"},
+            {"en": "the reason", "pt": "a razão"},
+            {"en": "all (I want)", "pt": "tudo (que quero)"}
+          ],
+          "exercises": [
+            {"question": "___ we need is more time.", "options": ["That", "What", "Which", "It"], "answer": 1, "explanation": "What-cleft → 'What we need is...'."},
+            {"question": "___ was John who broke the window.", "options": ["What", "It", "That", "He"], "answer": 1, "explanation": "It-cleft → 'It was John who...'."},
+            {"question": "___ I like about her is her honesty.", "options": ["That", "It", "What", "Which"], "answer": 2, "explanation": "What-cleft → 'What I like...'."},
+            {"question": "The reason ___ I called is to thank you.", "options": ["because", "why", "what", "which"], "answer": 1, "explanation": "'The reason why...'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Dê sua opinião sobre um tema atual destacando o ponto principal com uma cleft sentence (What... / It was...).", "prompt_en": "Give your opinion on a current topic, highlighting the key point with a cleft sentence.", "criteria": "Uses it-cleft or what-cleft for emphasis correctly."}
+        },
+        {
+          "id": "m5l3",
+          "title": "Condicionais avançadas e subjuntivo",
+          "method": "PPP · Gramática avançada",
+          "minutes": 12,
+          "can_do": "Consigo expressar hipóteses de forma formal e elegante.",
+          "material_pt": "**Condicionais invertidas** (formais, sem 'if'):\n- *Had I known...* (= If I had known)\n- *Were I you...* (= If I were you)\n- *Should you need help...* (= If you need help)\n\n**wish / if only** para desejos e arrependimentos:\n- *I **wish** I **had** more time.* (presente irreal)\n- *I **wish** I **had studied** medicine.* (arrependimento no passado)",
+          "vocab": [
+            {"en": "were", "pt": "fosse/estivesse"},
+            {"en": "had (known)", "pt": "tivesse (sabido)"},
+            {"en": "should (you)", "pt": "caso (você)"},
+            {"en": "provided", "pt": "desde que"},
+            {"en": "if only", "pt": "se ao menos"}
+          ],
+          "exercises": [
+            {"question": "___ I known, I would have helped.", "options": ["If", "Had", "Should", "Were"], "answer": 1, "explanation": "Condicional invertida → 'Had I known'."},
+            {"question": "___ you need help, call me.", "options": ["Should", "Had", "Were", "If"], "answer": 0, "explanation": "Formal → 'Should you need help'."},
+            {"question": "I wish I ___ more time.", "options": ["have", "had", "will have", "would have"], "answer": 1, "explanation": "Desejo presente irreal → 'had'."},
+            {"question": "___ I you, I'd apologise.", "options": ["If", "Had", "Were", "Should"], "answer": 2, "explanation": "Condicional invertida com to be → 'Were I you'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Dê um conselho hipotético a alguém usando uma condicional invertida ('Were I you...' ou 'Had I...').", "prompt_en": "Give hypothetical advice using an inverted conditional ('Were I you...' or 'Had I...').", "criteria": "Uses inverted conditionals and wish correctly."}
+        },
+        {
+          "id": "m5l4",
+          "title": "Nominalização e registro formal",
+          "method": "Abordagem lexical · Task-Based",
+          "minutes": 11,
+          "can_do": "Consigo escrever de forma acadêmica e profissional.",
+          "material_pt": "A **nominalização** transforma verbos/adjetivos em substantivos, dando um tom mais formal e denso — típico de textos acadêmicos e relatórios.\n\n- *Prices increased.* → *There was an **increase** in prices.*\n- *They implemented the plan.* → *The **implementation** of the plan...*\n- *We must analyse the data.* → *An **analysis** of the data is required.*\n\nVerbos comuns e seus substantivos: reduce → **reduction**, decide → **decision**, assess → **assessment**.",
+          "vocab": [
+            {"en": "increase (n.)", "pt": "aumento"},
+            {"en": "reduction", "pt": "redução"},
+            {"en": "implementation", "pt": "implementação"},
+            {"en": "analysis", "pt": "análise"},
+            {"en": "assessment", "pt": "avaliação"}
+          ],
+          "exercises": [
+            {"question": "Formal para 'Prices increased': There was an ___ in prices.", "options": ["increasing", "increase", "increased", "increasingly"], "answer": 1, "explanation": "Substantivo → 'an increase'."},
+            {"question": "The ___ of the plan took months.", "options": ["implementing", "implementation", "implement", "implemented"], "answer": 1, "explanation": "Nominalização → 'implementation'."},
+            {"question": "A careful ___ of the data is needed.", "options": ["analysis", "analyse", "analysing", "analysed"], "answer": 0, "explanation": "Substantivo → 'analysis'."},
+            {"question": "The company announced a ___ in costs.", "options": ["reduce", "reducing", "reduction", "reduced"], "answer": 2, "explanation": "Nominalização → 'reduction'."}
+          ],
+          "task": {"type": "writing", "prompt_pt": "Reescreva de forma formal e nominalizada: 'We decided to reduce costs because sales dropped.'", "prompt_en": "Rewrite formally using nominalisation: 'We decided to reduce costs because sales dropped.'", "criteria": "Uses nominalisation to raise the register appropriately."}
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Maestria",
+      "cefr": "C2",
+      "subtitle": "Nuance, registro e naturalidade nativa",
+      "color": "#e5a800",
+      "locked_hint": "Conclua o Módulo 5 para desbloquear.",
+      "lessons": [
+        {
+          "id": "m6l1",
+          "title": "Subjuntivo formal e inversão avançada",
+          "method": "PPP · Gramática avançada",
+          "minutes": 12,
+          "can_do": "Consigo usar registro formal e enfático como um nativo culto.",
+          "material_pt": "**Subjuntivo formal**: após verbos de exigência/sugestão (*insist, demand, recommend, suggest, essential that*), o verbo fica na **forma base** para todas as pessoas:\n- *The board insists that he **be** present.*\n- *It is essential that everyone **be** on time.*\n\n**Inversão com So/Such:**\n- *So **strong was** the storm that flights were cancelled.*\n- *Such **was** his talent that no one could compete.*",
+          "vocab": [
+            {"en": "insist", "pt": "insistir/exigir"},
+            {"en": "demand", "pt": "exigir"},
+            {"en": "recommend", "pt": "recomendar"},
+            {"en": "mandatory", "pt": "obrigatório"},
+            {"en": "essential", "pt": "essencial"}
+          ],
+          "exercises": [
+            {"question": "The board insists that he ___ present.", "options": ["is", "be", "was", "will be"], "answer": 1, "explanation": "Subjuntivo formal → forma base 'be'."},
+            {"question": "They demanded that the rule ___ changed.", "options": ["is", "was", "be", "were"], "answer": 2, "explanation": "Após 'demand that' → 'be changed'."},
+            {"question": "So ___ was the storm that flights stopped.", "options": ["strong", "strongly", "was strong", "strength"], "answer": 0, "explanation": "Inversão: 'So strong was the storm...'."},
+            {"question": "It is essential that everyone ___ on time.", "options": ["is", "be", "are", "being"], "answer": 1, "explanation": "'Essential that' + base → 'be'."}
+          ],
+          "task": {"type": "writing", "prompt_pt": "Escreva uma recomendação formal para uma empresa usando o subjuntivo ('We recommend that...').", "prompt_en": "Write a formal recommendation for a company using the subjunctive ('We recommend that...').", "criteria": "Uses the formal subjunctive correctly."}
+        },
+        {
+          "id": "m6l2",
+          "title": "Hedging e marcadores de discurso",
+          "method": "Abordagem lexical · Comunicativo",
+          "minutes": 11,
+          "can_do": "Consigo suavizar afirmações e soar equilibrado e culto.",
+          "material_pt": "**Hedging** é a arte de afirmar com cautela — essencial em contextos acadêmicos e diplomáticos.\n\n- *This is **arguably** the best solution.* (defensavelmente)\n- *It **could be argued** that...* (poderia-se argumentar)\n- *The policy was, **by and large**, successful.* (de modo geral)\n- ***Notwithstanding** his objections, the plan went ahead.* (não obstante)\n\nEsses recursos mostram nuance e evitam soar categórico demais.",
+          "vocab": [
+            {"en": "arguably", "pt": "defensavelmente"},
+            {"en": "presumably", "pt": "presumivelmente"},
+            {"en": "to some extent", "pt": "até certo ponto"},
+            {"en": "by and large", "pt": "de modo geral"},
+            {"en": "notwithstanding", "pt": "não obstante"}
+          ],
+          "exercises": [
+            {"question": "This is ___ the best solution.", "options": ["definitely", "arguably", "obviously", "never"], "answer": 1, "explanation": "Hedging (afirmação cautelosa) → 'arguably'."},
+            {"question": "The results, ___, were positive.", "options": ["by and large", "exactly", "absolutely", "never"], "answer": 0, "explanation": "'By and large' = de modo geral."},
+            {"question": "___ his objections, the plan went ahead.", "options": ["Notwithstanding", "Because", "Therefore", "So"], "answer": 0, "explanation": "'Notwithstanding' = não obstante."},
+            {"question": "It ___ be argued that the policy failed.", "options": ["can", "could", "will", "must"], "answer": 1, "explanation": "Hedging → 'could be argued'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Apresente uma opinião equilibrada sobre inteligência artificial usando duas expressões de hedging.", "prompt_en": "Present a balanced opinion on artificial intelligence using two hedging expressions.", "criteria": "Uses hedging expressions to qualify claims naturally."}
+        },
+        {
+          "id": "m6l3",
+          "title": "Idioms e nuance",
+          "method": "Abordagem lexical · Task-Based",
+          "minutes": 11,
+          "can_do": "Consigo entender e usar expressões idiomáticas com naturalidade.",
+          "material_pt": "Idioms dão naturalidade nativa — mas o segredo é o **contexto e a conotação**.\n\n- *in tatters* = em frangalhos, arruinado → *His plans were left **in tatters**.*\n- *a blessing in disguise* = um mal que vem para o bem.\n- *the tip of the iceberg* = só a ponta do iceberg (parte pequena de algo maior).\n- *take (something) with a pinch of salt* = não levar totalmente a sério.\n- *jump the gun* = agir cedo demais.",
+          "vocab": [
+            {"en": "in tatters", "pt": "em frangalhos"},
+            {"en": "a blessing in disguise", "pt": "um mal que vem pra bem"},
+            {"en": "the tip of the iceberg", "pt": "a ponta do iceberg"},
+            {"en": "with a pinch of salt", "pt": "com ressalvas"},
+            {"en": "jump the gun", "pt": "agir precipitadamente"}
+          ],
+          "exercises": [
+            {"question": "His plans were left ___ after the crisis.", "options": ["in tatters", "on the fence", "over the moon", "under the weather"], "answer": 0, "explanation": "Arruinado → 'in tatters'."},
+            {"question": "Losing that job was ___; I found a better one.", "options": ["a blessing in disguise", "the last straw", "a red herring", "cold feet"], "answer": 0, "explanation": "Mal que vem pra bem → 'a blessing in disguise'."},
+            {"question": "This problem is just ___.", "options": ["the tip of the iceberg", "a piece of cake", "water under the bridge", "the ball rolling"], "answer": 0, "explanation": "Parte pequena de algo maior → 'the tip of the iceberg'."},
+            {"question": "Take his advice ___.", "options": ["with a pinch of salt", "on the house", "by the book", "out of the blue"], "answer": 0, "explanation": "Com ressalvas → 'with a pinch of salt'."}
+          ],
+          "task": {"type": "speaking", "prompt_pt": "Conte uma história curta e verdadeira da sua vida usando pelo menos dois idioms desta lição.", "prompt_en": "Tell a short true story from your life using at least two idioms from this lesson.", "criteria": "Uses idioms accurately and in the right context."}
+        }
+      ]
     }
   ]
 }
