@@ -14,6 +14,8 @@ export default function App() {
   const [health, setHealth] = useState(null);
   const [lessonId, setLessonId] = useState(null);
   const [deferredInstall, setDeferredInstall] = useState(null);
+  const [update, setUpdate] = useState(null);   // {current, latest, update_available, url}
+  const [updating, setUpdating] = useState(false);
 
   const nav = (name, arg) => {
     if (name === "lesson") setLessonId(arg);
@@ -29,7 +31,27 @@ export default function App() {
         if (!d.profile) setScreen("profile");
       })
       .catch(() => {});
+    // PT-BR: verifica se há versão nova no GitHub. EN: check GitHub for a new version.
+    api.get("/api/version").then(setUpdate).catch(() => {});
   }, []);
+
+  // PT-BR: atualiza (git pull + rebuild) e espera o servidor voltar, então recarrega.
+  // EN: update (git pull + rebuild), wait for the server to come back, then reload.
+  async function doUpdate() {
+    setUpdating(true);
+    try { await api.post("/api/update"); } catch {}
+    let sawDown = false;
+    const start = Date.now();
+    const poll = async () => {
+      try {
+        await fetch("/api/health");
+        if (sawDown) { location.reload(); return; }
+      } catch { sawDown = true; }
+      if (Date.now() - start < 120000) setTimeout(poll, 2000);
+      else location.reload();
+    };
+    setTimeout(poll, 4000);
+  }
 
   // PT-BR: captura o evento de instalação (PWA). EN: capture the install event (PWA).
   useEffect(() => {
@@ -60,6 +82,15 @@ export default function App() {
           <div className={"status-pill " + statusPill.cls} title="Estado do Ollama">{statusPill.txt}</div>
         </div>
       </header>
+
+      {update?.update_available && (
+        <div className="update-bar">
+          <span>🎉 Nova versão <strong>{update.latest}</strong> disponível!</span>
+          <button className="update-btn" disabled={updating} onClick={doUpdate}>
+            {updating ? "Atualizando…" : "Atualizar"}
+          </button>
+        </div>
+      )}
 
       <main id="app">
         {screen === "home" && (

@@ -27,6 +27,7 @@ import mdns
 import memory
 import ollama_client
 import tts
+import version
 
 # PT-BR: detecta a GPU no início e ajusta o Ollama (preferência GPU, fallback CPU).
 # EN: detect the GPU at startup and tune Ollama (prefer GPU, fall back to CPU).
@@ -151,7 +152,19 @@ def health():
     ok, names = ollama_client.is_available()
     return {"ollama": ok, "model": ollama_client.MODEL, "models": names,
             "items": len(ITEM_BANK), "tts": tts.available(), "tts_engine": tts.engine_name(),
-            "gpu": GPU_INFO}
+            "gpu": GPU_INFO, "version": version.current()}
+
+
+@app.get("/api/version")
+def get_version(force: bool = False):
+    """PT-BR: versão atual + checagem de atualização no GitHub. EN: current version + GitHub update check."""
+    return version.check(force=force)
+
+
+@app.post("/api/update")
+def do_update():
+    """PT-BR: atualiza o app (git pull + rebuild) e reinicia o servidor. EN: update + restart."""
+    return version.perform_update()
 
 
 @app.get("/api/tts")

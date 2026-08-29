@@ -40,6 +40,22 @@ body {
 .status-pill.ok { background: #e5ffd6; color: var(--green-dark); }
 .status-pill.off { background: #ffe0e0; color: var(--red); }
 
+/* ---------- Barra de atualização / Update bar ---------- */
+.update-bar {
+  display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+  background: #e5ffd6; color: var(--green-dark); padding: 10px 16px; font-size: 14px;
+  border-bottom: 2px solid var(--green);
+}
+.update-btn {
+  border: none; background: var(--green); color: #fff; font-weight: 800; cursor: pointer;
+  padding: 7px 16px; border-radius: 12px; box-shadow: 0 3px 0 var(--green-dark);
+}
+.update-btn:active { transform: translateY(2px); box-shadow: none; }
+.update-btn:disabled { opacity: .6; box-shadow: none; }
+@media (prefers-color-scheme: dark) {
+  .update-bar { background: #1c2b12; }
+}
+
 /* ---------- Screens ---------- */
 #app { flex: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 16px;
   display: flex; flex-direction: column; }

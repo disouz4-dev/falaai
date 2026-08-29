@@ -34,16 +34,15 @@ if [ -z "$LAN_IP" ]; then
   LAN_IP=$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || true)
 fi
 
+SSL_ARGS=""
+OL_HTTPS=0
 if [ "$1" == "--https" ]; then
-  # PT-BR: Gera certificado autoassinado (necessário p/ microfone via rede no celular).
-  # EN:    Generate a self-signed cert (needed for mic over LAN on the phone).
+  # PT-BR: prefere o certificado CONFIÁVEL do mkcert; senão, autoassinado. EN: prefer mkcert, else self-signed.
   mkdir -p certs
-  # PT-BR: prefere o certificado CONFIÁVEL do mkcert (cadeado verde). Senão, autoassinado.
-  # EN: prefer the TRUSTED mkcert certificate (green lock). Otherwise, self-signed.
   if [ -f certs/openlingo.local.pem ] && [ -f certs/openlingo.local-key.pem ]; then
-    CERT="../certs/openlingo.local.pem"; KEY="../certs/openlingo.local-key.pem"; TRUSTED=1
+    CERT="certs/openlingo.local.pem"; KEY="certs/openlingo.local-key.pem"; TRUSTED=1
   else
-    CERT="../certs/cert.pem"; KEY="../certs/key.pem"; TRUSTED=0
+    CERT="certs/cert.pem"; KEY="certs/key.pem"; TRUSTED=0
     if [ ! -f certs/key.pem ]; then
       echo "==> Gerando certificado autoassinado…"
       openssl req -x509 -newkey rsa:2048 -nodes -days 825 \
@@ -52,6 +51,8 @@ if [ "$1" == "--https" ]; then
         -addext "subjectAltName=DNS:openlingo.local,DNS:localhost,IP:127.0.0.1${LAN_IP:+,IP:$LAN_IP}" >/dev/null 2>&1
     fi
   fi
+  SSL_ARGS="--ssl-keyfile $KEY --ssl-certfile $CERT"
+  OL_HTTPS=1
   echo ""
   echo "🦜 OpenLingo (HTTPS)"
   echo "   Nome na rede: https://openlingo.local:$PORT   ← use este em qualquer dispositivo"
@@ -63,9 +64,6 @@ if [ "$1" == "--https" ]; then
     echo "   ⚠️  Certificado autoassinado — para cadeado verde rode: ./setup-cert.sh"
   fi
   echo ""
-  cd backend
-  OPENLINGO_HTTPS=1 OPENLINGO_PORT="$PORT" exec uvicorn main:app --host "$HOST" --port "$PORT" \
-    --ssl-keyfile "$KEY" --ssl-certfile "$CERT"
 else
   echo ""
   echo "🦜 OpenLingo (HTTP)"
@@ -73,6 +71,25 @@ else
   echo "   PC:           http://localhost:$PORT"
   echo "   (para microfone no celular rode: ./run.sh --https)"
   echo ""
-  cd backend
-  OPENLINGO_PORT="$PORT" exec uvicorn main:app --host "$HOST" --port "$PORT"
 fi
+
+# PT-BR: LOOP DE REINÍCIO — o botão "Atualizar" do app (/api/update) faz o servidor sair com o
+#        sinal .restart; aqui reinstalamos deps, recompilamos o React e subimos o código novo.
+# EN: RESTART LOOP — the app's "Update" button triggers a .restart signal; here we reinstall,
+#     rebuild the React app and relaunch with the new code.
+set +e
+while true; do
+  OPENLINGO_HTTPS="$OL_HTTPS" OPENLINGO_PORT="$PORT" \
+    uvicorn main:app --app-dir backend --host "$HOST" --port "$PORT" $SSL_ARGS
+  code=$?
+  if [ -f .restart ]; then
+    rm -f .restart
+    echo "==> 🔄 Atualização aplicada — reinstalando dependências e recompilando o app…"
+    pip install -q -r backend/requirements.txt
+    if [ -f web/package.json ] && command -v npm >/dev/null 2>&1; then
+      (cd web && npm install --silent && npm run build >/dev/null)
+    fi
+    continue
+  fi
+  exit $code
+done
