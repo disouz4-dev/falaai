@@ -4,7 +4,7 @@
 set -e
 HERE="$(cd "$(dirname "$0")/.." && pwd)"   # PT-BR: raiz do projeto. EN: project root.
 PORT="${OPENLINGO_PORT:-8000}"
-URL="http://localhost:$PORT"
+URL="http://openlingo.local:$PORT"          # PT-BR: nome amigável na rede. EN: friendly name.
 
 # PT-BR: sobe o servidor em segundo plano se ainda não estiver no ar.
 # EN: start the server in the background if it isn't running yet.

@@ -214,6 +214,7 @@ O conteúdo segue métodos reais e atuais de ensino de línguas:
 - [ ] Geração de novos itens/lições pela IA
 - [ ] Correção de pronúncia na conversação
 - [ ] Empacotamento nativo (Electron/Tauri) com instaladores `.exe` / `.dmg` / `.AppImage`
+- [ ] HTTPS confiável (cadeado verde) com CA local via `mkcert` — remove o aviso "não seguro"
 
 ---
 
