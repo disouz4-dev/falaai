@@ -11,3 +11,5 @@ backend/voices/
 # PT-BR: artefatos de build do desktop. EN: desktop build artifacts.
 desktop/dist/
 desktop/node_modules/
+# PT-BR: CA local do mkcert (por máquina). EN: local mkcert CA (per machine).
+frontend/openlingo-ca.crt

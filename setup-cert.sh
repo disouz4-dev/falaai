@@ -41,11 +41,18 @@ echo "==> Gerando certificado confiável para openlingo.local..."
 mkcert -cert-file certs/openlingo.local.pem -key-file certs/openlingo.local-key.pem \
   openlingo.local localhost 127.0.0.1 ${LAN_IP:+$LAN_IP}
 
+# PT-BR: disponibiliza a CA para o celular baixar do próprio servidor.
+# EN: expose the CA so the phone can download it from the server itself.
+cp "$(mkcert -CAROOT)/rootCA.pem" frontend/openlingo-ca.crt 2>/dev/null || true
+
 echo ""
 echo "✅ Pronto! Reinicie o servidor (./run.sh --https) e abra https://openlingo.local:8000"
 echo "   No PC o cadeado fica verde, sem aviso."
 echo ""
-echo "📱 Para o CELULAR ficar seguro também, instale a CA no aparelho:"
-echo "   Arquivo da CA: $(mkcert -CAROOT)/rootCA.pem"
-echo "   Android: Config > Segurança > Instalar certificado > Certificado de CA."
-echo "   iOS: envie o rootCA.pem, instale o perfil e ative em Ajustes > Geral > Sobre > Confiança de certificados."
+echo "📱 Para o CELULAR ficar seguro também (uma vez só):"
+echo "   1) No celular, abra:  https://openlingo.local:8000/openlingo-ca.crt"
+echo "      (aceite o aviso desta vez só, para baixar o certificado)"
+echo "   2) Instale o certificado baixado:"
+echo "      Android: Config > Segurança > Mais > Instalar certificado > Certificado de CA."
+echo "      iOS: instale o perfil e ative em Ajustes > Geral > Sobre > Confiança de certificados."
+echo "   3) Reabra https://openlingo.local:8000 — agora sem aviso e com o microfone."
