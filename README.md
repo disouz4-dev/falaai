@@ -120,6 +120,20 @@ http://openlingo.local:8000      (ou https://openlingo.local:8000 no modo --http
 Funciona nativamente em macOS, iOS, Windows 10+ e Linux (Avahi). Em alguns Androids antigos,
 use o IP como alternativa.
 
+### 🔒 HTTPS confiável (sem aviso "não seguro")
+
+Por padrão o modo `--https` usa um certificado autoassinado — funciona, mas o navegador mostra
+"não seguro". Para **cadeado verde, sem aviso**, gere um certificado confiável com `mkcert`
+(cria uma Autoridade Certificadora local):
+
+```bash
+./setup-cert.sh      # roda uma vez; pede a senha do sudo para instalar e confiar na CA
+./run.sh --https     # passa a usar o certificado confiável automaticamente
+```
+
+No **PC** o aviso some. Para o **celular** também ficar seguro, instale o `rootCA.pem`
+(o caminho é mostrado ao final do `setup-cert.sh`) no aparelho.
+
 ---
 
 ## ⚡ GPU e CPU
@@ -214,7 +228,7 @@ O conteúdo segue métodos reais e atuais de ensino de línguas:
 - [ ] Geração de novos itens/lições pela IA
 - [ ] Correção de pronúncia na conversação
 - [ ] Empacotamento nativo (Electron/Tauri) com instaladores `.exe` / `.dmg` / `.AppImage`
-- [ ] HTTPS confiável (cadeado verde) com CA local via `mkcert` — remove o aviso "não seguro"
+- [x] HTTPS confiável (cadeado verde) com CA local via `mkcert` — ver `./setup-cert.sh`
 
 ---
 
