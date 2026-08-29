@@ -12,7 +12,7 @@ backend/voices/
 desktop/dist/
 desktop/node_modules/
 # PT-BR: CA local do mkcert (por máquina). EN: local mkcert CA (per machine).
-frontend/openlingo-ca.crt
+web/public/openlingo-ca.crt
 # PT-BR: vault de memoria do aluno (dados pessoais). EN: student memory vault (personal data).
 backend/data/memory/
 

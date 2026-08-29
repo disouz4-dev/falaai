@@ -28,7 +28,8 @@ Teste de nível adaptativo (CEFR) · Curso completo A1–C2 · Conversação por
 | Componente | Para quê | Obrigatório |
 |---|---|---|
 | [Ollama](https://ollama.com) | Motor da IA (conversa, feedback, relatórios) | ✅ |
-| [Python 3.10+](https://python.org) | Backend | ✅ |
+| [Python 3.10+](https://python.org) | Backend (FastAPI) | ✅ |
+| [Node.js 18+](https://nodejs.org) | Compilar o frontend React (`./run.sh` faz automático) | ✅ |
 | Navegador **Chrome/Edge** | Reconhecimento de voz (falar) e instalação como app | ✅ |
 | [Piper](https://github.com/rhasspy/piper) + vozes `en_US` e `pt_BR` | Voz do professor (TTS local, bilíngue) | ✅ |
 | GPU NVIDIA/AMD ou Apple Silicon | Acelera a IA (funciona em CPU também) | Opcional |
@@ -172,11 +173,13 @@ openlingo/
 │   └── data/
 │       ├── items.json     # banco de 48 itens calibrados do teste (por nível CEFR)
 │       ├── course.json    # currículo: 6 módulos, 26 lições (A1–C2)
-│       └── openlingo.db   # banco SQLite do aluno (criado no 1º uso)
-└── frontend/              # PWA (HTML/CSS/JS puro, sem build)
-    ├── index.html · styles.css · app.js
-    ├── manifest.webmanifest · sw.js   # instalável / offline
-    └── icon.svg
+│       ├── openlingo.db   # banco SQLite do aluno (criado no 1º uso)
+│       └── memory/        # vault .md INTERNO do professor (memória do aluno)
+└── web/                   # frontend React + Vite (PWA)
+    ├── src/App.jsx · api.js · speech.js
+    ├── src/screens/       # Home, Placement, Talk, Course, Lesson, Profile, Progress
+    ├── public/            # manifest.webmanifest, sw.js, icon.svg
+    └── dist/              # build servido pelo FastAPI (gerado por ./run.sh)
 ```
 
 ### 🗄️ Banco de dados (dados do aluno e evolução)

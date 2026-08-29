@@ -41,9 +41,11 @@ echo "==> Gerando certificado confiável para openlingo.local..."
 mkcert -cert-file certs/openlingo.local.pem -key-file certs/openlingo.local-key.pem \
   openlingo.local localhost 127.0.0.1 ${LAN_IP:+$LAN_IP}
 
-# PT-BR: disponibiliza a CA para o celular baixar do próprio servidor.
-# EN: expose the CA so the phone can download it from the server itself.
-cp "$(mkcert -CAROOT)/rootCA.pem" frontend/openlingo-ca.crt 2>/dev/null || true
+# PT-BR: disponibiliza a CA para o celular baixar do próprio servidor (web/public persiste no build;
+#        web/dist serve na hora se já houver build). EN: expose the CA for the phone to download.
+mkdir -p web/public
+cp "$(mkcert -CAROOT)/rootCA.pem" web/public/openlingo-ca.crt 2>/dev/null || true
+[ -d web/dist ] && cp "$(mkcert -CAROOT)/rootCA.pem" web/dist/openlingo-ca.crt 2>/dev/null || true
 
 echo ""
 echo "✅ Pronto! Reinicie o servidor (./run.sh --https) e abra https://openlingo.local:8000"

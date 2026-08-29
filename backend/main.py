@@ -34,10 +34,8 @@ GPU_INFO = gpu.apply_env()
 print(f"[OpenLingo] Aceleração: {GPU_INFO['device'].upper()} — {GPU_INFO['reason']}")
 
 BASE_DIR = Path(__file__).resolve().parent
-# PT-BR: prefere o build do React (web/dist); se não houver, usa o frontend vanilla legado.
-# EN: prefer the React build (web/dist); fall back to the legacy vanilla frontend.
-_WEB_DIST = BASE_DIR.parent / "web" / "dist"
-FRONTEND_DIR = _WEB_DIST if _WEB_DIST.exists() else (BASE_DIR.parent / "frontend")
+# PT-BR: frontend React compilado (web/dist). EN: compiled React frontend (web/dist).
+FRONTEND_DIR = BASE_DIR.parent / "web" / "dist"
 ITEMS_PATH = BASE_DIR / "data" / "items.json"
 
 TEST_LENGTH = 20  # PT-BR: nº de questões do teste. EN: number of questions in the test.
@@ -408,24 +406,11 @@ def _ai_report(level, se, skills, correct, total):
         )
 
 
-class MemoryIn(BaseModel):
-    category: str = "notes"
-    text: str
-
-
-@app.get("/api/memory")
-def get_memory():
-    """PT-BR: retorna o vault de memória do professor (arquivos .md). EN: return the teacher's memory vault."""
-    return {"vault": memory.read_all(), "dir": str(memory.VAULT_DIR)}
-
-
-@app.post("/api/memory")
-def add_memory(m: MemoryIn):
-    """PT-BR: adiciona uma memória manualmente. EN: add a memory manually."""
-    ok = memory.add_memory(m.category, m.text)
-    return {"ok": ok}
-
-
+# PT-BR: A memória do professor é INTERNA — não há endpoint para o aluno acessá-la.
+#        Ela é lida no prompt e escrita pela extração, só no backend. O vault fica em disco
+#        (backend/data/memory/) para o dono do sistema inspecionar, nunca exposto pela API.
+# EN: The teacher's memory is INTERNAL — no endpoint exposes it to the student. It is read into
+#     the prompt and written by the extractor, backend-only. The vault stays on disk.
 @app.post("/api/chat")
 def chat(body: ChatIn):
     """PT-BR: Conversação por voz em tempo real (streaming). O nível CEFR ajusta a fala do professor.
@@ -591,7 +576,15 @@ def course_task_feedback(body: TaskFeedbackIn):
 
 
 # --------------------------------------------------------------------------- #
-# PT-BR: Serve o PWA (deve ficar por último). EN: Serve the PWA (must be last).
+# PT-BR: Serve o frontend React compilado (deve ficar por último). EN: Serve the built React app.
 # --------------------------------------------------------------------------- #
 if FRONTEND_DIR.exists():
     app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+else:
+    @app.get("/")
+    def _needs_build():
+        # PT-BR: frontend ainda não compilado. EN: frontend not built yet.
+        return {
+            "message": "Frontend React não compilado.",
+            "fix": "Rode ./run.sh (compila automaticamente) ou: cd web && npm install && npm run build",
+        }
