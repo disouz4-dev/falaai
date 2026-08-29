@@ -77,11 +77,34 @@ sobre `gemma3:4b`.
 
 ## 📱 Instalar como aplicativo (Windows, macOS, Linux)
 
-O OpenLingo é uma **PWA** — dá para instalar como app de verdade:
+Há duas formas — as duas dão um **ícone** para abrir o app:
 
-1. Abra `http://localhost:8000` no **Chrome** ou **Edge**.
+### A) Ícone na área de trabalho (atalho que sobe o servidor e abre o app)
+
+Depois de clonar o projeto, rode o script do seu sistema:
+
+```bash
+# Linux
+./desktop/install-desktop-linux.sh
+# macOS
+./desktop/install-desktop-mac.sh
+```
+```powershell
+# Windows (PowerShell)
+./desktop/install-desktop-windows.ps1
+```
+
+Cria o ícone 🦜 **OpenLingo** na Área de trabalho e no menu de aplicativos (Menu Iniciar /
+Launchpad / lançador). Um clique sobe o servidor e abre o app no navegador.
+
+### B) Instalar como PWA (janela própria)
+
+1. Abra `http://localhost:8000` (ou `http://openlingo.local:8000`) no **Chrome** ou **Edge**.
 2. Clique em **⬇️ Instalar o OpenLingo** na tela inicial (ou no ícone de instalar da barra de endereço).
-3. Ele passa a abrir em janela própria, com ícone no sistema — no **Windows** (menu Iniciar), **macOS** (Launchpad/Dock) e **Linux** (lançador de apps).
+3. Ele passa a abrir em janela própria, com ícone no sistema — **Windows** (menu Iniciar), **macOS** (Launchpad/Dock) e **Linux** (lançador de apps).
+
+> **Instaladores nativos** (`.exe` / `.dmg` / `.AppImage`): no roadmap. Cada um precisa ser
+> gerado no respectivo sistema operacional.
 
 **No celular:** conecte na mesma rede Wi-Fi, rode com `--https`/`https`, abra `https://openlingo.local:8000` no Chrome (aceite o aviso do certificado autoassinado) e use **Adicionar à tela inicial**.
 
