@@ -12,15 +12,16 @@ import os
 import uuid
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 import db
 import irt
 import ollama_client
+import tts
 
 BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR.parent / "frontend"
@@ -114,7 +115,22 @@ def _progress(session):
 @app.get("/api/health")
 def health():
     ok, names = ollama_client.is_available()
-    return {"ollama": ok, "model": ollama_client.MODEL, "models": names, "items": len(ITEM_BANK)}
+    return {"ollama": ok, "model": ollama_client.MODEL, "models": names,
+            "items": len(ITEM_BANK), "tts": tts.available(), "tts_engine": tts.engine_name()}
+
+
+@app.get("/api/tts")
+def text_to_speech(text: str = Query(..., min_length=1)):
+    """PT-BR: Gera o áudio (WAV) da fala do professor no servidor. Tocado pelo app em qualquer
+    aparelho, sem depender de voz no navegador. EN: Server-side speech audio (WAV) for the teacher."""
+    audio = tts.synth(text)
+    if not audio:
+        raise HTTPException(503, "TTS indisponível / TTS unavailable")
+    return Response(
+        content=audio,
+        media_type="audio/wav",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 # --------------------------------------------------------------------------- #

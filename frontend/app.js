@@ -280,22 +280,33 @@ const talk = {
   },
 
   speak(text) {
-    // PT-BR: A VOZ DO PROFESSOR — fala a resposta em inglês (não é só transcrição).
-    // EN: THE TEACHER'S VOICE — speaks the reply in English (not just transcription).
-    if (!window.speechSynthesis || !text) return;
-    const clean = text.replace(/[*_`#>_~]/g, "").trim();
+    // PT-BR: A VOZ DO PROFESSOR — toca o áudio gerado no SERVIDOR (Piper). Funciona em
+    //        qualquer aparelho, mesmo sem voz instalada no navegador. Fallback: TTS do navegador.
+    // EN: THE TEACHER'S VOICE — plays SERVER-generated audio (Piper). Works on any device even
+    //     without a browser voice. Fallback: browser TTS.
+    if (!text) return;
+    const clean = text.replace(/[*_`#>~]/g, "").trim();
     if (!clean) return;
+    // PT-BR: interrompe o áudio anterior. EN: stop previous audio.
+    if (this._audio) { try { this._audio.pause(); } catch {} this._audio = null; }
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    const audio = new Audio(API + "/api/tts?text=" + encodeURIComponent(clean));
+    this._audio = audio;
+    audio.play().catch(() => this.speakBrowser(clean)); // PT-BR: se falhar, usa o navegador. EN: fallback.
+  },
+
+  // PT-BR: fallback — voz do próprio navegador. EN: fallback — the browser's own voice.
+  speakBrowser(clean) {
+    if (!window.speechSynthesis) return;
     const synth = window.speechSynthesis;
     const doSpeak = () => {
       const u = new SpeechSynthesisUtterance(clean);
-      u.lang = "en-US"; u.rate = 0.95; u.pitch = 1.0;
+      u.lang = "en-US"; u.rate = 0.95;
       const v = pickEnglishVoice();
       if (v) u.voice = v;
-      synth.speak(u);
-      synth.resume(); // PT-BR: contorna a pausa automática do Chrome. EN: Chrome auto-pause workaround.
+      synth.speak(u); synth.resume();
     };
     synth.cancel();
-    // PT-BR: pequeno atraso evita o bug de cancel()+speak() no Android. EN: avoids Android cancel+speak bug.
     setTimeout(doSpeak, 70);
   },
 
