@@ -18,6 +18,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+import db
 import irt
 import ollama_client
 
@@ -34,6 +35,9 @@ with open(ITEMS_PATH, encoding="utf-8") as f:
 
 # PT-BR: Estado das sessões em memória. EN: In-memory session state.
 SESSIONS = {}
+
+# PT-BR: Inicializa o banco local (perfil + histórico). EN: init local DB (profile + history).
+db.init_db()
 
 app = FastAPI(title="OpenLingo API")
 app.add_middleware(
@@ -56,6 +60,13 @@ class AnswerIn(BaseModel):
 class ChatIn(BaseModel):
     messages: list  # [{role, content}]
     level: str = "B1"
+
+
+class ProfileIn(BaseModel):
+    name: str
+    native_lang: str = "Português (Brasil)"
+    goal: str = ""
+    interests: str = ""
 
 
 def _public_item(item):
@@ -90,6 +101,20 @@ def _progress(session):
 def health():
     ok, names = ollama_client.is_available()
     return {"ollama": ok, "model": ollama_client.MODEL, "models": names, "items": len(ITEM_BANK)}
+
+
+# --------------------------------------------------------------------------- #
+# PT-BR: Perfil do aluno. EN: Learner profile.
+# --------------------------------------------------------------------------- #
+@app.get("/api/profile")
+def get_profile():
+    return {"profile": db.get_profile()}
+
+
+@app.post("/api/profile")
+def save_profile(p: ProfileIn):
+    prof = db.upsert_profile(p.name.strip(), p.native_lang, p.goal.strip(), p.interests.strip())
+    return {"profile": prof}
 
 
 @app.post("/api/placement/start")
@@ -176,6 +201,13 @@ def placement_result(session_id: str):
 
     total_correct = sum(1 for h in session["history"] if h["correct"])
 
+    # PT-BR: Salva a tentativa no histórico (só uma vez por sessão) para a curva de aprendizado.
+    # EN: Save the attempt to history (once per session) to build the learning curve.
+    if not session.get("saved"):
+        db.save_attempt(level, round(theta, 3), round(se, 3), total_correct,
+                        len(session["history"]), skills)
+        session["saved"] = True
+
     report = _ai_report(level, se, skills, total_correct, len(session["history"]))
 
     return {
@@ -188,6 +220,92 @@ def placement_result(session_id: str):
         "skills": skills,
         "report": report,
     }
+
+
+@app.get("/api/progress")
+def progress():
+    """PT-BR: Curva de aprendizado — histórico de tentativas + análise da evolução pela IA.
+    EN: Learning curve — attempt history + AI analysis of the learner's evolution."""
+    attempts = db.list_attempts()
+    profile = db.get_profile()
+    practice = db.practice_count()
+
+    # PT-BR: série da evolução (nível/theta ao longo do tempo). EN: evolution series.
+    series = [
+        {
+            "date": a["created_at"][:10],
+            "level": a["level"],
+            "theta": a["theta"],
+            "accuracy": round(100 * a["correct"] / a["total"]) if a["total"] else 0,
+            "skills": {k: round(100 * v["correct"] / v["total"]) if v["total"] else 0
+                       for k, v in a["skills"].items()},
+        }
+        for a in attempts
+    ]
+
+    # PT-BR: resposta rápida (gráficos). A análise da IA vem no endpoint dedicado abaixo.
+    # EN: fast response (charts). The AI analysis is served by the dedicated endpoint below.
+    return {
+        "attempts": len(series),
+        "practice_sessions": practice,
+        "series": series,
+        "first_level": series[0]["level"] if series else None,
+        "latest_level": series[-1]["level"] if series else None,
+    }
+
+
+@app.get("/api/progress/analysis")
+def progress_analysis():
+    """PT-BR: Análise da curva de aprendizado pela IA (endpoint lento, carregado à parte).
+    EN: AI learning-curve analysis (slow endpoint, loaded separately so charts show instantly)."""
+    attempts = db.list_attempts()
+    profile = db.get_profile()
+    practice = db.practice_count()
+    series = [
+        {
+            "date": a["created_at"][:10], "level": a["level"], "accuracy":
+            round(100 * a["correct"] / a["total"]) if a["total"] else 0,
+            "skills": {k: round(100 * v["correct"] / v["total"]) if v["total"] else 0
+                       for k, v in a["skills"].items()},
+        }
+        for a in attempts
+    ]
+    if not series:
+        return {"analysis": None}
+    return {"analysis": _ai_curve_analysis(profile, series, practice)}
+
+
+def _ai_curve_analysis(profile, series, practice):
+    """PT-BR: A IA lê a curva de aprendizado e escreve uma análise da evolução.
+    EN: The AI reads the learning curve and writes an evolution analysis."""
+    name = (profile or {}).get("name") or "o aluno"
+    pts = "; ".join(f"{s['date']} nível {s['level']} ({s['accuracy']}%)" for s in series)
+    skill_now = series[-1]["skills"]
+    skill_txt = ", ".join(f"{k}: {v}%" for k, v in skill_now.items())
+    prompt = (
+        f"You are analysing the learning curve of a Brazilian English learner named {name}. "
+        f"Placement-test history (oldest to newest): {pts}. "
+        f"Latest per-skill accuracy: {skill_txt}. Voice-practice sessions so far: {practice}. "
+        f"Write a SHORT analysis in Brazilian Portuguese (max 100 words) addressed to {name} as 'você': "
+        f"is progress improving, stable, or dropping? which skill is evolving best and which lags? "
+        f"one clear recommendation. Write ONLY the analysis body, no preamble, no headings."
+    )
+    try:
+        ok, _ = ollama_client.is_available()
+        if not ok:
+            raise RuntimeError("offline")
+        return ollama_client.chat_once(
+            [{"role": "system", "content": "You are a supportive English-learning coach."},
+             {"role": "user", "content": prompt}],
+            temperature=0.6,
+        ).strip()
+    except Exception:
+        if len(series) < 2:
+            return ("Faça o teste algumas vezes ao longo dos dias para eu montar sua curva de "
+                    "evolução. (Análise da IA indisponível — verifique o Ollama.)")
+        delta = series[-1]["accuracy"] - series[0]["accuracy"]
+        tend = "subindo" if delta > 0 else ("estável" if delta == 0 else "caindo")
+        return f"Sua tendência de acertos está {tend} ({delta:+d} pontos). Continue praticando!"
 
 
 def _ai_report(level, se, skills, correct, total):
@@ -227,13 +345,35 @@ def _ai_report(level, se, skills, correct, total):
 def chat(body: ChatIn):
     """PT-BR: Conversação por voz em tempo real (streaming). O nível CEFR ajusta a fala do professor.
     EN: Real-time voice conversation (streaming). The CEFR level tunes the teacher's speech."""
+    # PT-BR: O professor conhece o aluno (nome, objetivo, interesses e nível medido).
+    # EN: The teacher knows the student (name, goal, interests, and measured level).
+    profile = db.get_profile()
+    who = ""
+    if profile:
+        parts = []
+        if profile.get("name"):
+            parts.append(f"The learner's name is {profile['name']}")
+        if profile.get("goal"):
+            parts.append(f"their goal is: {profile['goal']}")
+        if profile.get("interests"):
+            parts.append(f"their interests: {profile['interests']}")
+        if parts:
+            who = ". ".join(parts) + ". Use their name naturally and bring up their interests. "
+
     system = (
         "You are the OpenLingo English teacher having a spoken conversation. "
+        f"{who}"
         f"The learner's CEFR level is {body.level}. Adapt your vocabulary and grammar to that level. "
         "Keep replies short (1-3 sentences), natural, and end with a question to keep them talking. "
         "Gently correct only important mistakes."
     )
     messages = [{"role": "system", "content": system}] + body.messages
+
+    # PT-BR: registra a sessão de prática para a curva de aprendizado. EN: log practice.
+    try:
+        db.log_practice("conversation")
+    except Exception:
+        pass
 
     def gen():
         try:

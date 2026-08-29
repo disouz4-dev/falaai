@@ -18,7 +18,10 @@
   <!-- PT-BR: Cabeçalho. EN: Header. -->
   <header class="topbar">
     <div class="brand" data-nav="home">🦜 <span>OpenLingo</span></div>
-    <div id="ollama-status" class="status-pill" title="Estado do Ollama">···</div>
+    <div class="topbar-right">
+      <button id="profile-btn" class="icon-btn" data-nav="profile" title="Meu perfil">👤</button>
+      <div id="ollama-status" class="status-pill" title="Estado do Ollama">···</div>
+    </div>
   </header>
 
   <main id="app">
@@ -27,7 +30,7 @@
     <section id="screen-home" class="screen active">
       <div class="hero">
         <div class="hero-mascot">🦜</div>
-        <h1>Aprenda inglês do seu jeito</h1>
+        <h1 id="hero-title">Aprenda inglês do seu jeito</h1>
         <p class="subtitle">IA local · seu nível medido com métodos reais (CEFR)</p>
       </div>
       <div class="cards">
@@ -40,6 +43,11 @@
           <span class="bc-icon">🎙️</span>
           <span class="bc-title">Conversar (voz)</span>
           <span class="bc-sub">Fale com o professor de IA em tempo real</span>
+        </button>
+        <button class="big-card" data-nav="progress">
+          <span class="bc-icon">📈</span>
+          <span class="bc-title">Meu progresso</span>
+          <span class="bc-sub">Curva de aprendizado e relatórios gráficos</span>
         </button>
       </div>
       <p id="saved-level" class="saved-level hidden"></p>
@@ -111,6 +119,60 @@
       <div class="talk-controls">
         <div id="talk-hint" class="talk-hint">Toque no microfone e fale em inglês</div>
         <button id="mic-btn" class="mic-btn" title="Falar">🎤</button>
+      </div>
+    </section>
+
+    <!-- ============ PERFIL ============ -->
+    <section id="screen-profile" class="screen">
+      <div class="panel">
+        <h2>👤 Meu perfil</h2>
+        <p class="subtitle" style="margin-bottom:16px">O professor usa essas informações para personalizar as conversas.</p>
+        <label class="field">Nome
+          <input id="pf-name" type="text" placeholder="Como quer ser chamado(a)?" />
+        </label>
+        <label class="field">Objetivo com o inglês
+          <input id="pf-goal" type="text" placeholder="Ex.: viajar, trabalho, entrevistas…" />
+        </label>
+        <label class="field">Interesses / temas favoritos
+          <input id="pf-interests" type="text" placeholder="Ex.: tecnologia, música, games, negócios…" />
+        </label>
+        <button class="btn-primary" id="btn-save-profile">Salvar</button>
+        <button class="btn-ghost" data-nav="home">Voltar</button>
+        <p id="pf-msg" class="pf-msg"></p>
+      </div>
+    </section>
+
+    <!-- ============ PROGRESSO / CURVA DE APRENDIZADO ============ -->
+    <section id="screen-progress" class="screen">
+      <div class="progress-page">
+        <div class="talk-header">
+          <button class="icon-btn" data-nav="home" title="Voltar">✕</button>
+          <div class="talk-title">📈 Meu progresso</div>
+        </div>
+        <div id="progress-empty" class="empty-state hidden">
+          <div class="empty-emoji">🌱</div>
+          <p>Você ainda não fez nenhum teste.<br>Faça o teste de nivelamento para começar sua curva de aprendizado.</p>
+          <button class="btn-primary" data-nav="test-intro">Fazer teste de nível</button>
+        </div>
+        <div id="progress-content" class="hidden">
+          <div class="stat-row">
+            <div class="stat"><div class="stat-num" id="st-current">–</div><div class="stat-lbl">Nível atual</div></div>
+            <div class="stat"><div class="stat-num" id="st-tests">0</div><div class="stat-lbl">Testes</div></div>
+            <div class="stat"><div class="stat-num" id="st-practice">0</div><div class="stat-lbl">Conversas</div></div>
+          </div>
+
+          <h3 class="chart-title">Evolução do nível</h3>
+          <div id="chart-evolution" class="chart-box"></div>
+
+          <h3 class="chart-title">Habilidades (último teste)</h3>
+          <div id="chart-skills" class="chart-box"></div>
+
+          <div class="report-card">
+            <h3>🧠 Análise da IA</h3>
+            <div id="curve-analysis" class="report-text">Analisando sua evolução…</div>
+          </div>
+          <button class="btn-primary" data-nav="test-intro">Fazer novo teste</button>
+        </div>
       </div>
     </section>
 
