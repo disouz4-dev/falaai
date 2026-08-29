@@ -127,10 +127,10 @@ def health():
 
 
 @app.get("/api/tts")
-def text_to_speech(text: str = Query(..., min_length=1)):
-    """PT-BR: Gera o áudio (WAV) da fala do professor no servidor. Tocado pelo app em qualquer
-    aparelho, sem depender de voz no navegador. EN: Server-side speech audio (WAV) for the teacher."""
-    audio = tts.synth(text)
+def text_to_speech(text: str = Query(..., min_length=1), lang: str = Query("en")):
+    """PT-BR: Gera o áudio (WAV) da fala do professor no servidor, no idioma pedido (en/pt).
+    Tocado pelo app em qualquer aparelho. EN: Server-side speech audio (WAV) in the given language."""
+    audio = tts.synth(text, lang=lang)
     if not audio:
         raise HTTPException(503, "TTS indisponível / TTS unavailable")
     return Response(
@@ -398,11 +398,22 @@ def chat(body: ChatIn):
             who = ". ".join(parts) + ". Use their name naturally and bring up their interests. "
 
     system = (
-        "You are the OpenLingo English teacher having a spoken conversation. "
+        "You are a REAL bilingual English teacher (Portuguese–English) having a spoken conversation. "
         f"{who}"
-        f"The learner's CEFR level is {body.level}. Adapt your vocabulary and grammar to that level. "
-        "Keep replies short (1-3 sentences), natural, and end with a question to keep them talking. "
-        "Gently correct only important mistakes."
+        f"The learner's CEFR level is {body.level}. Adapt your English vocabulary and grammar to that level.\n"
+        "Alternate between the two languages exactly like a real teacher:\n"
+        "- TEACH and CONVERSE in ENGLISH: keep the practice immersive, natural, short (1-2 sentences), "
+        "and always end with a question in English to keep the learner talking.\n"
+        "- CORRECT in PORTUGUESE (português do Brasil): when the learner makes an important mistake, "
+        "switch briefly to Portuguese to explain the correction clearly — what was wrong and the correct "
+        "form — then switch back to English to continue.\n"
+        "Use Portuguese ONLY for corrections/explanations; use English for everything else. "
+        "Don't over-correct minor slips. Be warm and encouraging.\n"
+        "Format each correction on its own line starting with '📝 (correção): '. The text AFTER "
+        "'📝 (correção):' MUST be written in Brazilian Portuguese (never English).\n"
+        "Example of a good reply:\n"
+        "That sounds fun! What did you eat there?\n"
+        "📝 (correção): Em vez de \"I go\", diga \"I went\" — a festa foi no passado."
     )
     messages = [{"role": "system", "content": system}] + body.messages
 

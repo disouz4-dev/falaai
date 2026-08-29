@@ -280,19 +280,42 @@ const talk = {
   },
 
   speak(text) {
-    // PT-BR: A VOZ DO PROFESSOR — toca o áudio gerado no SERVIDOR (Piper). Funciona em
-    //        qualquer aparelho, mesmo sem voz instalada no navegador. Fallback: TTS do navegador.
-    // EN: THE TEACHER'S VOICE — plays SERVER-generated audio (Piper). Works on any device even
-    //     without a browser voice. Fallback: browser TTS.
+    // PT-BR: A VOZ DO PROFESSOR — toca o áudio gerado no SERVIDOR (Piper), trecho a trecho,
+    //        no idioma certo: INGLÊS no ensino e PORTUGUÊS nas correções (linhas com 📝).
+    // EN: THE TEACHER'S VOICE — plays SERVER audio (Piper) segment by segment in the right
+    //     language: ENGLISH for teaching, PORTUGUESE for corrections (lines with 📝).
     if (!text) return;
-    const clean = text.replace(/[*_`#>~]/g, "").trim();
-    if (!clean) return;
-    // PT-BR: interrompe o áudio anterior. EN: stop previous audio.
-    if (this._audio) { try { this._audio.pause(); } catch {} this._audio = null; }
+    // PT-BR: interrompe qualquer áudio anterior. EN: stop any previous audio.
+    this._stopAudio();
     if (window.speechSynthesis) window.speechSynthesis.cancel();
-    const audio = new Audio(API + "/api/tts?text=" + encodeURIComponent(clean));
+
+    // PT-BR: quebra a resposta em segmentos por idioma. EN: split the reply into language segments.
+    const segments = [];
+    for (const rawLine of text.split(/\n+/)) {
+      const isPt = /^\s*📝/.test(rawLine);
+      const clean = rawLine.replace(/📝\s*\(corre[çc][ãa]o\):?/i, "").replace(/[*_`#>~]/g, "").trim();
+      if (clean) segments.push({ text: clean, lang: isPt ? "pt" : "en" });
+    }
+    if (!segments.length) return;
+    this._playQueue(segments, 0);
+  },
+
+  _stopAudio() {
+    if (this._audio) { try { this._audio.pause(); } catch {} this._audio = null; }
+    this._queueToken = (this._queueToken || 0) + 1; // PT-BR: invalida fila anterior. EN: cancel old queue.
+  },
+
+  _playQueue(segments, i) {
+    const token = this._queueToken || 0;
+    if (i >= segments.length) return;
+    const seg = segments[i];
+    const audio = new Audio(API + "/api/tts?lang=" + seg.lang + "&text=" + encodeURIComponent(seg.text));
     this._audio = audio;
-    audio.play().catch(() => this.speakBrowser(clean)); // PT-BR: se falhar, usa o navegador. EN: fallback.
+    audio.onended = () => { if ((this._queueToken || 0) === token) this._playQueue(segments, i + 1); };
+    audio.play().catch(() => {
+      // PT-BR: fallback pro TTS do navegador (só o texto todo). EN: browser TTS fallback.
+      this.speakBrowser(segments.map((s) => s.text).join(". "));
+    });
   },
 
   // PT-BR: fallback — voz do próprio navegador. EN: fallback — the browser's own voice.
