@@ -16,6 +16,8 @@ export default function App() {
   const [deferredInstall, setDeferredInstall] = useState(null);
   const [update, setUpdate] = useState(null);   // {current, latest, update_available, url}
   const [updating, setUpdating] = useState(false);
+  // PT-BR: atualizar só é permitido no próprio computador. EN: updating only allowed on the host.
+  const isLocalhost = ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
 
   const nav = (name, arg) => {
     if (name === "lesson") setLessonId(arg);
@@ -86,9 +88,13 @@ export default function App() {
       {update?.update_available && (
         <div className="update-bar">
           <span>🎉 Nova versão <strong>{update.latest}</strong> disponível!</span>
-          <button className="update-btn" disabled={updating} onClick={doUpdate}>
-            {updating ? "Atualizando…" : "Atualizar"}
-          </button>
+          {isLocalhost ? (
+            <button className="update-btn" disabled={updating} onClick={doUpdate}>
+              {updating ? "Atualizando…" : "Atualizar"}
+            </button>
+          ) : (
+            <span className="update-hint">Atualize pelo computador que roda o servidor.</span>
+          )}
         </div>
       )}
 

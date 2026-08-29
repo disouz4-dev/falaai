@@ -52,6 +52,7 @@ body {
 }
 .update-btn:active { transform: translateY(2px); box-shadow: none; }
 .update-btn:disabled { opacity: .6; box-shadow: none; }
+.update-hint { font-size: 12px; opacity: .85; }
 @media (prefers-color-scheme: dark) {
   .update-bar { background: #1c2b12; }
 }

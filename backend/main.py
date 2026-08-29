@@ -12,7 +12,7 @@ import os
 import uuid
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -162,8 +162,12 @@ def get_version(force: bool = False):
 
 
 @app.post("/api/update")
-def do_update():
-    """PT-BR: atualiza o app (git pull + rebuild) e reinicia o servidor. EN: update + restart."""
+def do_update(request: Request):
+    """PT-BR: atualiza o app (git pull + rebuild) e reinicia — SÓ pelo próprio computador (localhost),
+    nunca pela rede. EN: update + restart — allowed ONLY from the host machine (localhost)."""
+    host = request.client.host if request.client else ""
+    if host not in ("127.0.0.1", "::1", "localhost"):
+        raise HTTPException(403, "Atualização só é permitida no próprio computador (localhost).")
     return version.perform_update()
 
 
