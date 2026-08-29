@@ -85,7 +85,7 @@ export function createRecognizer({ onListening, onResult, onError }) {
   recog.interimResults = false;
   recog.maxAlternatives = 1;
   let transcript = "";
-  let listening = false;
+  let holding = false;          // PT-BR: usuário está com o botão pressionado? EN: is the button held?
 
   recog.onresult = (e) => {
     for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -93,12 +93,22 @@ export function createRecognizer({ onListening, onResult, onError }) {
     }
   };
   recog.onerror = (e) => {
-    listening = false;
-    onListening?.(false);
+    // PT-BR: 'no-speech'/'aborted' são normais durante pausas; não trata como falha.
+    // EN: 'no-speech'/'aborted' are normal during pauses; not a real error.
     if (e.error !== "no-speech" && e.error !== "aborted") onError?.(e.error);
   };
   recog.onend = () => {
-    listening = false;
+    // PT-BR: parou sozinho MAS o usuário ainda segura → REINICIA para não cortar a fala.
+    // EN: auto-stopped but the button is still held → RESTART so speech isn't cut off.
+    if (holding) {
+      try {
+        recog.start();
+      } catch {
+        setTimeout(() => { if (holding) { try { recog.start(); } catch {} } }, 120);
+      }
+      return;
+    }
+    // PT-BR: usuário SOLTOU → envia a fala acumulada. EN: user RELEASED → send accumulated speech.
     onListening?.(false);
     const text = transcript.trim();
     transcript = "";
@@ -108,13 +118,16 @@ export function createRecognizer({ onListening, onResult, onError }) {
   return {
     supported: true,
     start() {
-      if (listening) return;
+      if (holding) return;
       transcript = "";
+      holding = true;
       unlockTTS();
-      try { recog.start(); listening = true; onListening?.(true); } catch {}
+      onListening?.(true);
+      try { recog.start(); } catch {}
     },
     stop() {
-      if (!listening) return;
+      if (!holding) return;
+      holding = false;
       try { recog.stop(); } catch {}
     },
   };
