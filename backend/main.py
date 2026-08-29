@@ -19,9 +19,15 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 import db
+import gpu
 import irt
 import ollama_client
 import tts
+
+# PT-BR: detecta a GPU no início e ajusta o Ollama (preferência GPU, fallback CPU).
+# EN: detect the GPU at startup and tune Ollama (prefer GPU, fall back to CPU).
+GPU_INFO = gpu.apply_env()
+print(f"[OpenLingo] Aceleração: {GPU_INFO['device'].upper()} — {GPU_INFO['reason']}")
 
 BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR.parent / "frontend"
@@ -116,7 +122,8 @@ def _progress(session):
 def health():
     ok, names = ollama_client.is_available()
     return {"ollama": ok, "model": ollama_client.MODEL, "models": names,
-            "items": len(ITEM_BANK), "tts": tts.available(), "tts_engine": tts.engine_name()}
+            "items": len(ITEM_BANK), "tts": tts.available(), "tts_engine": tts.engine_name(),
+            "gpu": GPU_INFO}
 
 
 @app.get("/api/tts")

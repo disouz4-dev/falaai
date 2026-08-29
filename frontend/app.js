@@ -720,6 +720,27 @@ function mdBlock(str) {
   return html;
 }
 
+/* ---------- Instalação do app (PWA) / App install (PWA) ---------- */
+// PT-BR: captura o evento de instalação e mostra o botão (Mac/Windows/Linux via navegador).
+// EN: capture the install event and show the button (Mac/Windows/Linux via the browser).
+let deferredInstall = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstall = e;
+  $("#install-btn").classList.remove("hidden");
+});
+window.addEventListener("appinstalled", () => {
+  deferredInstall = null;
+  $("#install-btn").classList.add("hidden");
+});
+$("#install-btn").onclick = async () => {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  await deferredInstall.userChoice;
+  deferredInstall = null;
+  $("#install-btn").classList.add("hidden");
+};
+
 /* ---------- Boot ---------- */
 $("#btn-start-test").onclick = () => test.start();
 $("#btn-save-profile").onclick = () => profile.save();

@@ -67,6 +67,11 @@ body {
 .bc-title { font-weight: 800; font-size: 18px; }
 .bc-sub { color: var(--muted); font-size: 13px; }
 .saved-level { text-align: center; margin-top: 22px; color: var(--muted); font-size: 14px; }
+.install-btn {
+  display: block; margin: 18px auto 0; border: 2px solid var(--blue); background: transparent;
+  color: var(--blue); font-weight: 800; padding: 12px 20px; border-radius: 14px; cursor: pointer;
+}
+.install-btn:active { transform: translateY(2px); }
 
 /* ---------- Panels / buttons ---------- */
 .panel { background: var(--panel); border-radius: var(--radius); padding: 22px; margin-top: 8px; }
@@ -236,14 +241,24 @@ body {
 
 /* ---------- Dark mode ---------- */
 @media (prefers-color-scheme: dark) {
-  :root { --ink:#eee; --muted:#9a9a9a; --bg:#151515; --panel:#222; --line:#333; }
-  .big-card, .opt { background: #1e1e1e; }
-  .big-card.primary { background: #1c2b12; }
-  .opt.selected { background: #10344a; }
-  .level-select, .field input { background:#1e1e1e; color:var(--ink); }
-  .lesson-list, .lesson-item, .coming-soon, .module-locked-msg { background:#1e1e1e; }
-  .lesson-item:active { background:#141414; }
-  .task-box { background:#2a2410; border-color:#5a4b12; }
+  :root { --ink:#f2f2f2; --muted:#b0b0b0; --bg:#131313; --panel:#242424; --line:#3a3a3a; }
+  /* PT-BR: botões com superfície CLARA/elevada e borda visível (não somem no fundo escuro).
+     EN: buttons with a LIGHT/elevated surface and visible border (don't vanish on the dark bg). */
+  .big-card, .opt, .lesson-list, .lesson-item, .coming-soon, .module-locked-msg {
+    background: #2e2e2e; border-color: #4d4d4d;
+  }
+  .big-card { border-bottom-color: #5c5c5c; }
+  .opt { border-bottom-color: #5c5c5c; }
+  .big-card:active, .opt:active { background: #383838; }
+  .big-card.primary { background: #22371a; border-color: #3f7222; }
+  .opt.selected { background: #123a52; border-color: var(--blue); }
+  .opt.correct { background: #1f4d12; border-color: var(--green); }
+  .opt.wrong { background: #4d1f1f; border-color: var(--red); }
+  .lesson-item:active { background: #383838; }
+  .lesson-dot { background: #3d3d3d; }
+  .level-select, .field input, .task-answer { background:#2e2e2e; color:var(--ink); border-color:#4d4d4d; }
+  .stat { background: #242424; }
+  .chart-box, .report-card, .panel { background: #1e1e1e; }
+  .task-box { background:#33300f; border-color:#7a6a1a; }
   .task-box .task-label { color: var(--yellow); }
-  .task-answer { background:#1e1e1e; color:var(--ink); }
 }

@@ -16,7 +16,12 @@ pip install -q -r backend/requirements.txt
 
 HOST="0.0.0.0"
 PORT="8000"
+# PT-BR: detecta o IP local (Linux e macOS). EN: detect LAN IP (Linux and macOS).
 LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+if [ -z "$LAN_IP" ]; then
+  # macOS
+  LAN_IP=$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || true)
+fi
 
 if [ "$1" == "--https" ]; then
   # PT-BR: Gera certificado autoassinado (necessário p/ microfone via rede no celular).

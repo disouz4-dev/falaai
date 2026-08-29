@@ -3,7 +3,7 @@
   EN:    OpenLingo service worker — caches the app shell for offline use / installability.
   Obs: chamadas /api/* nunca são cacheadas (precisam do Ollama ao vivo).
 */
-const CACHE = "openlingo-v4";
+const CACHE = "openlingo-v5";
 const SHELL = ["./", "index.html", "styles.css", "app.js", "manifest.webmanifest", "icon.svg"];
 
 self.addEventListener("install", (e) => {
