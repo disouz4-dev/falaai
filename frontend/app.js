@@ -213,29 +213,67 @@ const talk = {
     } else {
       this.recog = new SR();
       this.recog.lang = "en-US";
+      this.recog.continuous = true;      // PT-BR: captura enquanto o botão está pressionado. EN: capture while held.
       this.recog.interimResults = false;
       this.recog.maxAlternatives = 1;
-      this.recog.onresult = (e) => this.onSpeech(e.results[0][0].transcript);
-      this.recog.onerror = (e) => { this.setListening(false); $("#talk-hint").textContent = "Erro no microfone: " + e.error; };
-      this.recog.onend = () => this.setListening(false);
+      this._transcript = "";
+      // PT-BR: acumula os trechos finais enquanto o usuário segura o botão.
+      // EN: accumulate final chunks while the user holds the button.
+      this.recog.onresult = (e) => {
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          if (e.results[i].isFinal) this._transcript += e.results[i][0].transcript + " ";
+        }
+      };
+      this.recog.onerror = (e) => {
+        this.setListening(false);
+        if (e.error !== "no-speech" && e.error !== "aborted")
+          $("#talk-hint").textContent = "Erro no microfone: " + e.error;
+      };
+      // PT-BR: ao SOLTAR (recognition termina), envia o áudio transcrito ao professor.
+      // EN: on RELEASE (recognition ends), send the transcribed audio to the teacher.
+      this.recog.onend = () => {
+        this.setListening(false);
+        const text = (this._transcript || "").trim();
+        this._transcript = "";
+        if (text) this.onSpeech(text);
+      };
     }
-    $("#mic-btn").onclick = () => this.toggle();
+    // PT-BR: PUSH-TO-TALK — segura para falar, solta para enviar.
+    // EN: PUSH-TO-TALK — hold to talk, release to send.
+    const btn = $("#mic-btn");
+    const press = (e) => { e.preventDefault(); this.startListening(); };
+    const release = (e) => { e.preventDefault(); this.stopListening(); };
+    btn.addEventListener("pointerdown", press);
+    btn.addEventListener("pointerup", release);
+    btn.addEventListener("pointerleave", release);
+    btn.addEventListener("pointercancel", release);
+    btn.addEventListener("contextmenu", (e) => e.preventDefault()); // PT-BR: sem menu no toque longo. EN: no long-press menu.
+
     // PT-BR: mensagem de boas-vindas falada. EN: spoken welcome.
     if (!this.history.length) this.addBot("Hi! I'm your English teacher. What would you like to talk about today?");
   },
 
-  toggle() {
-    if (!this.recog) return;
-    if (this.listening) { this.recog.stop(); return; }
+  startListening() {
+    if (!this.recog || this.listening) return;
+    this._transcript = "";
+    unlockTTS(); // PT-BR: destrava o áudio no gesto. EN: unlock audio on the gesture.
     try { this.recog.start(); this.setListening(true); }
     catch { /* já iniciado / already started */ }
+  },
+
+  stopListening() {
+    if (!this.recog || !this.listening) return;
+    try { this.recog.stop(); } catch { /* ignore */ }
+    // PT-BR: o onend cuida de enviar. EN: onend handles sending.
   },
 
   setListening(on) {
     this.listening = on;
     const btn = $("#mic-btn");
     btn.classList.toggle("listening", on);
-    $("#talk-hint").textContent = on ? "Ouvindo… fale agora" : "Toque no microfone e fale em inglês";
+    $("#talk-hint").textContent = on
+      ? "🔴 Ouvindo… solte para enviar"
+      : "Segure o microfone para falar";
   },
 
   onSpeech(text) {
