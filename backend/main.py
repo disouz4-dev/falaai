@@ -21,6 +21,7 @@ from pydantic import BaseModel
 import db
 import gpu
 import irt
+import mdns
 import ollama_client
 import tts
 
@@ -58,6 +59,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# PT-BR: nome amigável na rede (openlingo.local). EN: friendly network name (openlingo.local).
+FRIENDLY_URL = None
+
+
+@app.on_event("startup")
+def _start_mdns():
+    """PT-BR: anuncia 'openlingo.local' na rede via mDNS. EN: advertise 'openlingo.local' via mDNS."""
+    global FRIENDLY_URL
+    port = int(os.environ.get("OPENLINGO_PORT", "8000"))
+    https = os.environ.get("OPENLINGO_HTTPS", "0") == "1"
+    FRIENDLY_URL = mdns.start(port=port, https=https)
+    if FRIENDLY_URL:
+        print(f"[OpenLingo] Acesse pela rede em: {FRIENDLY_URL}")
+
+
+@app.on_event("shutdown")
+def _stop_mdns():
+    mdns.stop()
 
 
 # --------------------------------------------------------------------------- #

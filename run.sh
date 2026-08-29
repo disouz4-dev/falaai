@@ -31,23 +31,26 @@ if [ "$1" == "--https" ]; then
     echo "==> Gerando certificado autoassinado…"
     openssl req -x509 -newkey rsa:2048 -nodes -days 825 \
       -keyout certs/key.pem -out certs/cert.pem \
-      -subj "/CN=OpenLingo" \
-      -addext "subjectAltName=DNS:localhost,IP:127.0.0.1${LAN_IP:+,IP:$LAN_IP}" >/dev/null 2>&1
+      -subj "/CN=openlingo.local" \
+      -addext "subjectAltName=DNS:openlingo.local,DNS:localhost,IP:127.0.0.1${LAN_IP:+,IP:$LAN_IP}" >/dev/null 2>&1
   fi
   echo ""
   echo "🦜 OpenLingo (HTTPS)"
-  echo "   PC:      https://localhost:$PORT"
-  [ -n "$LAN_IP" ] && echo "   Celular: https://$LAN_IP:$PORT  (aceite o aviso de certificado)"
+  echo "   Nome na rede: https://openlingo.local:$PORT   ← use este em qualquer dispositivo"
+  echo "   PC:           https://localhost:$PORT"
+  [ -n "$LAN_IP" ] && echo "   (ou por IP:   https://$LAN_IP:$PORT)"
+  echo "   Aceite o aviso de certificado autoassinado."
   echo ""
   cd backend
-  exec uvicorn main:app --host "$HOST" --port "$PORT" \
+  OPENLINGO_HTTPS=1 OPENLINGO_PORT="$PORT" exec uvicorn main:app --host "$HOST" --port "$PORT" \
     --ssl-keyfile ../certs/key.pem --ssl-certfile ../certs/cert.pem
 else
   echo ""
   echo "🦜 OpenLingo (HTTP)"
-  echo "   PC: http://localhost:$PORT"
+  echo "   Nome na rede: http://openlingo.local:$PORT   ← use este em qualquer dispositivo"
+  echo "   PC:           http://localhost:$PORT"
   echo "   (para microfone no celular rode: ./run.sh --https)"
   echo ""
   cd backend
-  exec uvicorn main:app --host "$HOST" --port "$PORT"
+  OPENLINGO_PORT="$PORT" exec uvicorn main:app --host "$HOST" --port "$PORT"
 fi

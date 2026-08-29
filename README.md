@@ -83,7 +83,19 @@ O OpenLingo é uma **PWA** — dá para instalar como app de verdade:
 2. Clique em **⬇️ Instalar o OpenLingo** na tela inicial (ou no ícone de instalar da barra de endereço).
 3. Ele passa a abrir em janela própria, com ícone no sistema — no **Windows** (menu Iniciar), **macOS** (Launchpad/Dock) e **Linux** (lançador de apps).
 
-**No celular:** conecte na mesma rede Wi-Fi, rode com `--https`/`https`, abra `https://SEU_IP:8000` no Chrome (aceite o aviso do certificado autoassinado) e use **Adicionar à tela inicial**.
+**No celular:** conecte na mesma rede Wi-Fi, rode com `--https`/`https`, abra `https://openlingo.local:8000` no Chrome (aceite o aviso do certificado autoassinado) e use **Adicionar à tela inicial**.
+
+### 🌐 Acesso pela rede pelo nome (sem IP)
+
+O OpenLingo se anuncia na rede via **mDNS/Zeroconf**. Qualquer dispositivo na mesma rede
+(PC, celular, tablet) acessa pelo nome, **sem precisar saber o IP**:
+
+```
+http://openlingo.local:8000      (ou https://openlingo.local:8000 no modo --https)
+```
+
+Funciona nativamente em macOS, iOS, Windows 10+ e Linux (Avahi). Em alguns Androids antigos,
+use o IP como alternativa.
 
 ---
 
