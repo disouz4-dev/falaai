@@ -18,10 +18,13 @@ from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+import threading
+
 import db
 import gpu
 import irt
 import mdns
+import memory
 import ollama_client
 import tts
 
@@ -51,6 +54,8 @@ SESSIONS = {}
 
 # PT-BR: Inicializa o banco local (perfil + histórico). EN: init local DB (profile + history).
 db.init_db()
+# PT-BR: Garante o vault de memória do professor. EN: ensure the teacher's memory vault.
+memory.ensure_vault()
 
 app = FastAPI(title="OpenLingo API")
 app.add_middleware(
@@ -400,6 +405,24 @@ def _ai_report(level, se, skills, correct, total):
         )
 
 
+class MemoryIn(BaseModel):
+    category: str = "notes"
+    text: str
+
+
+@app.get("/api/memory")
+def get_memory():
+    """PT-BR: retorna o vault de memória do professor (arquivos .md). EN: return the teacher's memory vault."""
+    return {"vault": memory.read_all(), "dir": str(memory.VAULT_DIR)}
+
+
+@app.post("/api/memory")
+def add_memory(m: MemoryIn):
+    """PT-BR: adiciona uma memória manualmente. EN: add a memory manually."""
+    ok = memory.add_memory(m.category, m.text)
+    return {"ok": ok}
+
+
 @app.post("/api/chat")
 def chat(body: ChatIn):
     """PT-BR: Conversação por voz em tempo real (streaming). O nível CEFR ajusta a fala do professor.
@@ -419,9 +442,22 @@ def chat(body: ChatIn):
         if parts:
             who = ". ".join(parts) + ". Use their name naturally and bring up their interests. "
 
+    # PT-BR: memória permanente do professor (vault .md) — detalhes, brincadeiras, gírias.
+    # EN: teacher's permanent memory (md vault) — details, inside jokes, slang.
+    mem = memory.load_context()
+    mem_block = ""
+    if mem:
+        mem_block = (
+            "\nWHAT YOU REMEMBER ABOUT THIS STUDENT (use it naturally, like an old friend — "
+            "bring up their life, reuse your inside jokes, and mirror their slang; never read it "
+            "back as a list):\n" + mem + "\n"
+        )
+
     system = (
         "You are a REAL bilingual English teacher (Portuguese–English) having a spoken conversation. "
-        f"{who}"
+        "Be warm, funny and human — like a friend who happens to teach English. Joke around, react, "
+        "show you remember past conversations. "
+        f"{who}{mem_block}"
         f"The learner's CEFR level is {body.level}. Adapt your English vocabulary and grammar to that level.\n"
         "Alternate between the two languages exactly like a real teacher:\n"
         "- TEACH and CONVERSE in ENGLISH: keep the practice immersive, natural, short (1-2 sentences), "
@@ -444,6 +480,13 @@ def chat(body: ChatIn):
         db.log_practice("conversation")
     except Exception:
         pass
+
+    # PT-BR: extrai memórias da última fala do aluno em segundo plano (não atrasa a resposta).
+    # EN: extract memories from the student's last message in the background (non-blocking).
+    last_user = next((m.get("content", "") for m in reversed(body.messages)
+                      if m.get("role") == "user"), "")
+    if last_user:
+        threading.Thread(target=memory.extract_and_store, args=(last_user,), daemon=True).start()
 
     def gen():
         try:
