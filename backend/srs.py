@@ -43,31 +43,31 @@ def next_due(half_life):
     return (datetime.utcnow() + timedelta(days=half_life)).isoformat()
 
 
-def seed_lesson_vocab(lesson):
-    """PT-BR: cadastra o vocabulário de uma lição no SRS. EN: register a lesson's vocab in SRS."""
+def seed_lesson_vocab(uid, lesson):
+    """PT-BR: cadastra o vocabulário de uma lição no SRS do usuário. EN: register a lesson's vocab in SRS."""
     for v in lesson.get("vocab", []):
         en = (v.get("en") or "").strip()
         pt = (v.get("pt") or "").strip()
         if en:
-            db.srs_upsert(en, pt)
+            db.srs_upsert(uid, en, pt)
 
 
-def review(term, correct):
+def review(uid, term, correct):
     """
     PT-BR: registra uma revisão: recalcula a meia-vida e o próximo vencimento.
     EN:    record a review: recompute half-life and next due.
     """
-    due = db.srs_due(limit=1000)
+    due = db.srs_due(uid, limit=1000)
     item = next((d for d in due if d["term"] == term), None)
     hl_old = item["half_life"] if item else MIN_HL
     hl = update_half_life(hl_old, correct)
-    db.srs_update(term, hl, correct, next_due(hl))
+    db.srs_update(uid, term, hl, correct, next_due(hl))
     return {"term": term, "half_life": hl, "correct": correct}
 
 
-def due_cards(limit=20):
+def due_cards(uid, limit=20):
     """PT-BR: cartões a revisar agora, com prob. de lembrança. EN: cards due now, with recall prob."""
-    rows = db.srs_due(limit=limit)
+    rows = db.srs_due(uid, limit=limit)
     now = datetime.utcnow()
     cards = []
     for r in rows:

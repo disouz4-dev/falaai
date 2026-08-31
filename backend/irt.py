@@ -11,6 +11,7 @@ EN:    Adaptive placement engine based on Item Response Theory (IRT). Uses the R
 """
 
 import math
+import random
 
 # PT-BR: Mapa CEFR -> logit (dificuldade média de cada nível). EN: CEFR -> logit map.
 CEFR_LOGITS = {"A1": -2.5, "A2": -1.5, "B1": -0.5, "B2": 0.5, "C1": 1.5, "C2": 2.5}

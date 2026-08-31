@@ -26,7 +26,15 @@ if [ -f web/package.json ] && [ ! -d web/dist ]; then
 fi
 
 HOST="0.0.0.0"
-PORT="8000"
+# PT-BR: Porta 80 (padrão) para o Firebase aceitar o login: o Firebase trata 'localhost'
+#        e 'localhost:PORT' como domínios diferentes e NÃO aceita porta na lista de
+#        domínios autorizados. Com a porta 80, o app fica em https://localhost (sem porta).
+#        Nota: porta <1024 exige sudo ao iniciar (./run.sh --https com sudo).
+# EN:    Port 80 (default) so Firebase accepts login: Firebase treats 'localhost' and
+#        'localhost:PORT' as different domains and does NOT accept a port in the authorized
+#        domains list. On port 80 the app is served at https://localhost (no port).
+#        NOTE: ports <1024 need sudo when starting (run ./run.sh --https with sudo).
+PORT="80"
 # PT-BR: detecta o IP local (Linux e macOS). EN: detect LAN IP (Linux and macOS).
 LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
 if [ -z "$LAN_IP" ]; then
@@ -55,9 +63,15 @@ if [ "$1" == "--https" ]; then
   OL_HTTPS=1
   echo ""
   echo "🦜 OpenLingo (HTTPS)"
-  echo "   Nome na rede: https://openlingo.local:$PORT   ← use este em qualquer dispositivo"
-  echo "   PC:           https://localhost:$PORT"
-  [ -n "$LAN_IP" ] && echo "   (ou por IP:   https://$LAN_IP:$PORT)"
+  if [ "$PORT" = "80" ]; then
+    echo "   Nome na rede: https://openlingo.local   ← use este em qualquer dispositivo"
+    echo "   PC:           https://localhost          ← (porta 80 — Firebase aceita o login)"
+    [ -n "$LAN_IP" ] && echo "   (ou por IP:   https://$LAN_IP)"
+  else
+    echo "   Nome na rede: https://openlingo.local:$PORT   ← use este em qualquer dispositivo"
+    echo "   PC:           https://localhost:$PORT"
+    [ -n "$LAN_IP" ] && echo "   (ou por IP:   https://$LAN_IP:$PORT)"
+  fi
   if [ "$TRUSTED" = "1" ]; then
     echo "   ✅ Certificado confiável (mkcert) — sem aviso de segurança."
   else

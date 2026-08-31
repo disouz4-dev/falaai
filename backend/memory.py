@@ -15,11 +15,20 @@ from pathlib import Path
 
 import ollama_client
 
-# PT-BR: pasta do vault (pode apontar para um vault do Obsidian via env). EN: vault dir (env-overridable).
-VAULT_DIR = Path(os.environ.get(
+# PT-BR: pasta-base do vault (pode apontar para um vault do Obsidian via env). Cada usuário tem
+#        sua SUBPASTA aqui (data/memory/<uid>/), mantendo memórias separadas por conta.
+# EN:    base vault dir (env-overridable). Each user gets its own SUBDIR here (data/memory/<uid>/).
+VAULT_BASE = Path(os.environ.get(
     "OPENLINGO_MEMORY_DIR",
     str(Path(__file__).resolve().parent / "data" / "memory"),
 ))
+_DEFAULT_UID = "local"
+
+
+def _vault_dir(uid):
+    """PT-BR: pasta do vault de um usuário específico. EN: vault dir for a specific user."""
+    uid = (uid or _DEFAULT_UID)
+    return VAULT_BASE / uid
 
 # PT-BR: categorias -> arquivo .md + título. EN: categories -> .md file + title.
 CATEGORIES = {
@@ -32,23 +41,24 @@ CATEGORIES = {
 _MAX_CONTEXT_CHARS = 1800
 
 
-def ensure_vault():
+def ensure_vault(uid=None):
     """PT-BR: cria a pasta e os arquivos do vault se não existirem. EN: create vault dir/files if absent."""
-    VAULT_DIR.mkdir(parents=True, exist_ok=True)
+    vdir = _vault_dir(uid)
+    vdir.mkdir(parents=True, exist_ok=True)
     for cat, (fname, title, desc) in CATEGORIES.items():
-        f = VAULT_DIR / fname
+        f = vdir / fname
         if not f.exists():
             f.write_text(f"# {title}\n> {desc}\n\n", encoding="utf-8")
 
 
-def _existing_lines(fname):
-    f = VAULT_DIR / fname
+def _existing_lines(uid, fname):
+    f = _vault_dir(uid) / fname
     if not f.exists():
         return ""
     return f.read_text(encoding="utf-8").lower()
 
 
-def add_memory(category, text):
+def add_memory(uid, category, text):
     """
     PT-BR: acrescenta uma memória (bullet datado) no arquivo da categoria, evitando duplicatas.
     EN:    append a dated bullet memory to the category file, avoiding near-duplicates.
@@ -59,26 +69,27 @@ def add_memory(category, text):
     cat = category if category in CATEGORIES else "notes"
     fname, title, desc = CATEGORIES[cat]
     # PT-BR: dedupe simples por sobreposição de palavras. EN: simple word-overlap dedupe.
-    existing = _existing_lines(fname)
+    existing = _existing_lines(uid, fname)
     key = re.sub(r"[^a-z0-9á-ú ]", "", text.lower())
     if key and key[:40] in existing:
         return False
-    ensure_vault()
-    with open(VAULT_DIR / fname, "a", encoding="utf-8") as fp:
+    ensure_vault(uid)
+    with open(_vault_dir(uid) / fname, "a", encoding="utf-8") as fp:
         fp.write(f"- ({date.today().isoformat()}) {text}.\n")
     return True
 
 
-def load_context():
+def load_context(uid=None):
     """
     PT-BR: junta o vault num texto curto para injetar no prompt do professor.
     EN:    concatenate the vault into a short text to inject into the teacher's prompt.
     """
-    if not VAULT_DIR.exists():
+    vdir = _vault_dir(uid)
+    if not vdir.exists():
         return ""
     parts = []
     for cat, (fname, title, desc) in CATEGORIES.items():
-        f = VAULT_DIR / fname
+        f = vdir / fname
         if not f.exists():
             continue
         lines = [ln.strip() for ln in f.read_text(encoding="utf-8").splitlines()
@@ -89,13 +100,14 @@ def load_context():
     return ctx[-_MAX_CONTEXT_CHARS:] if ctx else ""
 
 
-def read_all():
+def read_all(uid=None):
     """PT-BR: retorna o vault inteiro (para exibir/editar). EN: return the whole vault (for viewing)."""
-    ensure_vault()
+    vdir = _vault_dir(uid)
+    ensure_vault(uid)
     out = {}
     for cat, (fname, title, desc) in CATEGORIES.items():
         out[cat] = {"title": title, "file": fname,
-                    "content": (VAULT_DIR / fname).read_text(encoding="utf-8")}
+                    "content": (vdir / fname).read_text(encoding="utf-8")}
     return out
 
 
@@ -113,7 +125,7 @@ def _parse_json_array(raw):
         return []
 
 
-def extract_and_store(user_text, assistant_text=""):
+def extract_and_store(uid, user_text, assistant_text=""):
     """
     PT-BR: a IA lê a última fala do aluno e extrai memórias DURÁVEIS (detalhes, brincadeiras,
            gírias), gravando no vault. Roda em segundo plano para não atrasar a resposta.
@@ -144,7 +156,7 @@ def extract_and_store(user_text, assistant_text=""):
         saved = []
         for it in items:
             if isinstance(it, dict) and it.get("text"):
-                if add_memory(it.get("category", "notes"), it["text"]):
+                if add_memory(uid, it.get("category", "notes"), it["text"]):
                     saved.append(it["text"])
         return saved
     except Exception:

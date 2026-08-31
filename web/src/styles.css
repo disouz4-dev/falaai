@@ -204,6 +204,12 @@ body {
   border: 2px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink);
 }
 .field input:focus { outline: none; border-color: var(--blue); }
+.field select {
+  display: block; width: 100%; margin-top: 6px; padding: 13px; font-size: 16px;
+  border: 2px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink);
+  font-family: inherit;
+}
+.field select:focus { outline: none; border-color: var(--blue); }
 .pf-msg { text-align: center; color: var(--green-dark); font-weight: 700; min-height: 20px; margin-top: 10px; }
 
 /* ---------- Progresso ---------- */
@@ -311,4 +317,31 @@ body {
   .chart-box, .report-card, .panel { background: #1e1e1e; }
   .task-box { background:#33300f; border-color:#7a6a1a; }
   .task-box .task-label { color: var(--yellow); }
+}
+
+/* ---------- Login / Auth ---------- */
+.center-panel {
+  max-width: 420px; margin: 10vh auto 0; text-align: center;
+  align-items: center; display: flex; flex-direction: column;
+}
+.center-panel .brand { font-size: 24px; }
+.center-panel h2 { margin: 18px 0 4px; }
+.glogin {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: #ffffff; color: #2b2b2b; border: 2px solid var(--line);
+  text-transform: none; letter-spacing: 0; font-size: 16px; font-weight: 700;
+}
+.glogin:hover { background: #f7f7f7; }
+.glogo {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, #4285F4, #34A853 50%, #FBBC05 75%, #EA4335);
+  color: #fff; font-size: 13px; font-weight: 900;
+}
+.auth-error { color: var(--red); font-weight: 700; margin: 14px 0 0; font-size: 13px; }
+.auth-hint { font-size: 12px; color: var(--muted); margin-top: 18px; line-height: 1.5; }
+
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer; object-fit: cover;
+  border: 2px solid var(--green);
 }

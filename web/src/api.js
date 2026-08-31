@@ -1,9 +1,34 @@
-// PT-BR: Helpers de API e formatação. EN: API and formatting helpers.
+// PT-BR: Helpers de API e formatação. Agora toda chamada envia o token Firebase (Bearer)
+//        para o backend identificar o usuário logado (multi-usuário).
+// EN:    API and formatting helpers. Every call now sends the Firebase token (Bearer)
+//        so the backend can identify the logged-in user (multi-user).
+
+// PT-BR: pega o token de ID atual (se logado). EN: get the current ID token (if logged in).
+async function _token() {
+  try {
+    const { auth } = await import("./firebase.js");
+    const u = auth.currentUser;
+    if (u) return await u.getIdToken();
+  } catch { /* sem firebase / offline — segue sem token */ }
+  return null;
+}
+
+async function _fetch(path, options = {}) {
+  const token = await _token();
+  const headers = { ...(options.headers || {}) };
+  if (token) headers["Authorization"] = "Bearer " + token;
+  const res = await fetch(path, { ...options, headers });
+  // PT-BR: 401 = token inválido/expirado; deixa o App saber. EN: 401 = invalid/expired token.
+  if (res.status === 401) {
+    window.dispatchEvent(new CustomEvent("openlingo:auth-required"));
+  }
+  return res;
+}
 
 export const api = {
-  get: (path) => fetch(path).then((r) => r.json()),
+  get: (path) => _fetch(path).then((r) => r.json()),
   post: (path, body) =>
-    fetch(path, {
+    _fetch(path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: body !== undefined ? JSON.stringify(body) : undefined,

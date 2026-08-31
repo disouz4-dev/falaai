@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { api, mdBlock, mdLite } from "../api.js";
-import { speak } from "../speech.js";
+import { speak, stopSpeaking } from "../speech.js";
 
 export default function Lesson({ nav, lessonId }) {
   const [data, setData] = useState(null);
@@ -14,6 +14,7 @@ export default function Lesson({ nav, lessonId }) {
   const [listening, setListening] = useState(false);
   const [explain, setExplain] = useState(null);
   const [explaining, setExplaining] = useState(false);
+  const [muted, setMuted] = useState(false);
   const scoreRef = useRef(0);
 
   useEffect(() => {
@@ -141,6 +142,12 @@ export default function Lesson({ nav, lessonId }) {
                 </div>
               ))}
             </div>
+            <div className="lesson-controls">
+              <button className={muted ? "btn-ghost mute-on" : "btn-primary mute-off"}
+                onClick={() => { setMuted(!muted); stopSpeaking(); }}>
+                {muted ? "Desmutar" : "Mutar professor"}
+              </button>
+            </div>
             <button className="btn-primary" onClick={next}>Praticar</button>
           </div>
         )}
@@ -194,9 +201,15 @@ export default function Lesson({ nav, lessonId }) {
               <div>{data.task.prompt_pt}</div>
               <div className="task-en">{data.task.prompt_en}</div>
             </div>
-            <button className={"mic-inline" + (listening ? " listening" : "")} onClick={dictate}>
-              {listening ? "🔴 Ouvindo…" : "🎤 Falar resposta"}
-            </button>
+            <div className="task-controls">
+              <button className={"mic-inline" + (listening ? " listening" : "")} onClick={dictate}>
+                {listening ? "🔴 Ouvindo…" : "🎤 Falar resposta"}
+              </button>
+              <button className={muted ? "btn-ghost mute-on" : "btn-primary mute-off"}
+                onClick={() => { setMuted(!muted); stopSpeaking(); }}>
+                {muted ? "Desmutar" : "Mutar professor"}
+              </button>
+            </div>
             <textarea className="task-answer" placeholder="…ou escreva sua resposta em inglês aqui"
               value={taskAnswer} onChange={(e) => setTaskAnswer(e.target.value)} />
             {taskFb && <div className="task-feedback" dangerouslySetInnerHTML={{ __html: "🧑‍🏫 " + mdLite(taskFb) }} />}

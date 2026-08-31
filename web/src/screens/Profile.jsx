@@ -5,17 +5,24 @@ export default function Profile({ nav, profile, setProfile }) {
   const [name, setName] = useState(profile?.name || "");
   const [goal, setGoal] = useState(profile?.goal || "");
   const [interests, setInterests] = useState(profile?.interests || "");
+  const [gender, setGender] = useState(profile?.gender_preference || "female");
   const [msg, setMsg] = useState("");
 
   async function save() {
     if (!name.trim()) { setMsg("Digite pelo menos seu nome."); return; }
     const d = await api.post("/api/profile", {
-      name: name.trim(), goal: goal.trim(), interests: interests.trim(),
+      name: name.trim(), goal: goal.trim(), interests: interests.trim(), gender_preference: gender,
     });
     setProfile(d.profile);
     setMsg("✓ Salvo!");
     setTimeout(() => { setMsg(""); nav("home"); }, 700);
   }
+
+  const genderLabels = { "female": "Professora", "male": "Professor" };
+  const genderOptions = [
+    { label: "Professora", value: "female" },
+    { label: "Professor", value: "male" },
+  ];
 
   return (
     <section className="screen active">
@@ -35,6 +42,15 @@ export default function Profile({ nav, profile, setProfile }) {
         <label className="field">Interesses / temas favoritos
           <input type="text" placeholder="Ex.: tecnologia, música, games, negócios…"
             value={interests} onChange={(e) => setInterests(e.target.value)} />
+        </label>
+        <label className="field">Gênero do professor
+          <select value={gender} onChange={(e) => setGender(e.target.value)}>
+            {genderOptions.map(o => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
         </label>
         <button className="btn-primary" onClick={save}>Salvar</button>
         <button className="btn-ghost" onClick={() => nav("home")}>Voltar</button>

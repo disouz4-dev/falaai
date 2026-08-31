@@ -12,7 +12,7 @@ import os
 import uuid
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -20,6 +20,7 @@ from pydantic import BaseModel
 
 import threading
 
+import auth
 import db
 import gpu
 import irt
@@ -109,6 +110,7 @@ class ProfileIn(BaseModel):
     native_lang: str = "Português (Brasil)"
     goal: str = ""
     interests: str = ""
+    gender_preference: str = "female"  # "female" = professora, "male" = professor
 
 
 class CompleteIn(BaseModel):
@@ -148,6 +150,15 @@ def _progress(session):
 # --------------------------------------------------------------------------- #
 # PT-BR: Endpoints da API. EN: API endpoints.
 # --------------------------------------------------------------------------- #
+# PT-BR: Dependência que valida o token Firebase e devolve o usuário logado.
+# EN:    Dependency that validates the Firebase token and returns the logged-in user.
+def get_current_user(authorization: str = Header(None)):  # noqa: E501
+    try:
+        return auth.get_uid_from_header(authorization)
+    except ValueError as e:
+        raise HTTPException(401, f"Autenticação requerida / Authentication required: {e}")
+
+
 @app.get("/api/health")
 def health():
     ok, names = ollama_client.is_available()
@@ -173,10 +184,10 @@ def do_update(request: Request):
 
 
 @app.get("/api/tts")
-def text_to_speech(text: str = Query(..., min_length=1), lang: str = Query("en")):
-    """PT-BR: Gera o áudio (WAV) da fala do professor no servidor, no idioma pedido (en/pt).
-    Tocado pelo app em qualquer aparelho. EN: Server-side speech audio (WAV) in the given language."""
-    audio = tts.synth(text, lang=lang)
+def text_to_speech(text: str = Query(..., min_length=1), lang: str = Query("en"), gender: str = Query("female")):
+    """PT-BR: Gera o áudio (WAV) da fala do professor no servidor, no idioma e gênero pedido (en/pt + gênero).
+    Tocado pelo app em qualquer aparelho. EN: Server-side speech audio in given language and gender."""
+    audio = tts.synth(text, lang=lang, gender=gender)
     if not audio:
         raise HTTPException(503, "TTS indisponível / TTS unavailable")
     return Response(
@@ -190,13 +201,15 @@ def text_to_speech(text: str = Query(..., min_length=1), lang: str = Query("en")
 # PT-BR: Perfil do aluno. EN: Learner profile.
 # --------------------------------------------------------------------------- #
 @app.get("/api/profile")
-def get_profile():
-    return {"profile": db.get_profile()}
+def get_profile(user: dict = Depends(get_current_user)):
+    return {"profile": db.get_profile(user["uid"])}
 
 
 @app.post("/api/profile")
-def save_profile(p: ProfileIn):
-    prof = db.upsert_profile(p.name.strip(), p.native_lang, p.goal.strip(), p.interests.strip())
+def save_profile(p: ProfileIn, user: dict = Depends(get_current_user)):
+    prof = db.upsert_profile(user["uid"], p.name.strip(), p.native_lang, p.goal.strip(),
+                             p.interests.strip(), p.gender_preference,
+                             email=user.get("email"), picture=user.get("picture"))
     return {"profile": prof}
 
 
@@ -216,7 +229,7 @@ def placement_start():
 
 
 @app.post("/api/placement/answer")
-def placement_answer(ans: AnswerIn):
+def placement_answer(ans: AnswerIn, user: dict = Depends(get_current_user)):
     """PT-BR: Registra a resposta, reestima o nível e devolve a próxima questão (adaptativo).
     EN: Record the answer, re-estimate ability, and return the next question (adaptive)."""
     session = SESSIONS.get(ans.session_id)
@@ -233,7 +246,7 @@ def placement_answer(ans: AnswerIn):
     # PT-BR: registra o erro para o hub de revisão. EN: log the mistake for the review hub.
     if not correct:
         try:
-            db.log_mistake("teste", item["skill"], item["question"],
+            db.log_mistake(user["uid"], "teste", item["skill"], item["question"],
                            item["options"][item["answer"]],
                            item["options"][ans.choice] if 0 <= ans.choice < len(item["options"]) else "",
                            item.get("explanation_pt", ""))
@@ -274,7 +287,7 @@ def placement_answer(ans: AnswerIn):
 
 
 @app.get("/api/placement/result/{session_id}")
-def placement_result(session_id: str):
+def placement_result(session_id: str, user: dict = Depends(get_current_user)):
     """PT-BR: Resultado final: nível CEFR, quebra por habilidade e relatório da IA.
     EN: Final result: CEFR level, per-skill breakdown, and an AI-generated report."""
     session = SESSIONS.get(session_id)
@@ -296,7 +309,7 @@ def placement_result(session_id: str):
     # PT-BR: Salva a tentativa no histórico (só uma vez por sessão) para a curva de aprendizado.
     # EN: Save the attempt to history (once per session) to build the learning curve.
     if not session.get("saved"):
-        db.save_attempt(level, round(theta, 3), round(se, 3), total_correct,
+        db.save_attempt(user["uid"], level, round(theta, 3), round(se, 3), total_correct,
                         len(session["history"]), skills)
         session["saved"] = True
 
@@ -315,12 +328,12 @@ def placement_result(session_id: str):
 
 
 @app.get("/api/progress")
-def progress():
+def progress(user: dict = Depends(get_current_user)):
     """PT-BR: Curva de aprendizado — histórico de tentativas + análise da evolução pela IA.
     EN: Learning curve — attempt history + AI analysis of the learner's evolution."""
-    attempts = db.list_attempts()
-    profile = db.get_profile()
-    practice = db.practice_count()
+    attempts = db.list_attempts(user["uid"])
+    profile = db.get_profile(user["uid"])
+    practice = db.practice_count(user["uid"])
 
     # PT-BR: série da evolução (nível/theta ao longo do tempo). EN: evolution series.
     series = [
@@ -347,12 +360,12 @@ def progress():
 
 
 @app.get("/api/progress/analysis")
-def progress_analysis():
+def progress_analysis(user: dict = Depends(get_current_user)):
     """PT-BR: Análise da curva de aprendizado pela IA (endpoint lento, carregado à parte).
     EN: AI learning-curve analysis (slow endpoint, loaded separately so charts show instantly)."""
-    attempts = db.list_attempts()
-    profile = db.get_profile()
-    practice = db.practice_count()
+    attempts = db.list_attempts(user["uid"])
+    profile = db.get_profile(user["uid"])
+    practice = db.practice_count(user["uid"])
     series = [
         {
             "date": a["created_at"][:10], "level": a["level"], "accuracy":
@@ -439,12 +452,12 @@ def _ai_report(level, se, skills, correct, total):
 # EN: The teacher's memory is INTERNAL — no endpoint exposes it to the student. It is read into
 #     the prompt and written by the extractor, backend-only. The vault stays on disk.
 @app.post("/api/chat")
-def chat(body: ChatIn):
+def chat(body: ChatIn, user: dict = Depends(get_current_user)):
     """PT-BR: Conversação por voz em tempo real (streaming). O nível CEFR ajusta a fala do professor.
     EN: Real-time voice conversation (streaming). The CEFR level tunes the teacher's speech."""
-    # PT-BR: O professor conhece o aluno (nome, objetivo, interesses e nível medido).
-    # EN: The teacher knows the student (name, goal, interests, and measured level).
-    profile = db.get_profile()
+    # PT-BR: O professor conhece o aluno (nome, objetivo, interesses, nível e gênero medido).
+    # EN: The teacher knows the student (name, goal, interests, level, and gender).
+    profile = db.get_profile(user["uid"])
     who = ""
     if profile:
         parts = []
@@ -454,63 +467,68 @@ def chat(body: ChatIn):
             parts.append(f"their goal is: {profile['goal']}")
         if profile.get("interests"):
             parts.append(f"their interests: {profile['interests']}")
-        if parts:
+        if profile.get("gender_preference"):
+            gp = profile["gender_preference"]
+            who = f"The teacher is a {'professor' if gp == 'male' else 'professora'}. Adapt your tone accordingly. "
+            who += ". ".join(parts) + ". Use their name naturally and bring up their interests. "
+        else:
             who = ". ".join(parts) + ". Use their name naturally and bring up their interests. "
 
-    # PT-BR: memória permanente do professor (vault .md) — detalhes, brincadeiras, gírias.
-    # EN: teacher's permanent memory (md vault) — details, inside jokes, slang.
-    mem = memory.load_context()
-    mem_block = ""
-    if mem:
-        mem_block = (
-            "\nWHAT YOU REMEMBER ABOUT THIS STUDENT (use it naturally, like an old friend — "
-            "bring up their life, reuse your inside jokes, and mirror their slang; never read it "
-            "back as a list):\n" + mem + "\n"
+        # PT-BR: memória permanente do professor (vault .md) — detalhes, brincadeiras, gírias.
+        # EN: teacher's permanent memory (md vault) — details, inside jokes, slang.
+        mem = memory.load_context(user["uid"])
+        mem_block = ""
+        if mem:
+            mem_block = (
+                "\nWHAT YOU REMEMBER ABOUT THIS STUDENT (use it naturally, like an old friend — "
+                "bring up their life, reuse your inside jokes, and mirror their slang; never read it "
+                "back as a list):\n" + mem + "\n"
+            )
+
+        system = (
+            "You are a REAL bilingual English teacher (Portuguese–English) having a spoken conversation. "
+            "Be warm, funny and human — like a friend who happens to teach English. Joke around, react, "
+            "show you remember past conversations. "
+            f"{who}{mem_block}"
+            f"The learner's CEFR level is {body.level}. Adapt your English vocabulary and grammar to that level.\n"
+            "Alternate between the two languages exactly like a real teacher:\n"
+            "- TEACH and CONVERSE in ENGLISH: keep the practice immersive, natural, short (1-2 sentences), "
+            "and always end with a question in English to keep the learner talking.\n"
+            "- CORRECT in PORTUGUESE (português do Brasil): when the learner makes an important mistake, "
+            "switch briefly to Portuguese to explain the correction clearly — what was wrong and the correct "
+            "form — then switch back to English to continue.\n"
+            "Use Portuguese ONLY for corrections/explanations; use English for everything else. "
+            "Don't over-correct minor slips. Be warm and encouraging.\n"
+            "Format each correction on its own line starting with '📝 (correção): '. The text AFTER "
+            "'📝 (correção):' MUST be written in Brazilian Portuguese (never English).\n"
+            "Example of a good reply:\n"
+            "That sounds fun! What did you eat there?\n"
+            "📝 (correção): Em vez de \"I go\", diga \"I went\" — a festa foi no passado."
         )
+        messages = [{"role": "system", "content": system}] + body.messages
 
-    system = (
-        "You are a REAL bilingual English teacher (Portuguese–English) having a spoken conversation. "
-        "Be warm, funny and human — like a friend who happens to teach English. Joke around, react, "
-        "show you remember past conversations. "
-        f"{who}{mem_block}"
-        f"The learner's CEFR level is {body.level}. Adapt your English vocabulary and grammar to that level.\n"
-        "Alternate between the two languages exactly like a real teacher:\n"
-        "- TEACH and CONVERSE in ENGLISH: keep the practice immersive, natural, short (1-2 sentences), "
-        "and always end with a question in English to keep the learner talking.\n"
-        "- CORRECT in PORTUGUESE (português do Brasil): when the learner makes an important mistake, "
-        "switch briefly to Portuguese to explain the correction clearly — what was wrong and the correct "
-        "form — then switch back to English to continue.\n"
-        "Use Portuguese ONLY for corrections/explanations; use English for everything else. "
-        "Don't over-correct minor slips. Be warm and encouraging.\n"
-        "Format each correction on its own line starting with '📝 (correção): '. The text AFTER "
-        "'📝 (correção):' MUST be written in Brazilian Portuguese (never English).\n"
-        "Example of a good reply:\n"
-        "That sounds fun! What did you eat there?\n"
-        "📝 (correção): Em vez de \"I go\", diga \"I went\" — a festa foi no passado."
-    )
-    messages = [{"role": "system", "content": system}] + body.messages
-
-    # PT-BR: registra a sessão de prática para a curva de aprendizado. EN: log practice.
-    try:
-        db.log_practice("conversation")
-    except Exception:
-        pass
-
-    # PT-BR: extrai memórias da última fala do aluno em segundo plano (não atrasa a resposta).
-    # EN: extract memories from the student's last message in the background (non-blocking).
-    last_user = next((m.get("content", "") for m in reversed(body.messages)
-                      if m.get("role") == "user"), "")
-    if last_user:
-        threading.Thread(target=memory.extract_and_store, args=(last_user,), daemon=True).start()
-
-    def gen():
+        # PT-BR: registra a sessão de prática para a curva de aprendizado. EN: log practice.
         try:
-            for chunk in ollama_client.chat_stream(messages, temperature=0.6):
-                yield chunk
-        except Exception as e:  # PT-BR: nunca falha em silêncio. EN: never fail silently.
-            yield f"\n[erro: {e}]"
+            db.log_practice(user["uid"], "conversation")
+        except Exception:
+            pass
 
-    return StreamingResponse(gen(), media_type="text/plain; charset=utf-8")
+        # PT-BR: extrai memórias da última fala do aluno em segundo plano (não atrasa a resposta).
+        # EN: extract memories from the student's last message in the background (non-blocking).
+        last_user = next((m.get("content", "") for m in reversed(body.messages)
+                          if m.get("role") == "user"), "")
+        if last_user:
+            threading.Thread(target=memory.extract_and_store,
+                             args=(user["uid"], last_user), daemon=True).start()
+
+        def gen():
+            try:
+                for chunk in ollama_client.chat_stream(messages, temperature=0.6):
+                    yield chunk
+            except Exception as e:  # PT-BR: nunca falha em silêncio. EN: never fail silently.
+                yield f"\n[erro: {e}]"
+
+        return StreamingResponse(gen(), media_type="text/plain; charset=utf-8")
 
 
 # --------------------------------------------------------------------------- #
@@ -525,9 +543,9 @@ def _find_lesson(lesson_id):
 
 
 @app.get("/api/course")
-def course():
+def course(user: dict = Depends(get_current_user)):
     """PT-BR: Estrutura do curso + progresso + travas de módulo. EN: Course structure + progress + locks."""
-    done = db.get_lesson_progress()
+    done = db.get_lesson_progress(user["uid"])
     modules_out = []
     prev_all_done = True  # PT-BR: 1º módulo sempre liberado. EN: first module always unlocked.
     for m in COURSE:
@@ -564,15 +582,15 @@ def course_lesson(lesson_id: str):
 
 
 @app.post("/api/course/lesson/{lesson_id}/complete")
-def course_complete(lesson_id: str, body: CompleteIn):
+def course_complete(lesson_id: str, body: CompleteIn, user: dict = Depends(get_current_user)):
     """PT-BR: Marca a lição como concluída. EN: Mark the lesson as completed."""
     _, les = _find_lesson(lesson_id)
     if not les:
         raise HTTPException(404, "Lição não encontrada / Lesson not found")
-    db.complete_lesson(lesson_id, body.score)
+    db.complete_lesson(user["uid"], lesson_id, body.score)
     # PT-BR: adiciona o vocabulário da lição ao SRS (repetição espaçada). EN: add vocab to SRS.
     try:
-        srs.seed_lesson_vocab(les)
+        srs.seed_lesson_vocab(user["uid"], les)
     except Exception:
         pass
     return {"ok": True}
@@ -636,15 +654,15 @@ class SrsReviewIn(BaseModel):
 
 
 @app.get("/api/srs")
-def srs_due():
+def srs_due(user: dict = Depends(get_current_user)):
     """PT-BR: cartões de vocabulário a revisar agora + estatísticas. EN: due SRS cards + stats."""
-    return {"cards": srs.due_cards(limit=20), "stats": db.srs_stats()}
+    return {"cards": srs.due_cards(user["uid"], limit=20), "stats": db.srs_stats(user["uid"])}
 
 
 @app.post("/api/srs/review")
-def srs_review(r: SrsReviewIn):
+def srs_review(r: SrsReviewIn, user: dict = Depends(get_current_user)):
     """PT-BR: registra a revisão de um cartão (acertou/errou). EN: record a card review."""
-    return srs.review(r.term, r.correct)
+    return srs.review(user["uid"], r.term, r.correct)
 
 
 # ---------- Explique meu erro ----------
@@ -709,12 +727,12 @@ class ListenCheckIn(BaseModel):
 
 
 @app.post("/api/listen/check")
-def listen_check(c: ListenCheckIn):
+def listen_check(c: ListenCheckIn, user: dict = Depends(get_current_user)):
     """PT-BR: compara o que o aluno digitou com a frase falada. EN: compare typed vs spoken sentence."""
     sim = _similarity(c.target, c.typed)
     correct = sim >= 90
     if not correct:
-        db.log_mistake("ditado", "listening", c.target, c.target, c.typed, "")
+        db.log_mistake(user["uid"], "ditado", "listening", c.target, c.target, c.typed, "")
     return {"similarity": sim, "correct": correct, "target": c.target}
 
 
@@ -810,9 +828,9 @@ def roleplay_opening(sid: str):
 
 # ---------- Histórias com áudio (Stories / DuoRadio) ----------
 @app.get("/api/story")
-def story(level: str = "B1", topic: str = ""):
+def story(level: str = "B1", topic: str = "", user: dict = Depends(get_current_user)):
     """PT-BR: a IA cria uma mini-história no nível + perguntas de compreensão. EN: AI mini-story + questions."""
-    prof = db.get_profile()
+    prof = db.get_profile(user["uid"])
     interests = (prof or {}).get("interests", "")
     theme = topic or interests or "everyday life"
     prompt = (
@@ -850,20 +868,20 @@ class MistakeIn(BaseModel):
 
 
 @app.post("/api/mistakes/log")
-def mistakes_log(m: MistakeIn):
+def mistakes_log(m: MistakeIn, user: dict = Depends(get_current_user)):
     """PT-BR: registra um erro (chamado pelas lições no cliente). EN: log a mistake (called by lessons)."""
-    db.log_mistake(m.source, m.skill, m.question, m.correct, m.given, m.explanation)
+    db.log_mistake(user["uid"], m.source, m.skill, m.question, m.correct, m.given, m.explanation)
     return {"ok": True}
 
 
 @app.get("/api/mistakes")
-def mistakes_list():
-    return {"mistakes": db.list_mistakes(limit=30), "count": db.mistakes_count()}
+def mistakes_list(user: dict = Depends(get_current_user)):
+    return {"mistakes": db.list_mistakes(user["uid"], limit=30), "count": db.mistakes_count(user["uid"])}
 
 
 @app.post("/api/mistakes/{mid}/resolve")
-def mistakes_resolve(mid: int):
-    db.resolve_mistake(mid)
+def mistakes_resolve(mid: int, user: dict = Depends(get_current_user)):
+    db.resolve_mistake(user["uid"], mid)
     return {"ok": True}
 
 

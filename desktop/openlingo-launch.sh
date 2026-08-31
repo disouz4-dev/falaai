@@ -1,23 +1,33 @@
 #!/usr/bin/env bash
-# PT-BR: Lançador do OpenLingo (Linux/macOS) — sobe o servidor (se preciso) e abre o app.
-# EN:    OpenLingo launcher (Linux/macOS) — starts the server if needed and opens the app.
+# PT-BR: Lançador do OpenLingo (Linux) — sobe o servidor na porta 80 (HTTPS) e abre o app.
+# EN:    OpenLingo launcher (Linux) — starts the server on port 80 (HTTPS) and opens the app.
 set -e
-HERE="$(cd "$(dirname "$0")/.." && pwd)"   # PT-BR: raiz do projeto. EN: project root.
-PORT="${OPENLINGO_PORT:-8000}"
-URL="http://openlingo.local:$PORT"          # PT-BR: nome amigável na rede. EN: friendly name.
+HERE="$(cd "$(dirname "$0")/.." && pwd)"   # project root
 
-# PT-BR: sobe o servidor em segundo plano se ainda não estiver no ar.
-# EN: start the server in the background if it isn't running yet.
-if ! curl -s -o /dev/null "http://localhost:$PORT/api/health" 2>/dev/null; then
-  nohup "$HERE/run.sh" >/tmp/openlingo.log 2>&1 &
-  # PT-BR: espera o servidor responder. EN: wait for the server to answer.
-  for _ in $(seq 1 40); do
-    curl -s -o /dev/null "http://localhost:$PORT/api/health" 2>/dev/null && break
+# Precisa de sudo para porta 80. Se já tiver rodando, abre direto.
+if ! curl -k -s -o /dev/null "https://localhost/api/health" 2>/dev/null; then
+  # Usa pkexec (GUI sudo) ou sudo no terminal
+  if command -v pkexec >/dev/null 2>&1; then
+    pkexec "$HERE/run.sh" --https >/tmp/openlingo.log 2>&1 &
+  else
+    # Fallback: abre terminal pedindo sudo
+    if command -v gnome-terminal >/dev/null 2>&1; then
+      gnome-terminal -- bash -c "cd '$HERE' && sudo ./run.sh --https; exec bash"
+    elif command -v konsole >/dev/null 2>&1; then
+      konsole -e bash -c "cd '$HERE' && sudo ./run.sh --https; exec bash"
+    elif command -v xterm >/dev/null 2>&1; then
+      xterm -e bash -c "cd '$HERE' && sudo ./run.sh --https; exec bash"
+    else
+      notify-send "OpenLingo" "Execute manualmente: sudo $HERE/run.sh --https"
+      exit 1
+    fi
+  fi
+  # espera o servidor responder
+  for _ in $(seq 1 60); do
+    curl -k -s -o /dev/null "https://localhost/api/health" 2>/dev/null && break
     sleep 0.5
   done
 fi
 
-# PT-BR: abre no navegador padrão. EN: open in the default browser.
-if command -v xdg-open >/dev/null 2>&1; then xdg-open "$URL"
-elif command -v open >/dev/null 2>&1; then open "$URL"      # macOS
-else echo "Abra $URL no navegador."; fi
+# abre no navegador
+xdg-open "https://localhost" 2>/dev/null || open "https://localhost" 2>/dev/null || echo "Abra https://localhost no navegador."
