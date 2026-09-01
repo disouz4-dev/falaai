@@ -41,7 +41,7 @@ O Guaralingo é um **app desktop** — verifique e instala tudo sozinho.
 | Sistema | Comando |
 |---|---|
 | **Linux / macOS** | `curl -fsSL https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py \| python3 -` |
-| **Windows (PowerShell)** | `irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py \| python -` |
+| **Windows (PowerShell)** | `irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.ps1 \| iex` |
 
 Wrappers que garantem Python e delegam ao `install.py` (mesma lógica):
 

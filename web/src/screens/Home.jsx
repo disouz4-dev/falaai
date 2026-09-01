@@ -7,7 +7,7 @@ export default function Home({
   return (
     <section className="screen active">
       <div className="hero">
-        <div className="hero-mascot">🐺</div>
+        <img src="/guaralingo.png" alt="Guaralingo" className="hero-logo" />
         <h1>{profile?.name ? `Olá, ${profile.name}! 👋` : "Aprenda inglês do seu jeito"}</h1>
         <p className="subtitle">IA local · seu nível medido com métodos reais (CEFR)</p>
       </div>

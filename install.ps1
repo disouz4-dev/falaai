@@ -1,14 +1,17 @@
 # =============================================================================
-# PT-BR: Instalador do Guaralingo para Windows — wrapper fino que garante
-#        Python 3.10+ e delega ao instalador universal install.py (um código só).
+# PT-BR: Instalador do Guaralingo para Windows — um código só.
+#        Garante Python 3.10+ e delega ao install.py universal.
 #        Uso (uma linha):
 #          irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.ps1 | iex
-#          ou: irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py | python -
-# EN:    Guaralingo installer for Windows — thin wrapper ensuring Python 3.10+
-#        then delegating to the universal install.py (one code for all OS).
+# EN:    Guaralingo installer for Windows — one code for all.
 # =============================================================================
 $ErrorActionPreference = "Stop"
 $Url = "https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py"
+
+# PT-BR: se rodou via pipe (irm | iex), $PSScriptRoot fica vazio — usa o temp.
+# EN: if piped (irm | iex), $PSScriptRoot is empty — use temp dir.
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { "$env:TEMP\guaralingo" }
+if (-not (Test-Path $scriptDir)) { New-Item -ItemType Directory -Path $scriptDir -Force | Out-Null }
 
 # PT-BR: garante Python 3.10+. EN: ensure Python 3.10+.
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
@@ -23,11 +26,12 @@ if (-not $py) {
   if (-not (Get-Command $py -ErrorAction SilentlyContinue)) { throw "Instale Python 3.10+ em https://python.org e rode de novo." }
 }
 
-# PT-BR: se há install.py local (repo clonado), usa-o; senão baixa. EN: use local or fetch.
-$localPy = Join-Path $PSScriptRoot "install.py"
-if (Test-Path $localPy) { & $py $localPy @args; exit $LASTEXITCODE }
-
+# PT-BR: baixa o install.py e roda. EN: fetch and run install.py.
+$localPy = Join-Path $scriptDir "install.py"
+if (Test-Path $localPy) {
+  & $py $localPy @args
+  exit $LASTEXITCODE
+}
 Write-Host "Baixando instalador universal (install.py)..."
-# PT-BR: baixa e executa o install.py. EN: fetch and run install.py.
 $tmp = [System.IO.Path]::GetTempFileName() + ".py"
 try { Invoke-WebRequest -Uri $Url -OutFile $tmp; & $py $tmp @args } finally { Remove-Item $tmp -ErrorAction SilentlyContinue }
