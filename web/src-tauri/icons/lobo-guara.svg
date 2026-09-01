@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Fundo -->
+  <rect width="256" height="256" fill="#fbf1e3" rx="40"/>
+  
+  <!-- Corpo do lobo-guará (laranja-cobre) -->
+  <ellipse cx="128" cy="160" rx="70" ry="55" fill="#e8792b"/>
+  
+  <!-- Pescoço -->
+  <ellipse cx="128" cy="115" rx="35" ry="30" fill="#e8792b"/>
+  
+  <!-- Cabeça -->
+  <ellipse cx="128" cy="80" rx="42" ry="38" fill="#e8792b"/>
+  
+  <!-- Orelhas -->
+  <path d="M100 55 Q90 30 105 45 Q110 55 100 55" fill="#e8792b"/>
+  <path d="M156 55 Q166 30 151 45 Q146 55 156 55" fill="#e8792b"/>
+  <!-- Interior das orelhas -->
+  <path d="M103 52 Q95 35 107 46" fill="#fff0e0"/>
+  <path d="M153 52 Q161 35 149 46" fill="#fff0e0"/>
+  
+  <!-- Focinho (marrom escuro) -->
+  <ellipse cx="128" cy="88" rx="18" ry="14" fill="#2e2118"/>
+  <ellipse cx="120" cy="85" rx="4" ry="4" fill="#1a140e"/>
+  <ellipse cx="136" cy="85" rx="4" ry="4" fill="#1a140e"/>
+  
+  <!-- Olhos dourados -->
+  <ellipse cx="114" cy="72" rx="8" ry="10" fill="#e8a93c"/>
+  <ellipse cx="142" cy="72" rx="8" ry="10" fill="#e8a93c"/>
+  <!-- Pupilas -->
+  <ellipse cx="114" cy="72" rx="3.5" ry="5" fill="#1a140e"/>
+  <ellipse cx="142" cy="72" rx="3.5" ry="5" fill="#1a140e"/>
+  <!-- Brilho nos olhos -->
+  <ellipse cx="112" cy="69" rx="2" ry="2" fill="#fff8e0"/>
+  <ellipse cx="140" cy="69" rx="2" ry="2" fill="#fff8e0"/>
+  
+  <!-- Peito/ponta da cauda (creme) -->
+  <ellipse cx="128" cy="195" rx="50" ry="25" fill="#fbf1e3"/>
+  
+  <!-- Pernas dianteiras (marrom escuro) -->
+  <rect x="88" y="190" width="16" height="45" rx="4" fill="#2e2118"/>
+  <rect x="152" y="190" width="16" height="45" rx="4" fill="#2e2118"/>
+  
+  <!-- Pernas traseiras -->
+  <rect x="72" y="185" width="14" height="40" rx="4" fill="#2e2118"/>
+  <rect x="170" y="185" width="14" height="40" rx="4" fill="#2e2118"/>
+  
+  <!-- Cauda -->
+  <path d="M190 160 Q220 140 210 120 Q195 135 190 160" fill="#e8792b"/>
+  <path d="M205 130 Q225 115 210 100 Q198 112 205 130" fill="#fbf1e3"/>
+  
+  <!-- Sombra sutil -->
+  <ellipse cx="128" cy="210" rx="65" ry="12" fill="#e8792b" opacity="0.15"/>
+</svg>
