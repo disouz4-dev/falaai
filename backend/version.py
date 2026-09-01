@@ -26,9 +26,20 @@ _CACHE_TTL = 1800  # PT-BR: 30 min. EN: 30 min.
 def current():
     """PT-BR: versão local. EN: local version."""
     try:
-        return VERSION_FILE.read_text(encoding="utf-8").strip() or "0.0.0"
+        v = VERSION_FILE.read_text(encoding="utf-8").strip()
+        if v:
+            return v
     except Exception:
-        return "0.0.0"
+        pass
+    try:
+        import json as _json
+        conf = ROOT / "web" / "src-tauri" / "tauri.conf.json"
+        if conf.exists():
+            with open(conf, encoding="utf-8") as _f:
+                return _json.load(_f)["version"]
+    except Exception:
+        pass
+    return "0.0.0"
 
 
 def _tuple(v):

@@ -41,7 +41,9 @@
       "../../backend/requirements.txt",
       "../../backend/data/items.json",
       "../../backend/data/course.json",
-      "../../run.sh"
+      "../../run.sh",
+      "../../VERSION",
+      "tauri.conf.json"
     ],
     "externalBin": [
       "guaralingo-backend"
