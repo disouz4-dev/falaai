@@ -39,7 +39,8 @@ def _tuple(v):
 
 def check(force=False):
     """
-    PT-BR: verifica a última release no GitHub (com cache). EN: check the latest GitHub release (cached).
+    PT-BR: verifica a última release no GitHub (com cache).
+    EN: check the latest GitHub release (cached).
     """
     now = time.time()
     if not force and _cache["data"] and now - _cache["t"] < _CACHE_TTL:
@@ -65,6 +66,12 @@ def check(force=False):
     return data
 
 
+def reset_cache():
+    """PT-BR: limpa o cache de versão (após auto-update). EN: clear version cache (after auto-update)."""
+    _cache["t"] = 0
+    _cache["data"] = None
+
+
 def _git(*args):
     return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True, text=True, timeout=120)
 
@@ -75,6 +82,7 @@ def perform_update():
            servidor. O run.sh (loop) sobe de novo com o código novo, reinstalando deps e
            recompilando o React. EN: git pull + force frontend rebuild + schedule restart.
     """
+    reset_cache()
     before = current()
     try:
         pull = _git("pull", "--ff-only")
