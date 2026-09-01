@@ -14,38 +14,20 @@ $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { "$env:TEMP\guaralingo" 
 if (-not (Test-Path $scriptDir)) { New-Item -ItemType Directory -Path $scriptDir -Force | Out-Null }
 
 # PT-BR: encontra Python 3.10+ que REALMENTE funciona. EN: find Python 3.10+ that actually works.
+# PT-BR: NÃO usa 'python' — no Windows é stub da Store. Prefere python3, py ou caminho completo.
 function Find-Python {
-  # PT-BR: testa se um comando python realmente executa. EN: test if a python cmd actually runs.
-  function Test-PythonCmd {
-    param([string]$Cmd)
-    try {
-      $ver = & $Cmd --version 2>&1
-      if ($LASTEXITCODE -eq 0 -and $ver) { return $true }
-    } catch {}
-    return $false
-  }
-  # PT-BR: prefere python3 (mais confiável no Windows). EN: prefer python3 (more reliable).
-  if (Get-Command python3 -ErrorAction SilentlyContinue) {
-    if (Test-PythonCmd "python3") { return "python3" }
-  }
-  if (Get-Command python -ErrorAction SilentlyContinue) {
-    if (Test-PythonCmd "python") { return "python" }
-  }
+  if (Get-Command python3 -ErrorAction SilentlyContinue) { return "python3" }
+  if (Get-Command python3.exe -ErrorAction SilentlyContinue) { return "python3.exe" }
+  # PT-BR: launcher 'py' (vem com o Python). EN: 'py' launcher (comes with Python).
+  if (Get-Command py -ErrorAction SilentlyContinue) { return "py" }
   # PT-BR: winget instala em WindowsApps. EN: winget installs to WindowsApps.
   $wa = "$env:LOCALAPPDATA\Microsoft\WindowsApps"
-  if (Test-Path "$wa\python.exe") {
-    if (Test-PythonCmd "$wa\python.exe") { return "$wa\python.exe" }
-  }
-  if (Test-Path "$env:ProgramFiles\Python312\python.exe") {
-    if (Test-PythonCmd "$env:ProgramFiles\Python312\python.exe") { return "$env:ProgramFiles\Python312\python.exe" }
-  }
-  if (Test-Path "$env:ProgramFiles\Python311\python.exe") {
-    if (Test-PythonCmd "$env:ProgramFiles\Python311\python.exe") { return "$env:ProgramFiles\Python311\python.exe" }
-  }
-  # PT-BR: fallback — usa o launcher 'py'. EN: fallback — use 'py' launcher.
-  if (Get-Command py -ErrorAction SilentlyContinue) {
-    if (Test-PythonCmd "py") { return "py" }
-  }
+  if (Test-Path "$wa\python.exe") { return "$wa\python.exe" }
+  if (Test-Path "$env:ProgramFiles\Python312\python.exe") { return "$env:ProgramFiles\Python312\python.exe" }
+  if (Test-Path "$env:ProgramFiles\Python311\python.exe") { return "$env:ProgramFiles\Python311\python.exe" }
+  if (Test-Path "$env:ProgramFiles\Python310\python.exe") { return "$env:ProgramFiles\Python310\python.exe" }
+  # PT-BR: fallback — tenta 'python' por último. EN: fallback — try 'python' last.
+  if (Get-Command python -ErrorAction SilentlyContinue) { return "python" }
   return $null
 }
 $py = Find-Python
