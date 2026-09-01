@@ -40,14 +40,14 @@ O Guaralingo é um **app desktop**, com um **instalador `.deb` nativo para Linux
 
 **Via terminal (um comando):**
 ```bash
-# Baixa e instala o .deb da release mais recente (v1.0.0)
-curl -L https://github.com/disouz4-dev/guaralingo/releases/download/v1.0.0/Guaralingo_1.0.0_amd64.deb -o Guaralingo_1.0.0_amd64.deb && sudo dpkg -i Guaralingo_1.0.0_amd64.deb && sudo apt-get install -f
+# Baixa e instala o .deb da release mais recente (v1.0.1)
+curl -L https://github.com/disouz4-dev/guaralingo/releases/download/v1.0.1/Guaralingo_1.0.1_amd64.deb -o Guaralingo_1.0.1_amd64.deb && sudo dpkg -i Guaralingo_1.0.1_amd64.deb && sudo apt-get install -f
 ```
 Depois procure **Guaralingo** no menu de aplicações para abrir.
 
 **Ou manual:** baixe o `.deb` em https://github.com/disouz4-dev/guaralingo/releases e instale:
 ```bash
-sudo dpkg -i Guaralingo_1.0.0_amd64.deb
+sudo dpkg -i Guaralingo_1.0.1_amd64.deb
 sudo apt-get install -f
 ```
 
