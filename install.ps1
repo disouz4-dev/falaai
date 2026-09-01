@@ -13,18 +13,30 @@ $Url = "https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { "$env:TEMP\guaralingo" }
 if (-not (Test-Path $scriptDir)) { New-Item -ItemType Directory -Path $scriptDir -Force | Out-Null }
 
-# PT-BR: garante Python 3.10+. EN: ensure Python 3.10+.
-if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
-  if (Get-Command python3 -ErrorAction SilentlyContinue) { $py = "python3" } else { $py = $null }
-} else { $py = "python" }
+# PT-BR: encontra Python 3.10+. EN: find Python 3.10+.
+function Find-Python {
+  if (Get-Command python -ErrorAction SilentlyContinue) { return "python" }
+  if (Get-Command python3 -ErrorAction SilentlyContinue) { return "python3" }
+  # winget instala em WindowsApps
+  $wa = "$env:LOCALAPPDATA\Microsoft\WindowsApps"
+  if (Test-Path "$wa\python.exe") { return "$wa\python.exe" }
+  if (Test-Path "$env:ProgramFiles\Python312\python.exe") { return "$env:ProgramFiles\Python312\python.exe" }
+  if (Test-Path "$env:ProgramFiles\Python311\python.exe") { return "$env:ProgramFiles\Python311\python.exe" }
+  return $null
+}
+$py = Find-Python
+
 if (-not $py) {
-  Write-Host "==> Python não encontrado — instalando..."
+  Write-Host "==> Python não encontrado — instalando via winget..."
   if (Get-Command winget -ErrorAction SilentlyContinue) {
     winget install --id Python.Python.3.12 -e --accept-source-agreements --accept-package-agreements
-    $py = "python"
+    # PT-BR: refresca o PATH para a sessão atual. EN: refresh PATH for current session.
+    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH","User")
+    $py = Find-Python
   }
-  if (-not (Get-Command $py -ErrorAction SilentlyContinue)) { throw "Instale Python 3.10+ em https://python.org e rode de novo." }
+  if (-not $py) { throw "Instale Python 3.10+ em https://python.org e rode de novo." }
 }
+Write-Host "==> Usando: $py"
 
 # PT-BR: baixa o install.py e roda. EN: fetch and run install.py.
 $localPy = Join-Path $scriptDir "install.py"
