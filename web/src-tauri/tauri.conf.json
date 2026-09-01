@@ -37,7 +37,10 @@
       "icons/icon.ico"
     ],
     "resources": [
-      "../../backend/**/*",
+      "../../backend/*.py",
+      "../../backend/requirements.txt",
+      "../../backend/data/items.json",
+      "../../backend/data/course.json",
       "../../run.sh"
     ],
     "externalBin": [
