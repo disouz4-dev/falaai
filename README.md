@@ -69,14 +69,15 @@ sudo apt remove guaralingo
 
 ---
 
-## 🔐 Login local (como funciona)
+## 🔐 Login local e cadastro (100% offline)
 
-<!-- PT-BR / EN: local login explanation -->
-1. Abra o Guaralingo — ele mostra a **tela de login**.
-2. Clique em **Entrar**. O app faz o **login local**: o backend cria (ou reutiliza) um **perfil local** neste dispositivo e guarda um **token** assinado localmente.
-3. Pronto — seu progresso (perfil, testes, lições, vocabulário, conversas) fica **guardado neste dispositivo**, sem precisar de contas nem internet para autenticar.
+O Guaralingo é **100% local/offline** — nenhum dado vai para a nuvem, sem contas nem e-mail. O acesso é sempre local:
 
-> **Privacidade:** o Guaralingo é **100% local/offline**. Nenhum dado é enviado para a nuvem. Só acessa a internet para (opcionalmente) baixar **atualizações** e, se você instalar o Ollama, o Ollama baixa o modelo da IA na primeira vez.
+1. **1º acesso — cadastro obrigatório.** Ao abrir o app, aparece uma tela de **registro** com: nome, idioma nativo, objetivo, interesses e voz do professor (feminina/masculina). Preencha e clique em **Começar**. O perfil é criado localmente e salvo neste dispositivo.
+2. **Próximos acessos — login simples.** O app lembra o token local e mostra um botão **Entrar**. Sem formulário, sem senha.
+3. Seu progresso (perfil, testes, lições, vocabulário, conversas) fica **guardado neste dispositivo**, sem precisar de internet para autenticar.
+
+> **Privacidade:** o Guaralingo é 100% local/offline. Nenhum dado é enviado para a nuvem. Só acessa a internet para (opcionalmente) baixar **atualizações** e, se você instalar o Ollama, o Ollama baixa o modelo da IA na primeira vez.
 
 ---
 
