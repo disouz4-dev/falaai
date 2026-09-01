@@ -7,11 +7,14 @@ EN:    Guaralingo persistence layer (local SQLite, MULTI-USER).
        practice, course progress, SRS vocabulary and mistakes per user.
 """
 
+import hmac
 import json
 import os
 import sqlite3
 from datetime import datetime
 from pathlib import Path
+import hashlib
+import secrets
 
 # PT-BR: se GUARALINGO_DATA_DIR estiver definido (app desktop), guarda o banco em local
 #        gravável do usuário. Senão, usa backend/data (modo servidor web).
@@ -30,6 +33,25 @@ DB_PATH = DATA_DIR / "guaralingo.db"
 def data_dir() -> str:
     """PT-BR: expõe o diretório de dados atual (p/ o main.py usar). EN: expose current data dir."""
     return _DATA_DIR
+
+
+def _hash_password(password: str) -> str:
+    """PT-BR: gera hash seguro da senha (PBKDF2-SHA256). EN: hash password securely."""
+    salt = secrets.token_bytes(16)
+    hash_val = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
+    return salt.hex() + ":" + hash_val.hex()
+
+
+def _verify_password(password: str, stored_hash: str) -> bool:
+    """PT-BR: verifica senha contra hash armazenado. EN: verify password against stored hash."""
+    try:
+        salt_hex, hash_hex = stored_hash.split(":")
+        salt = bytes.fromhex(salt_hex)
+        hash_val = bytes.fromhex(hash_hex)
+        test_hash = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
+        return hmac.compare_digest(test_hash, hash_val)
+    except Exception:
+        return False
 
 
 def _conn():
@@ -52,6 +74,7 @@ def init_db():
                 gender_preference TEXT DEFAULT 'female',
                 email TEXT,
                 picture TEXT,
+                password_hash TEXT,
                 created_at TEXT
             )
         """)
@@ -130,23 +153,40 @@ def get_profile(uid):
 
 
 def upsert_profile(uid, name, native_lang, goal, interests, gender_preference="female",
-                   email=None, picture=None):
+                   email=None, picture=None, password=None):
     now = datetime.utcnow().isoformat()
     with _conn() as c:
         exists = c.execute("SELECT 1 FROM profile WHERE uid=?", (uid,)).fetchone()
         if exists:
-            c.execute(
-                "UPDATE profile SET name=?, native_lang=?, goal=?, interests=?, "
-                "gender_preference=?, email=?, picture=? WHERE uid=?",
-                (name, native_lang, goal, interests, gender_preference, email, picture, uid),
-            )
+            if password:
+                pw_hash = _hash_password(password)
+                c.execute(
+                    "UPDATE profile SET name=?, native_lang=?, goal=?, interests=?, "
+                    "gender_preference=?, email=?, picture=?, password_hash=? WHERE uid=?",
+                    (name, native_lang, goal, interests, gender_preference, email, picture, pw_hash, uid),
+                )
+            else:
+                c.execute(
+                    "UPDATE profile SET name=?, native_lang=?, goal=?, interests=?, "
+                    "gender_preference=?, email=?, picture=? WHERE uid=?",
+                    (name, native_lang, goal, interests, gender_preference, email, picture, uid),
+                )
         else:
+            pw_hash = _hash_password(password) if password else None
             c.execute(
                 "INSERT INTO profile (uid, name, native_lang, goal, interests, "
-                "gender_preference, email, picture, created_at) VALUES (?,?,?,?,?,?,?,?,?)",
-                (uid, name, native_lang, goal, interests, gender_preference, email, picture, now),
+                "gender_preference, email, picture, password_hash, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (uid, name, native_lang, goal, interests, gender_preference, email, picture, pw_hash, now),
             )
     return get_profile(uid)
+
+
+def verify_password(uid, password: str) -> bool:
+    """PT-BR: verifica se a senha confere com o hash armazenado. EN: verify password against stored hash."""
+    prof = get_profile(uid)
+    if not prof or not prof.get("password_hash"):
+        return False
+    return _verify_password(password, prof["password_hash"])
 
 
 def create_profile_from_auth(uid, name, email, picture):

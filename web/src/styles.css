@@ -352,6 +352,40 @@ body {
 .auth-error { color: var(--red); font-weight: 700; margin: 14px 0 0; font-size: 13px; }
 .auth-hint { font-size: 12px; color: var(--muted); margin-top: 18px; line-height: 1.5; }
 
+/* ---------- Radio group for voice selection ---------- */
+.radio-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+.radio-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.radio-option:has(input:checked) {
+  border-color: var(--blue);
+  background: #ddf4ff;
+}
+.radio-option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+.radio-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .avatar {
   width: 32px; height: 32px; border-radius: 50%; cursor: pointer; object-fit: cover;
   border: 2px solid var(--green);

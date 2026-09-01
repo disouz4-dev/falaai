@@ -119,20 +119,21 @@ export default function App() {
 
   const [loggingIn, setLoggingIn] = useState(false);
   const [authTab, setAuthTab] = useState("register");
-  const [form, setForm] = useState({ name: "", native_lang: "pt", goal: "", interests: "", gender_preference: "female" });
+  const [form, setForm] = useState({ name: "", native_lang: "pt", goal: "", interests: "", gender_preference: "female", password: "", confirmPassword: "" });
+  const [loginPassword, setLoginPassword] = useState("");
   // PT-BR: decide aba inicial: sem token = cadastro, com token = login. EN: initial tab: no token = register.
   useEffect(() => {
     if (authUser === null) setAuthTab(getLocalToken() ? "login" : "register");
   }, [authUser]);
 
-  async function handleLogin(name) {
+  async function handleLogin(password) {
     setLoginError("");
     setLoggingIn(true);
     try {
       const { loginLocal } = await import("./localauth.js");
       for (let attempt = 0; attempt < 12; attempt++) {
         try {
-          const data = await loginLocal(name);
+          const data = await loginLocal("", password);
           setAuthUser(data.user);
           return;
         } catch (e) {
@@ -154,7 +155,7 @@ export default function App() {
       const { loginLocal } = await import("./localauth.js");
       for (let attempt = 0; attempt < 12; attempt++) {
         try {
-          const data = await loginLocal(profileData.name);
+          const data = await loginLocal(profileData.name, profileData.password);
           // Se o perfil não existe, salva os dados do cadastro
           if (!data.profile || !data.profile.name) {
             await api.post("/api/profile", {
@@ -205,6 +206,9 @@ export default function App() {
     const handleSubmit = (e) => {
       e.preventDefault();
       if (!form.name.trim()) { setLoginError("Digite seu nome."); return; }
+      if (!form.password) { setLoginError("Digite uma senha."); return; }
+      if (form.password !== form.confirmPassword) { setLoginError("As senhas não coincidem."); return; }
+      if (form.password.length < 4) { setLoginError("A senha deve ter pelo menos 4 caracteres."); return; }
       handleRegister(form);
     };
     return (
@@ -244,10 +248,24 @@ export default function App() {
                   <textarea id="interests" rows={2} value={form.interests} onChange={e => setForm({...form, interests: e.target.value})} placeholder="Tecnologia, esportes, música..." />
                 </div>
                 <div className="field">
+                  <label htmlFor="password">Senha *</label>
+                  <input id="password" type="password" autoComplete="new-password" required value={form.password} onChange={e => setForm({...form, password: e.target.value})} placeholder="Crie uma senha" />
+                </div>
+                <div className="field">
+                  <label htmlFor="confirmPassword">Confirmar senha *</label>
+                  <input id="confirmPassword" type="password" autoComplete="new-password" required value={form.confirmPassword} onChange={e => setForm({...form, confirmPassword: e.target.value})} placeholder="Repita a senha" />
+                </div>
+                <div className="field">
                   <label>Voz do professor</label>
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <label style={{ flex: 1, display: "flex", alignItems: "center", gap: 6 }}><input type="radio" name="gender_preference" value="female" checked={form.gender_preference === "female"} onChange={e => setForm({...form, gender_preference: e.target.value})} /><span>Professora</span></label>
-                    <label style={{ flex: 1, display: "flex", alignItems: "center", gap: 6 }}><input type="radio" name="gender_preference" value="male" checked={form.gender_preference === "male"} onChange={e => setForm({...form, gender_preference: e.target.value})} /><span>Professor</span></label>
+                  <div className="radio-group">
+                    <label className="radio-option">
+                      <input type="radio" name="gender_preference" value="female" checked={form.gender_preference === "female"} onChange={e => setForm({...form, gender_preference: e.target.value})} />
+                      <span className="radio-label">Professora</span>
+                    </label>
+                    <label className="radio-option">
+                      <input type="radio" name="gender_preference" value="male" checked={form.gender_preference === "male"} onChange={e => setForm({...form, gender_preference: e.target.value})} />
+                      <span className="radio-label">Professor</span>
+                    </label>
                   </div>
                 </div>
                 <button className="btn-primary" type="submit" disabled={registering} style={{ width: "100%", marginTop: 8 }}>{registering ? "Cadastrando…" : "Criar e entrar"}</button>
@@ -257,8 +275,12 @@ export default function App() {
           ) : (
             <>
               <h2 style={{ marginTop: 0 }}>Entrar</h2>
-              <p className="subtitle" style={{ marginBottom: 16 }}>Já tem conta? Clique para entrar (login local, sem senha).</p>
-              <button className="btn-primary" onClick={() => handleLogin("")} disabled={loggingIn} style={{ width: "100%" }}>{loggingIn ? "Entrando…" : "Entrar"}</button>
+              <p className="subtitle" style={{ marginBottom: 16 }}>Já tem conta? Digite sua senha para entrar.</p>
+              <div className="field">
+                <label htmlFor="loginPassword">Senha</label>
+                <input id="loginPassword" type="password" autoComplete="current-password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="Sua senha" />
+              </div>
+              <button className="btn-primary" onClick={() => handleLogin(loginPassword)} disabled={loggingIn} style={{ width: "100%" }}>{loggingIn ? "Entrando…" : "Entrar"}</button>
               {loginError && <p className="auth-error">{loginError}</p>}
               {loggingIn && <p className="auth-hint">Conectando ao servidor local…</p>}
               <p className="subtitle" style={{ marginTop: 12, fontSize: 12 }}>Sem conta? Vá em <strong>Criar conta</strong>.</p>

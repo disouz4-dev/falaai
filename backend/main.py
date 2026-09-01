@@ -120,6 +120,7 @@ class ProfileIn(BaseModel):
 
 class LoginLocalIn(BaseModel):
     name: str = ""
+    password: str = ""
 
 
 class CompleteIn(BaseModel):
@@ -236,13 +237,35 @@ def _get_or_create_local_user():
 
 @app.post("/api/login")
 def login_local(body: LoginLocalIn):
-    """PT-BR: login local do app desktop. Cria o perfil se necessário e devolve o token.
-    EN: local login for the desktop app. Creates the profile if needed and returns the token."""
+    """PT-BR: login local do app desktop. Verifica senha se houver, cria perfil se necessário e devolve o token.
+    EN: local login for the desktop app. Verifies password if set, creates profile if needed, returns token."""
     uid = _get_or_create_local_user()
     prof = db.get_profile(uid)
+    
+    # Se já existe perfil com senha, verifica a senha
+    if prof and prof.get("password_hash"):
+        if not body.password:
+            raise HTTPException(status_code=401, detail="Senha necessária")
+        if not db.verify_password(uid, body.password):
+            raise HTTPException(status_code=401, detail="Senha incorreta")
+    
     if not prof:
         name = body.name.strip() or "Aluno(a)"
         prof = db.create_profile_from_auth(uid, name, "", "")
+        # Se enviou senha no primeiro login, salva o hash
+        if body.password:
+            db.upsert_profile(uid, name, "Português (Brasil)", "", "", "female", 
+                              email="", picture="", password=body.password)
+            prof = db.get_profile(uid)
+    elif body.password and not prof.get("password_hash"):
+        # Primeira vez definindo senha
+        db.upsert_profile(uid, prof.get("name", ""), prof.get("native_lang", "pt"), 
+                          prof.get("goal", ""), prof.get("interests", ""), 
+                          prof.get("gender_preference", "female"),
+                          email=prof.get("email"), picture=prof.get("picture"),
+                          password=body.password)
+        prof = db.get_profile(uid)
+    
     token = auth.create_local_token(uid, name=prof.get("name", ""), email=prof.get("email"),
                                     picture=prof.get("picture"))
     return {

@@ -55,13 +55,16 @@ export function clearLocalToken() {
 
 /** PT-BR: faz o login local (background) e devolve {token, user, profile}.
  *  EN: perform local login (background) and return {token, user, profile}. */
-export async function loginLocal(name) {
+export async function loginLocal(name, password = "") {
   const res = await fetch(apiBase() + "/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: name || "" }),
+    body: JSON.stringify({ name: name || "", password }),
   });
-  if (!res.ok) throw new Error("Falha no login local / Local login failed");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || "Falha no login local / Local login failed");
+  }
   const data = await res.json();
   storeToken(data.token);
   return data;
