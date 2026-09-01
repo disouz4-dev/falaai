@@ -1,8 +1,8 @@
 """
-PT-BR: Verificador de versão do OpenLingo. Compara a versão local (arquivo VERSION) com a
+PT-BR: Verificador de versão do Guaralingo. Compara a versão local (arquivo VERSION) com a
        última release no GitHub e diz se há atualização. Também executa a atualização
        (git pull + rebuild + reinício) a pedido do app.
-EN:    OpenLingo version checker. Compares the local version (VERSION file) with the latest
+EN:    Guaralingo version checker. Compares the local version (VERSION file) with the latest
        GitHub release and reports whether an update exists. Also performs the update.
 """
 
@@ -15,7 +15,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-REPO = os.environ.get("OPENLINGO_REPO", "disouz4-dev/openlingo")
+REPO = os.environ.get("GUARALINGO_REPO", "disouz4-dev/guaralingo")
 ROOT = Path(__file__).resolve().parent.parent
 VERSION_FILE = ROOT / "VERSION"
 
@@ -50,7 +50,7 @@ def check(force=False):
     try:
         req = urllib.request.Request(
             f"https://api.github.com/repos/{REPO}/releases/latest",
-            headers={"Accept": "application/vnd.github+json", "User-Agent": "OpenLingo"},
+            headers={"Accept": "application/vnd.github+json", "User-Agent": "Guaralingo"},
         )
         with urllib.request.urlopen(req, timeout=6) as r:
             d = json.loads(r.read().decode("utf-8"))
@@ -100,3 +100,105 @@ def perform_update():
         threading.Timer(1.2, lambda: os._exit(0)).start()
 
     return {"ok": True, "changed": changed, "from": before, "to": current(), "log": out.strip()[-800:]}
+
+
+# --------------------------------------------------------------------------- #
+# PT-BR: Auto-update do App DESKTOP (Linux) — baixa o novo .deb da release e o
+#        instala POR CIMA do atual (dpkg -i), sem desinstalar. Depois o frontend
+#        reinicia o app para usar o binário novo.
+# EN:    DESKTOP app auto-update (Linux) — download the new .deb from the release and
+#        install it OVER the current one (dpkg -i), without uninstalling. The frontend
+#        then relaunches the app so it uses the new binary.
+# --------------------------------------------------------------------------- #
+
+def _latest_release():
+    """PT-BR: retorna a última release (tag + lista de assets .deb/.AppImage) ou None.
+    EN: return the latest release (tag + list of .deb/.AppImage assets) or None."""
+    try:
+        req = urllib.request.Request(
+            f"https://api.github.com/repos/{REPO}/releases/latest",
+            headers={"Accept": "application/vnd.github+json", "User-Agent": "Guaralingo"},
+        )
+        with urllib.request.urlopen(req, timeout=8) as r:
+            d = json.loads(r.read().decode("utf-8"))
+        assets = [
+            a for a in (d.get("assets") or [])
+            if a.get("name", "").lower().endswith((".deb", ".appimage"))
+        ]
+        return {"tag": (d.get("tag_name") or "").lstrip("v"), "url": d.get("html_url") or "", "assets": assets}
+    except Exception:
+        return None
+
+
+def _arch():
+    """PT-BR: detecta a arquitetura (amd64/arm64). EN: detect the architecture (amd64/arm64)."""
+    try:
+        import platform
+        m = platform.machine().lower()
+        if m in ("x86_64", "amd64"):
+            return "amd64"
+        if m in ("aarch64", "arm64"):
+            return "arm64"
+        return m
+    except Exception:
+        return "amd64"
+
+
+def perform_update_desktop():
+    """
+    PT-BR: modo desktop: baixa o .deb da última release e instala por cima via dpkg.
+           Requer privilégio (pkexec/sudo) para instalar o pacote. Retorna o resultado
+           para o frontend, que reinicia o app depois.
+    EN:    desktop mode: download the .deb from the latest release and install it over the
+           current one via dpkg. Requires privilege (pkexec/sudo) to install the package.
+           Returns the result to the frontend, which relaunches the app afterwards.
+    """
+    rel = _latest_release()
+    if not rel or not rel["assets"]:
+        return {"ok": False, "error": "Nenhuma release/asset encontrada no GitHub." + ("" if rel else " (sem release)")}
+
+    tag = rel["tag"] or ""
+    arch = _arch()
+    # PT-BR: escolhe um .deb que contenha a arquitetura no nome (ex: amd64).
+    # EN: pick a .deb whose name contains the architecture (e.g. amd64).
+    deb = None
+    for a in rel["assets"]:
+        name = a["name"].lower()
+        if name.endswith(".deb") and arch in name:
+            deb = a
+            break
+    if not deb and any(a["name"].lower().endswith(".deb") for a in rel["assets"]):
+        deb = next(a for a in rel["assets"] if a["name"].lower().endswith(".deb"))
+
+    if not deb:
+        return {"ok": False, "error": "Nenhum pacote .deb encontrado no release."}
+
+    # PT-BR: baixa o .deb para um diretório gravável pelo usuário. EN: download it to a writable dir.
+    dl_dir = Path(os.path.expanduser("~/.cache/guaralingo"))
+    dl_dir.mkdir(parents=True, exist_ok=True)
+    dest = dl_dir / deb["name"]
+    try:
+        req = urllib.request.Request(deb["browser_download_url"], headers={"User-Agent": "Guaralingo"})
+        with urllib.request.urlopen(req, timeout=120) as r, open(dest, "wb") as f:
+            # PT-BR: copia em blocos para não carregar tudo em memória. EN: copy in chunks.
+            while True:
+                chunk = r.read(1 << 20)
+                if not chunk:
+                    break
+                f.write(chunk)
+    except Exception as e:
+        return {"ok": False, "error": f"Falha ao baixar o .deb: {e}"}
+
+    # PT-BR: instala por cima com privilégio (pkexec → diálogo gráfico; fallback sudo).
+    # EN: install over the current package with privilege (pkexec → GUI prompt; sudo fallback).
+    import shutil
+    pkexec = shutil.which("pkexec")
+    cmd = [pkexec, "dpkg", "-i", str(dest)] if pkexec else ["sudo", "dpkg", "-i", str(dest)]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    except Exception as e:
+        return {"ok": False, "error": f"Falha ao executar a instalação: {e}"}
+
+    if proc.returncode != 0:
+        return {"ok": False, "error": (proc.stderr or proc.stdout or "").strip()[-800:]}
+    return {"ok": True, "from": current(), "to": tag, "log": (proc.stdout or "").strip()[-800:]}

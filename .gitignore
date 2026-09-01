@@ -12,10 +12,14 @@ backend/voices/
 desktop/dist/
 desktop/node_modules/
 # PT-BR: CA local do mkcert (por máquina). EN: local mkcert CA (per machine).
-web/public/openlingo-ca.crt
+web/public/guaralingo-ca.crt
 # PT-BR: vault de memoria do aluno (dados pessoais). EN: student memory vault (personal data).
 backend/data/memory/
 
 # PT-BR: React/Vite. EN: React/Vite.
 web/node_modules/
 web/dist/
+# PT-BR: build do Tauri que é copiado para dentro do bundle. EN: Tauri build copied into the bundle.
+web/src-tauri/dist/
+# PT-BR: pacotes instaláveis gerados (release). EN: generated installer packages (release).
+web/*.deb

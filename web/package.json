@@ -1,9 +1,9 @@
 {
-  "name": "openlingo-web",
+  "name": "guaralingo-web",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "OpenLingo — frontend em React + Vite (PWA)",
+  "description": "Guaralingo — frontend em React + Vite (PWA)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

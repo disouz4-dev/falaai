@@ -1,14 +1,14 @@
 """
-PT-BR: Anúncio mDNS/Zeroconf do OpenLingo. Publica o host 'openlingo.local' e um serviço
-       HTTP na rede local, para qualquer dispositivo achar o app pelo NOME (openlingo.local:8000)
+PT-BR: Anúncio mDNS/Zeroconf do Guaralingo. Publica o host 'guaralingo.local' e um serviço
+       HTTP na rede local, para qualquer dispositivo achar o app pelo NOME (guaralingo.local:8000)
        sem precisar saber o IP. Funciona nativamente em macOS, Windows 10+, iOS e Linux (Avahi).
-EN:    OpenLingo mDNS/Zeroconf advertising. Publishes the 'openlingo.local' host and an HTTP
-       service so any device finds the app by NAME (openlingo.local:8000) without knowing the IP.
+EN:    Guaralingo mDNS/Zeroconf advertising. Publishes the 'guaralingo.local' host and an HTTP
+       service so any device finds the app by NAME (guaralingo.local:8000) without knowing the IP.
 """
 
 import socket
 
-HOSTNAME = "openlingo"  # PT-BR: vira openlingo.local. EN: becomes openlingo.local.
+HOSTNAME = "guaralingo"  # PT-BR: vira guaralingo.local. EN: becomes guaralingo.local.
 
 _zc = None
 _info = None
@@ -28,8 +28,8 @@ def _lan_ip():
 
 def start(port=8000, https=False):
     """
-    PT-BR: Registra 'openlingo.local' e o serviço na rede. Retorna a URL amigável.
-    EN:    Register 'openlingo.local' and the service on the network. Returns the friendly URL.
+    PT-BR: Registra 'guaralingo.local' e o serviço na rede. Retorna a URL amigável.
+    EN:    Register 'guaralingo.local' and the service on the network. Returns the friendly URL.
     """
     global _zc, _info
     try:
@@ -44,11 +44,11 @@ def start(port=8000, https=False):
         _zc = Zeroconf()
         _info = ServiceInfo(
             service_type,
-            f"OpenLingo.{service_type}",
+            f"Guaralingo.{service_type}",
             addresses=[socket.inet_aton(ip)],
             port=port,
             properties={"path": "/"},
-            server=f"{HOSTNAME}.local.",  # PT-BR: publica o host openlingo.local. EN: publishes host.
+            server=f"{HOSTNAME}.local.",  # PT-BR: publica o host guaralingo.local. EN: publishes host.
         )
         _zc.register_service(_info, allow_name_change=True)
         return f"{scheme}://{HOSTNAME}.local:{port}"

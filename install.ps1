@@ -1,14 +1,14 @@
 # =============================================================================
-# PT-BR: Instalador único do OpenLingo para Windows (PowerShell).
+# PT-BR: Instalador único do Guaralingo para Windows (PowerShell).
 #        Uso (uma linha, no PowerShell):
-#          irm https://raw.githubusercontent.com/disouz4-dev/openlingo/main/install.ps1 | iex
-# EN:    One-command OpenLingo installer for Windows (PowerShell).
+#          irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.ps1 | iex
+# EN:    One-command Guaralingo installer for Windows (PowerShell).
 # =============================================================================
 $ErrorActionPreference = "Stop"
-$Repo = "https://github.com/disouz4-dev/openlingo.git"
-$Dir  = if ($env:OPENLINGO_DIR) { $env:OPENLINGO_DIR } else { "$HOME\openlingo" }
+$Repo = "https://github.com/disouz4-dev/guaralingo.git"
+$Dir  = if ($env:GUARALINGO_DIR) { $env:GUARALINGO_DIR } else { "$HOME\guaralingo" }
 
-Write-Host "🦜 Instalando o OpenLingo (Windows)..."
+Write-Host "🦜 Instalando o Guaralingo (Windows)..."
 
 # --- 1. Ollama ---------------------------------------------------------------
 if (-not (Get-Command ollama -ErrorAction SilentlyContinue)) {
@@ -42,5 +42,5 @@ Write-Host "==> Instalando o Piper (voz do professor)..."
 python -m pip install --user piper-tts
 
 # --- 5. Executar -------------------------------------------------------------
-Write-Host "`n✅ Pronto! Iniciando o OpenLingo..."
+Write-Host "`n✅ Pronto! Iniciando o Guaralingo..."
 .\run.bat

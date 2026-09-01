@@ -1,17 +1,28 @@
 /*
-  PT-BR: Estilos do OpenLingo — mobile-first, visual amigável estilo Duolingo.
-  EN:    OpenLingo styles — mobile-first, friendly Duolingo-like look.
+  PT-BR: Estilos do Guaralingo — mobile-first, visual amigável e colorido.
+  EN:    Guaralingo styles — mobile-first, friendly colorful look.
 */
 :root {
-  --green: #58cc02;
-  --green-dark: #46a302;
-  --blue: #1cb0f6;
-  --red: #ff4b4b;
-  --yellow: #ffc800;
-  --ink: #3c3c3c;
+  /* PT-BR: Paleta do LOBO-GUARÁ (mascote do app): laranja-cobre da pelagem, dourado dos
+     olhos, marrom/preto das pernas e focinho, e creme do peito/ponta da cauda.
+     EN:    Maned-wolf (guará) palette — copper-orange fur, golden eyes, dark legs/snout,
+     and cream chest/tail-tip. */
+  --guara: #e8792b;        /* pelagem laranja-cobre */
+  --guara-dark: #c25c18;   /* variação mais escura da pelagem */
+  --guara-soft: #fff0e0;   /* fundo suave da pelagem */
+  --coal: #2e2118;         /* pernas/máscara escuras do guará */
+  --gold: #e8a93c;         /* olhos dourados */
+  --cream: #fbf1e3;        /* peito/ponta da cauda */
+
+  --green: var(--guara);        /* ação/sucesso principal = tom guará */
+  --green-dark: var(--guara-dark);
+  --blue: #1cb0f6;              /* ações secundárias / mic */
+  --red: #ff4b4b;               /* erro / gravando */
+  --yellow: var(--gold);        /* acentos = olhos dourados */
+  --ink: var(--coal);
   --muted: #777;
   --bg: #fff;
-  --panel: #f7f7f7;
+  --panel: var(--cream);
   --line: #e5e5e5;
   --radius: 16px;
 }

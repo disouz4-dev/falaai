@@ -59,7 +59,7 @@ export default function Placement({ nav }) {
     setPhase("result");
     setResult(null);
     const d = await api.get("/api/placement/result/" + session);
-    localStorage.setItem("openlingo_level", d.level);
+    localStorage.setItem("guaralingo_level", d.level);
     setResult(d);
   }
 

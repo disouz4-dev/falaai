@@ -1,6 +1,6 @@
 @echo off
-REM PT-BR: Sobe o OpenLingo no Windows. Use "run.bat https" para liberar o microfone no celular.
-REM EN:    Starts OpenLingo on Windows. Use "run.bat https" to unlock the mic on your phone.
+REM PT-BR: Sobe o Guaralingo no Windows. Use "run.bat https" para liberar o microfone no celular.
+REM EN:    Starts Guaralingo on Windows. Use "run.bat https" to unlock the mic on your phone.
 setlocal
 cd /d "%~dp0"
 
@@ -19,7 +19,7 @@ set PORT=8000
 if /I "%1"=="https" goto https
 
 echo.
-echo OpenLingo (HTTP)
+echo Guaralingo (HTTP)
 echo    PC: http://localhost:%PORT%
 echo    (para microfone no celular use: run.bat https)
 echo.
@@ -36,10 +36,10 @@ if not exist "certs\cert.pem" (
     echo [ERRO] openssl nao encontrado. Instale o OpenSSL ou rode sem https.
     goto end
   )
-  openssl req -x509 -newkey rsa:2048 -nodes -days 825 -keyout certs\key.pem -out certs\cert.pem -subj "/CN=OpenLingo"
+  openssl req -x509 -newkey rsa:2048 -nodes -days 825 -keyout certs\key.pem -out certs\cert.pem -subj "/CN=Guaralingo"
 )
 echo.
-echo OpenLingo (HTTPS)
+echo Guaralingo (HTTPS)
 echo    PC:      https://localhost:%PORT%
 echo    Celular: use o IP da sua maquina (ipconfig) em https://SEU_IP:%PORT%
 echo.

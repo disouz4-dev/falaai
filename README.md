@@ -1,10 +1,14 @@
 <div align="center">
 
-# 🦜 OpenLingo
+# 🐺 Guaralingo
 
-**Plataforma de ensino de inglês estilo Duolingo — 100% local, com IA via [Ollama](https://ollama.com).**
+**Plataforma de ensino de inglês — 100% local, com IA via [Ollama](https://ollama.com).**
 
-Teste de nível adaptativo (CEFR) · Curso completo A1–C2 · Conversação por voz em tempo real · Relatórios de evolução · **Login com Google · Multi-usuário · Instalador .deb nativo**
+O mascote e logo do Guaralingo é o **lobo-guará** 🐺 — símbolo da fauna brasileira, escolhido para representar o projeto.
+
+Teste de nível adaptativo (CEFR) · Curso completo A1–C2 · Conversação por voz em tempo real · Relatórios de evolução · **Login local (offline) · App desktop autônomo · Atualização automática**
+
+<!-- EN: Guaralingo — an English learning platform, 100% local with local AI via Ollama. The logo and mascot is the maned wolf (lobo-guará). -->
 
 </div>
 
@@ -12,148 +16,78 @@ Teste de nível adaptativo (CEFR) · Curso completo A1–C2 · Conversação por
 
 ## ✨ Funcionalidades
 
-- 🎯 **Teste de nivelamento adaptativo (CEFR A1–C2)** — 20 questões que se ajustam ao seu desempenho usando **Teoria de Resposta ao Item (modelo de Rasch + estimativa EAP)**, o mesmo princípio de testes reais (EF SET, Cambridge Linguaskill, Duolingo English Test). Mede gramática, vocabulário e leitura. **Questões embaralhadas a cada teste.**
+<!-- PT-BR / EN: feature list -->
+- 🎯 **Teste de nivelamento adaptativo (CEFR A1–C2)** — 20 questões que se ajustam ao seu desempenho usando **Teoria de Resposta ao Item (modelo de Rasch + estimativa EAP)**, o mesmo princípio de testes adaptativos de proficiência. Mede gramática, vocabulário e leitura. **Questões embaralhadas a cada teste.**
 - 📚 **Curso completo A1 → C2** — 26 lições em 6 módulos, no formato **PPP** (Apresentação → Prática → Produção), com **material didático digital**, vocabulário, exercícios e **tarefas comunicativas** avaliadas pela IA. Baseado em métodos reais: **CEFR, CLT, Task-Based Learning, abordagem lexical e repetição espaçada**.
 - 🎙️ **Conversação por voz com professor bilíngue** — você fala em inglês e o professor responde **com texto e voz**: **ensina em inglês** (imersão) e **corrige em português** (na voz `pt_BR`), como um professor de verdade, adaptando-se ao seu nível.
 - 👤 **Perfil do aluno** — o professor conhece seu nome, objetivo e interesses e personaliza as conversas.
 - 📈 **Curva de aprendizado** — histórico de testes com **gráficos de evolução** (nível e habilidades) e análise da IA sobre seu progresso.
-- 🗣️ **Voz gerada localmente** ([Piper](https://github.com/rhasspy/piper)) — vozes naturais `en_US-amy-medium` (EN) e `pt_BR-faber-medium` (PT), funciona em qualquer aparelho.
+- 🗣️ **Voz gerada localmente** ([Piper](https://github.com/rhasspy/piper)) — vozes naturais `en_US-amy-medium` (EN) e `pt_BR-faber-medium` (PT).
 - ⚡ **Detector de GPU** — dá preferência à **GPU** quando disponível e cai automaticamente para **CPU** quando a GPU não suporta o modelo.
-- 📱 **PWA responsiva e instalável** — roda no PC e no celular, e pode ser instalada como app no **Windows, macOS e Linux**.
-- 🔐 **Login com Google (Firebase Auth)** — cada usuário tem seus próprios dados (perfil, progresso, histórico, vocabulário). Dados isolados por conta.
-- 📦 **Instalador .deb nativo (Linux)** — instala via `apt`, aparece no menu de aplicações, desinstalável via `apt remove openlingo`.
+- 🔐 **Login local (offline, sem conta)** — nada de contas nem nuvem: seu progresso fica **só neste dispositivo**. O app abre na tela de login e você entra com o botão **Entrar**.
+- 🚀 **App desktop autônomo** — o app **sobe o backend sozinho** (em segundo plano, na porta 8000). Não precisa instalar/configurar servidor.
+- 🔄 **Atualização automática** — o app verifica e instala novas versões **direto de dentro do app**, sem desinstalar/reinstalar (pede a senha de administrador uma vez).
 
 ---
 
-## 🧩 Requisitos
+## 🚀 Instalação — app desktop (recomendado)
 
-| Componente | Para quê | Obrigatório |
+O Guaralingo é um **app desktop**, com um **instalador `.deb` nativo para Linux** e um instalador **universal (AppImage)**. Baixe a release mais recente na página de **Releases** do GitHub:
+
+> https://github.com/disouz4-dev/guaralingo/releases
+
+**🐧 Linux (.deb — recomendado)**
+```bash
+# Baixe o arquivo .deb na aba Releases e instale (integra ao menu, desinstalável):
+sudo dpkg -i Guaralingo_1.0.0_amd64.deb
+# (se faltar dependência: sudo apt-get install -f)
+```
+Depois procure **Guaralingo** no menu de aplicações para abrir.
+
+**Desinstalar (Linux)**
+```bash
+sudo apt remove open-lingo
+```
+
+> **Nota sobre outros sistemas:** o Linux tem builds prontos (`.deb` e AppImage). Builds de **Windows (.msi)** e **macOS (.dmg)** exigem compilação nesse sistema — veja [Compilar do código](#compilar-do-código).
+
+### Requisitos do sistema
+
+| Componente | Para quê | Observação |
 |---|---|---|
-| [Ollama](https://ollama.com) | Motor da IA (conversa, feedback, relatórios) | ✅ |
-| [Python 3.10+](https://python.org) | Backend (FastAPI) | ✅ |
-| [Node.js 18+](https://nodejs.org) | Compilar o frontend React (`./run.sh` faz automático) | ✅ |
-| Navegador **Chrome/Edge** | Reconhecimento de voz (falar) e instalação como app | ✅ |
-| [Piper](https://github.com/rhasspy/piper) + vozes `en_US` e `pt_BR` | Voz do professor (TTS local, bilíngue) | ✅ |
-| GPU NVIDIA/AMD ou Apple Silicon | Acelera a IA (funciona em CPU também) | Opcional |
-
-O instalador cuida de tudo isso automaticamente (Ollama, Piper e as vozes).
+| [Ollama](https://ollama.com) | Motor da IA (conversa, feedback, relatórios) | obrigatório para a IA |
+| [Python 3.10+](https://python.org) | Backend (FastAPI) | o app cria um venv próprio automaticamente |
+| WebKitGTK 4.1 | Runtime do app desktop | instalado como dependência do `.deb` |
+| GPU NVIDIA/AMD ou Apple Silicon | Acelera a IA | opcional (funciona em CPU também) |
 
 ---
 
-## 🚀 Instalação — um comando por sistema
+## 🔐 Login local (como funciona)
 
-Abra o terminal e cole **a linha do seu sistema**. Ela instala os pré-requisitos, baixa o projeto, configura o modelo + as vozes e já sobe o app.
+<!-- PT-BR / EN: local login explanation -->
+1. Abra o Guaralingo — ele mostra a **tela de login**.
+2. Clique em **Entrar**. O app faz o **login local**: o backend cria (ou reutiliza) um **perfil local** neste dispositivo e guarda um **token** assinado localmente.
+3. Pronto — seu progresso (perfil, testes, lições, vocabulário, conversas) fica **guardado neste dispositivo**, sem precisar de contas nem internet para autenticar.
 
-**🐧 Linux** (instalador .deb recomendado)
-```bash
-# Opção 1: .deb (integra ao sistema, desinstalável)
-wget https://github.com/disouz4-dev/openlingo/releases/download/v1.0.0/OpenLingo_1.0.0_amd64.deb
-sudo apt install ./OpenLingo_1.0.0_amd64.deb
-
-# Opção 2: script clássico
-bash <(curl -fsSL https://raw.githubusercontent.com/disouz4-dev/openlingo/main/install.sh)
-```
-
-**🍎 macOS**
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/disouz4-dev/openlingo/main/install.sh)"
-```
-
-**🪟 Windows** (PowerShell)
-```powershell
-irm https://raw.githubusercontent.com/disouz4-dev/openlingo/main/install.ps1 | iex
-```
-
-Depois disso, abra **https://localhost** (porta 80, HTTPS — necessário para microfone e login Google).
-
-### Instalação manual (alternativa)
-
-```bash
-git clone https://github.com/disouz4-dev/openlingo.git
-cd openlingo
-./setup.sh          # cria o modelo no Ollama + baixa as vozes do Piper  (Windows: veja abaixo)
-./run.sh --https    # inicia com HTTPS na porta 80 (precisa de sudo)
-```
-
-No **Windows**, use `run.bat` e `run.bat https`. O modelo do professor é criado com
-`ollama create small-english-teacher -f Modelfile` — uma recriação fiel do
-[`Lckoo1230/small-english-teacher-ollama`](https://huggingface.co/Lckoo1230/small-english-teacher-ollama)
-sobre `gemma3:4b`.
+> **Privacidade:** o Guaralingo é **100% local/offline**. Nenhum dado é enviado para a nuvem. Só acessa a internet para (opcionalmente) baixar **atualizações** e, se você instalar o Ollama, o Ollama baixa o modelo da IA na primeira vez.
 
 ---
 
-## 🔐 Login e Multi-usuário
+## 🔄 Atualização automática
 
-**Primeira execução:**
-1. Abra `https://localhost` (aceite o aviso do certificado autoassinado).
-2. Clique em **"Entrar com Google"**.
-3. Escolha sua conta Google.
-4. Seu perfil é criado automaticamente (nome, e-mail, foto).
+O Guaralingo avisa quando há **nova versão** disponível (botão **Atualizar** na tela inicial). Ao atualizar:
 
-**Como funciona:**
-- Cada conta Google = **um `uid` único no Firebase**.
-- Todos os dados (perfil, testes, lições, vocabulário SRS, conversas, memória do professor) ficam **separados por `uid`**.
-- Você pode logar em qualquer dispositivo (desde que o domínio esteja autorizado no Firebase Console).
-- Logout no canto superior direito (ícone do avatar).
+1. O app baixa o novo **`.deb`** da release do GitHub.
+2. Instala **por cima** do atual (via `pkexec` — o sistema pede a senha de administrador uma vez) — **não desinstala nem perde seus dados**.
+3. Reinicia o app com a versão nova.
 
-> **Importante:** Para usar fora de casa (túnel Cloudflare), adicione a URL do túnel em **Firebase Console → Authentication → Settings → Authorized domains**. `localhost` já funciona por padrão.
-
----
-
-## 📱 Instalar como aplicativo (Windows, macOS, Linux)
-
-### Linux — Instalador .deb (recomendado)
-```bash
-wget https://github.com/disouz4-dev/openlingo/releases/download/v1.0.0/OpenLingo_1.0.0_amd64.deb
-sudo apt install ./OpenLingo_1.0.0_amd64.deb
-```
-Cria ícone no menu de aplicações, integra ao sistema, desinstalável:
-```bash
-sudo apt remove openlingo
-```
-
-### Ícone na área de trabalho (atalho que sobe o servidor e abre o app)
-Depois de clonar o projeto, rode o script do seu sistema:
-```bash
-# Linux
-./desktop/install-desktop-linux.sh
-# macOS
-./desktop/install-desktop-mac.sh
-```
-```powershell
-# Windows (PowerShell)
-./desktop/install-desktop-windows.ps1
-```
-
-Cria o ícone 🦜 **OpenLingo** na Área de trabalho e no menu de aplicativos. Um clique sobe o servidor (com `pkexec` para porta 80) e abre o app.
-
-### B) Instalar como PWA (janela própria)
-1. Abra `https://localhost` no **Chrome** ou **Edge**.
-2. Clique em **⬇️ Instalar o OpenLingo** na tela inicial (ou no ícone de instalar da barra de endereço).
-3. Ele passa a abrir em janela própria, com ícone no sistema.
-
-**No celular:** conecte na mesma rede Wi-Fi, rode com `--https`, abra `https://openlingo.local` no Chrome (aceite o aviso do certificado autoassinado) e use **Adicionar à tela inicial**.
-
-### 🌐 Acesso pela rede pelo nome (sem IP)
-O OpenLingo se anuncia na rede via **mDNS/Zeroconf**. Qualquer dispositivo na mesma rede acessa pelo nome:
-```
-https://openlingo.local      (porta 80 HTTPS)
-```
-Funciona nativamente em macOS, iOS, Windows 10+ e Linux (Avahi).
-
-### 🔒 HTTPS confiável (sem aviso "não seguro")
-Por padrão o modo `--https` usa um certificado autoassinado. Para **cadeado verde, sem aviso**, gere um certificado confiável com `mkcert`:
-```bash
-./setup-cert.sh      # roda uma vez; pede a senha do sudo para instalar e confiar na CA
-./run.sh --https     # passa a usar o certificado confiável automaticamente
-```
-No **PC** o aviso some. Para o **celular** também ficar seguro, instale o `rootCA.pem` no aparelho.
+Assim você se mantém na versão mais recente **sem ficar desinstalando e instalando** manualmente.
 
 ---
 
 ## ⚡ GPU e CPU
 
-A IA roda **em CPU ou GPU**. O OpenLingo detecta o hardware no início e escolhe o melhor dispositivo:
+A IA roda **em CPU ou GPU**. O Guaralingo detecta o hardware no início e escolhe o melhor dispositivo:
 - **Tem GPU com VRAM suficiente** → usa a **GPU** (mais rápido).
 - **GPU pequena para o modelo** → offload parcial GPU+CPU.
 - **Sem GPU / VRAM insuficiente** → usa a **CPU** (funciona igual, só mais devagar).
@@ -169,43 +103,37 @@ O estado também aparece em `GET /api/health` e no log de inicialização do ser
 ## 🏗️ Arquitetura
 
 ```
-openlingo/
-├── Modelfile              # modelo Ollama "small-english-teacher"
-├── install.sh / install.ps1  # instalador de 1 comando (Linux/macOS · Windows)
-├── setup.sh               # cria o modelo no Ollama + baixa as vozes do Piper
-├── run.sh / run.bat       # sobem o servidor (HTTPS porta 80)
-├── remote.sh              # túnel Cloudflare para acesso externo
-├── backend/               # FastAPI
-│   ├── main.py            # API: teste, curso, conversa, TTS, progresso, perfil
-│   ├── auth.py            # validação de token Firebase ID (PyJWT + chaves Google)
+guaralingo/
+├── backend/               # FastAPI (Python)
+│   ├── main.py            # API: login local, teste, curso, conversa, TTS, progresso, perfil, update
+│   ├── auth.py            # token LOCAL assinado (HMAC) + validação
 │   ├── irt.py             # motor TRI/Rasch + mapeamento CEFR
 │   ├── ollama_client.py   # cliente Ollama (streaming e não-streaming)
 │   ├── tts.py             # síntese de voz local bilíngue (Piper en_US + pt_BR)
 │   ├── gpu.py             # detector de GPU (preferência GPU, fallback CPU)
-│   ├── db.py              # persistência SQLite **multi-usuário (chaveada por uid)**
-│   ├── srs.py             # repetição espaçada por usuário
-│   ├── memory.py          # vault .md interno do professor (por uid)
-│   └── data/
-│       ├── items.json     # banco de 48 itens calibrados do teste (por nível CEFR)
-│       ├── course.json    # currículo: 6 módulos, 26 lições (A1–C2)
-│       ├── openlingo.db   # banco SQLite multi-user (criado no 1º uso)
-│       └── memory/        # vault .md INTERNO do professor (por uid)
+│   ├── db.py              # persistência SQLite (suporta GUARALINGO_DATA_DIR)
+│   ├── srs.py / memory.py # repetição espaçada / vault .md interno do professor
+│   └── version.py         # checagem de versão + auto-update (.deb por cima)
 ├── web/                   # frontend React + Vite (PWA)
 │   ├── src/
-│   │   ├── App.jsx        # auth gate, login Google, avatar/logout
-│   │   ├── firebase.js    # Firebase init + signInWithRedirect
-│   │   ├── api.js         # attach Bearer token (Firebase ID token)
+│   │   ├── App.jsx        # tela de login local, navegação, auto-update
+│   │   ├── localauth.js   # auth local + detecção do app desktop (isTauri)
+│   │   ├── api.js         # chamadas de API com token local (Bearer)
 │   │   ├── speech.js      # push-to-talk (hold to record)
-│   │   ├── screens/       # Home, Placement, Talk, Course, Lesson, Profile, Progress, Practice
-│   │   └── styles.css
-│   ├── src-tauri/         # Tauri app (gera .deb, AppImage)
-│   └── dist/              # build servido pelo FastAPI (gerado por ./run.sh)
-└── desktop/               # scripts de atalho/ícone por SO
+│   │   └── screens/       # Home, Placement, Talk, Course, Lesson, Profile, Progress, Practice
+│   ├── src-tauri/         # app desktop (Rust) — gera .deb / AppImage
+│   │   ├── sidecar/       # sobe o backend local na porta 8000 (cria venv próprio)
+│   │   └── src/lib.rs     # spawn do sidecar + command de reinício após atualizar
+│   └── dist/              # build servido (gerado por npm run build)
+├── install.sh / install.ps1  # instaladores de 1 comando (Linux/macOS · Windows)
+├── setup.sh / run.sh / run.bat  # dev: modelo Ollama, servidor local
+└── Modelfile              # modelo Ollama "small-english-teacher"
 ```
 
-### 🗄️ Banco de dados (dados do aluno e evolução) — **Multi-usuário**
+### 🗄️ Banco de dados (dados do aluno)
 
-**SQLite local** (`backend/data/openlingo.db`), via `sqlite3` puro (sem ORM). **Todas as tabelas chaveadas por `uid` (Firebase UID):**
+**SQLite** (`guaralingo.db`), via `sqlite3` puro (sem ORM), no diretório de dados do usuário
+(`~/.local/share/guaralingo/` no app desktop — gravável, sem precisar de root).
 
 | Tabela | Chave | O que guarda |
 |---|---|---|
@@ -216,21 +144,7 @@ openlingo/
 | `srs` | `uid` + `term` | repetição espaçada: intervalo, ease_factor, next_review |
 | `mistakes` | `uid` + id | erros extraídos das conversas para revisão |
 
-A tela **Meu progresso** e o endpoint `/api/progress` leem a tabela `attempts` (ordenada por data, filtrada por `uid`) para montar os gráficos de evolução e a análise da IA.
-
-### 🔌 API (todas protegidas — exigem `Authorization: Bearer <Firebase ID Token>`)
-
-| Endpoint | Função |
-|---|---|
-| `GET /api/health` | status do Ollama, TTS e GPU (público) |
-| `GET/POST /api/profile` | ler/salvar o perfil do usuário logado |
-| `POST /api/placement/start` · `/answer` · `GET /result/{id}` | teste adaptativo |
-| `GET /api/progress` · `/progress/analysis` | curva de evolução + análise da IA |
-| `GET /api/course` · `/course/lesson/{id}` · `POST /complete` · `/task-feedback` | curso e tarefas |
-| `POST /api/chat` | conversa por voz (streaming, professor bilíngue) |
-| `GET /api/tts?text=&lang=` | áudio da fala (Piper), `lang=en`/`pt` |
-| `GET /api/srs/due` · `POST /api/srs/review` | SRS por usuário |
-| `GET /api/mistakes` | erros do usuário para revisão |
+O `uid` local é criado na primeira entrada (login local), tudo **local neste dispositivo** — não há contas nem nuvem.
 
 ---
 
@@ -248,23 +162,41 @@ O conteúdo segue métodos reais e atuais de ensino de línguas:
 
 ---
 
+## 🛠️ Compilar do código
+
+```bash
+git clone https://github.com/disouz4-dev/guaralingo.git
+cd guaralingo
+
+# Frontend + app desktop (gera .deb / AppImage em web/src-tauri/target/release/bundle/)
+cd web
+npm install
+npx tauri build                       # gera o .deb e o AppImage (Linux)
+```
+
+Para gerar builds de **Windows** ou **macOS**, rode `npx tauri build` naquele sistema
+(o Tauri compila a versão nativa de cada SO).
+
+---
+
 ## 🗺️ Roadmap
 
-- [x] **Firebase Auth multi-usuário** (login Google, dados isolados por conta)
-- [x] **Instalador .deb nativo (Linux)** — integra ao sistema, desinstalável
+- [x] **Login local (offline, sem conta)** — progresso guardado no dispositivo
+- [x] **App desktop autônomo** — sobe o backend sozinho (porta 8000)
+- [x] **Instalador .deb nativo (Linux)** — integra ao menu, desinstalável
+- [x] **Atualização automática** — instala a nova versão por cima, sem desinstalar
 - [x] **TTS Piper corrigido** — vozes naturais EN/PT male/female
 - [x] **Push-to-talk** — segurar para gravar sem cortar
 - [x] **Teste de nivelamento** — questões embaralhadas
+- [ ] Instaladores nativos Windows (`.msi`) e macOS (`.dmg`)
 - [ ] Repetição espaçada (SRS) ativa do vocabulário na UI
 - [ ] XP, ofensiva (streak) e vidas
 - [ ] Desbloqueio de módulos pelo nível do teste
 - [ ] Geração de novos itens/lições pela IA
 - [ ] Correção de pronúncia na conversação
-- [ ] Instaladores nativos Windows (`.msi`) e macOS (`.dmg`)
-- [x] HTTPS confiável (cadeado verde) com CA local via `mkcert` — ver `./setup-cert.sh`
 
 ---
 
 ## 📄 Licença e créditos
 
-Projeto pessoal. Persona do professor baseada no modelo [`Lckoo1230/small-english-teacher-ollama`](https://huggingface.co/Lckoo1230/small-english-teacher-ollama). Vozes por [Piper](https://github.com/rhasspy/piper). IA local via [Ollama](https://ollama.com). Auth via [Firebase](https://firebase.google.com). Desktop via [Tauri](https://tauri.app).
+Projeto pessoal. Persona do professor baseada no modelo [`Lckoo1230/small-english-teacher-ollama`](https://huggingface.co/Lckoo1230/small-english-teacher-ollama). Vozes por [Piper](https://github.com/rhasspy/piper). IA local via [Ollama](https://ollama.com). Desktop via [Tauri](https://tauri.app).

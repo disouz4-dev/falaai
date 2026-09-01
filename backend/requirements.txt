@@ -1,7 +1,5 @@
-# PT-BR: Dependências do backend OpenLingo. EN: OpenLingo backend dependencies.
+# PT-BR: Dependências do backend Guaralingo. EN: Guaralingo backend dependencies.
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 pydantic==2.10.4
-zeroconf==0.151.1  # PT-BR: nome na rede (openlingo.local). EN: network name (openlingo.local).
-PyJWT>=2.8,<3   # PT-BR: validação de tokens Firebase (multi-usuário). EN: Firebase token validation.
-cryptography>=42 # PT-BR: suporte RSA p/ assinatura dos tokens. EN: RSA support for token signatures.
+zeroconf==0.151.1  # PT-BR: nome na rede (guaralingo.local). EN: network name (guaralingo.local).

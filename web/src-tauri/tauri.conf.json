@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "OpenLingo",
+  "productName": "Guaralingo",
   "version": "1.0.0",
-  "identifier": "com.openlingo.app",
+  "identifier": "com.guaralingo.app",
   "build": {
     "frontendDist": "dist",
     "devUrl": "http://localhost:5173",
@@ -12,13 +12,14 @@
   "app": {
     "windows": [
       {
-        "title": "OpenLingo",
+        "title": "Guaralingo",
         "width": 1024,
         "height": 768,
         "minWidth": 800,
         "minHeight": 600,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "label": "main"
       }
     ],
     "security": {
@@ -38,6 +39,9 @@
     "resources": [
       "../../backend/**/*",
       "../../run.sh"
+    ],
+    "externalBin": [
+      "guaralingo-backend"
     ],
     "linux": {
       "deb": {

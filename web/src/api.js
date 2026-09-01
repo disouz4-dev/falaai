@@ -1,26 +1,23 @@
-// PT-BR: Helpers de API e formatação. Agora toda chamada envia o token Firebase (Bearer)
-//        para o backend identificar o usuário logado (multi-usuário).
-// EN:    API and formatting helpers. Every call now sends the Firebase token (Bearer)
-//        so the backend can identify the logged-in user (multi-user).
+// PT-BR: Helpers de API e formatação. Toda chamada envia o token LOCAL (Bearer) para o
+//        backend identificar o usuário (login local/offline).
+// EN:    API and formatting helpers. Every call sends the LOCAL token (Bearer) so the
+//        backend can identify the user (local/offline login).
 
-// PT-BR: pega o token de ID atual (se logado). EN: get the current ID token (if logged in).
+// PT-BR: pega o token local atual (se logado). EN: get the current local token (if logged in).
 async function _token() {
-  try {
-    const { auth } = await import("./firebase.js");
-    const u = auth.currentUser;
-    if (u) return await u.getIdToken();
-  } catch { /* sem firebase / offline — segue sem token */ }
-  return null;
+  const { getLocalToken } = await import("./localauth.js");
+  return getLocalToken();
 }
 
 async function _fetch(path, options = {}) {
   const token = await _token();
+  const { apiBase } = await import("./localauth.js");
   const headers = { ...(options.headers || {}) };
   if (token) headers["Authorization"] = "Bearer " + token;
-  const res = await fetch(path, { ...options, headers });
+  const res = await fetch(apiBase() + path, { ...options, headers });
   // PT-BR: 401 = token inválido/expirado; deixa o App saber. EN: 401 = invalid/expired token.
   if (res.status === 401) {
-    window.dispatchEvent(new CustomEvent("openlingo:auth-required"));
+    window.dispatchEvent(new CustomEvent("guaralingo:auth-required"));
   }
   return res;
 }

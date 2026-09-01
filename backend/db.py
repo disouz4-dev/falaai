@@ -1,23 +1,39 @@
 """
-PT-BR: Camada de persistência do OpenLingo (SQLite local, MULTI-USUÁRIO).
-       Agora cada conta Firebase tem seus próprios dados. Todas as funções recebem um
-       `uid` (identidade única do Firebase) e chaveiam perfil, tentativas do teste,
-       prática, progresso do curso, vocabulário SRS e erros por usuário.
-EN:    OpenLingo persistence layer (local SQLite, MULTI-USER).
-       Each Firebase account now has its own data. All functions take a `uid` (Firebase
-       unique id) and key profile, test attempts, practice, course progress, SRS
-       vocabulary and mistakes per user.
+PT-BR: Camada de persistência do Guaralingo (SQLite local, MULTI-USUÁRIO).
+       Todas as funções recebem um `uid` (identidade local do usuário) e chaveiam perfil,
+       tentativas do teste, prática, progresso do curso, vocabulário SRS e erros por usuário.
+EN:    Guaralingo persistence layer (local SQLite, MULTI-USER).
+       All functions take a `uid` (local user identity) and key profile, test attempts,
+       practice, course progress, SRS vocabulary and mistakes per user.
 """
 
 import json
+import os
 import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent / "data" / "openlingo.db"
+# PT-BR: se GUARALINGO_DATA_DIR estiver definido (app desktop), guarda o banco em local
+#        gravável do usuário. Senão, usa backend/data (modo servidor web).
+# EN:    if GUARALINGO_DATA_DIR is set (desktop app), keep the DB in a user-writable path.
+#        Otherwise use backend/data (web server mode).
+_DATA_DIR = os.environ.get("GUARALINGO_DATA_DIR")
+if _DATA_DIR:
+    DATA_DIR = Path(_DATA_DIR)
+else:
+    DATA_DIR = Path(__file__).resolve().parent / "data"
+    _DATA_DIR = str(DATA_DIR)
+
+DB_PATH = DATA_DIR / "guaralingo.db"
+
+
+def data_dir() -> str:
+    """PT-BR: expõe o diretório de dados atual (p/ o main.py usar). EN: expose current data dir."""
+    return _DATA_DIR
 
 
 def _conn():
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
@@ -134,8 +150,8 @@ def upsert_profile(uid, name, native_lang, goal, interests, gender_preference="f
 
 
 def create_profile_from_auth(uid, name, email, picture):
-    """PT-BR: cria um perfil inicial a partir dos dados do login Google, se ainda não existir.
-    EN: create an initial profile from Google sign-in data, if it doesn't exist yet."""
+    """PT-BR: cria um perfil inicial a partir dos dados do login local, se ainda não existir.
+    EN: create an initial profile from the local sign-in data, if it doesn't exist yet."""
     if get_profile(uid):
         return get_profile(uid)
     return upsert_profile(uid, name or "Aluno(a)", "Português (Brasil)", "", "",

@@ -41,7 +41,7 @@ export default function Home({
       </div>
 
       {deferredInstall && (
-        <button className="install-btn" onClick={onInstall}>⬇️ Instalar o OpenLingo</button>
+        <button className="install-btn" onClick={onInstall}>⬇️ Instalar o Guaralingo</button>
       )}
 
       {/* PT-BR: status de versão sempre visível. EN: always-visible version status. */}
@@ -61,7 +61,7 @@ export default function Home({
           </div>
         ) : (
           <span className="ver-line ver-ok">
-            ✓ OpenLingo <strong>v{update.current}</strong> — você está na versão mais atual
+            ✓ Guaralingo <strong>v{update.current}</strong> — você está na versão mais atual
           </span>
         )}
         <button className="ver-check" disabled={checking} onClick={recheck}>

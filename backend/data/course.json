@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "description_pt": "Currículo completo do OpenLingo (A1–C2). Estrutura: módulos (por nível CEFR) -> lições no formato PPP (Presentation-Practice-Production). Métodos: CEFR, Aprendizagem Comunicativa (CLT), Task-Based Learning (TBLT), abordagem lexical e repetição espaçada. Syllabus gramatical/funcional real de cada nível.",
+    "description_pt": "Currículo completo do Guaralingo (A1–C2). Estrutura: módulos (por nível CEFR) -> lições no formato PPP (Presentation-Practice-Production). Métodos: CEFR, Aprendizagem Comunicativa (CLT), Task-Based Learning (TBLT), abordagem lexical e repetição espaçada. Syllabus gramatical/funcional real de cada nível.",
     "methods_ref": ["CEFR", "CLT (Communicative Language Teaching)", "TBLT (Task-Based)", "PPP", "Lexical Approach", "Spaced Repetition"]
   },
   "modules": [

@@ -7,12 +7,12 @@ import Story from "./Story.jsx";
 import Pronounce from "./Pronounce.jsx";
 import Mistakes from "./Mistakes.jsx";
 
-// PT-BR: Hub de prática — reúne todos os modos estilo Duolingo. EN: practice hub.
+// PT-BR: Hub de prática — reúne todos os modos de treino. EN: practice hub.
 export default function Practice({ nav, profile }) {
   const [mode, setMode] = useState("menu");
   const [srsStats, setSrsStats] = useState(null);
   const [mistakes, setMistakes] = useState(null);
-  const level = localStorage.getItem("openlingo_level") || "B1";
+  const level = localStorage.getItem("guaralingo_level") || "B1";
 
   useEffect(() => {
     if (mode !== "menu") return;

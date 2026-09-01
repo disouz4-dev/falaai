@@ -1,8 +1,8 @@
 """
-PT-BR: OpenLingo — backend FastAPI.
+PT-BR: Guaralingo — backend FastAPI.
        Serve o PWA e expõe a API do teste de nivelamento adaptativo (CEFR/TRI) e do
        modo de conversação por voz em tempo real (streaming via Ollama).
-EN:    OpenLingo — FastAPI backend.
+EN:    Guaralingo — FastAPI backend.
        Serves the PWA and exposes the adaptive placement-test API (CEFR/IRT) and the
        real-time voice conversation mode (streaming via Ollama).
 """
@@ -34,12 +34,17 @@ import version
 # PT-BR: detecta a GPU no início e ajusta o Ollama (preferência GPU, fallback CPU).
 # EN: detect the GPU at startup and tune Ollama (prefer GPU, fall back to CPU).
 GPU_INFO = gpu.apply_env()
-print(f"[OpenLingo] Aceleração: {GPU_INFO['device'].upper()} — {GPU_INFO['reason']}")
+print(f"[Guaralingo] Aceleração: {GPU_INFO['device'].upper()} — {GPU_INFO['reason']}")
 
 BASE_DIR = Path(__file__).resolve().parent
 # PT-BR: frontend React compilado (web/dist). EN: compiled React frontend (web/dist).
 FRONTEND_DIR = BASE_DIR.parent / "web" / "dist"
 ITEMS_PATH = BASE_DIR / "data" / "items.json"
+# PT-BR: arquivo que guarda a identidade local do app desktop (persistente entre execuções).
+#        Usa o diretório de dados (gravável), que respeita GUARALINGO_DATA_DIR no app desktop.
+# EN: file that persists the local desktop identity across runs. Uses the data dir (writable),
+#     which honors GUARALINGO_DATA_DIR in the desktop app.
+LOCAL_USER_PATH = Path(db.data_dir()) / "local_user.json"
 
 TEST_LENGTH = 20  # PT-BR: nº de questões do teste. EN: number of questions in the test.
 START_THETA = -1.0  # PT-BR: começa fácil e sobe progressivamente. EN: start easy, ramp up.
@@ -61,7 +66,7 @@ db.init_db()
 # PT-BR: Garante o vault de memória do professor. EN: ensure the teacher's memory vault.
 memory.ensure_vault()
 
-app = FastAPI(title="OpenLingo API")
+app = FastAPI(title="Guaralingo API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -69,21 +74,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# PT-BR: nome amigável na rede (openlingo.local). EN: friendly network name (openlingo.local).
+# PT-BR: nome amigável na rede (guaralingo.local). EN: friendly network name (guaralingo.local).
 FRIENDLY_URL = None
 
 
 @app.on_event("startup")
 def _start_mdns():
-    """PT-BR: anuncia 'openlingo.local' na rede via mDNS. EN: advertise 'openlingo.local' via mDNS."""
+    """PT-BR: anuncia 'guaralingo.local' na rede via mDNS. EN: advertise 'guaralingo.local' via mDNS."""
     global FRIENDLY_URL
-    if os.environ.get("OPENLINGO_MDNS", "1") == "0":
+    if os.environ.get("GUARALINGO_MDNS", "1") == "0":
         return  # PT-BR: mDNS desativado (ex.: ambientes restritos). EN: mDNS disabled.
-    port = int(os.environ.get("OPENLINGO_PORT", "8000"))
-    https = os.environ.get("OPENLINGO_HTTPS", "0") == "1"
+    port = int(os.environ.get("GUARALINGO_PORT", "8000"))
+    https = os.environ.get("GUARALINGO_HTTPS", "0") == "1"
     FRIENDLY_URL = mdns.start(port=port, https=https)
     if FRIENDLY_URL:
-        print(f"[OpenLingo] Acesse pela rede em: {FRIENDLY_URL}")
+        print(f"[Guaralingo] Acesse pela rede em: {FRIENDLY_URL}")
 
 
 @app.on_event("shutdown")
@@ -111,6 +116,10 @@ class ProfileIn(BaseModel):
     goal: str = ""
     interests: str = ""
     gender_preference: str = "female"  # "female" = professora, "male" = professor
+
+
+class LoginLocalIn(BaseModel):
+    name: str = ""
 
 
 class CompleteIn(BaseModel):
@@ -150,8 +159,8 @@ def _progress(session):
 # --------------------------------------------------------------------------- #
 # PT-BR: Endpoints da API. EN: API endpoints.
 # --------------------------------------------------------------------------- #
-# PT-BR: Dependência que valida o token Firebase e devolve o usuário logado.
-# EN:    Dependency that validates the Firebase token and returns the logged-in user.
+# PT-BR: Dependência que valida o token local e devolve o usuário logado.
+# EN:    Dependency that validates the local token and returns the logged-in user.
 def get_current_user(authorization: str = Header(None)):  # noqa: E501
     try:
         return auth.get_uid_from_header(authorization)
@@ -175,11 +184,17 @@ def get_version(force: bool = False):
 
 @app.post("/api/update")
 def do_update(request: Request):
-    """PT-BR: atualiza o app (git pull + rebuild) e reinicia — SÓ pelo próprio computador (localhost),
-    nunca pela rede. EN: update + restart — allowed ONLY from the host machine (localhost)."""
+    """PT-BR: atualiza o app — no modo NAVEGADOR faz git pull + rebuild + reinício;
+    no modo DESKTOP baixa o novo .deb da release e instala por cima (dpkg -i).
+    SÓ pelo próprio computador (localhost), nunca pela rede.
+    EN: app update — in BROWSER mode does git pull + rebuild + restart; in DESKTOP mode
+    downloads the new .deb from the release and installs it over the current one (dpkg -i).
+    Only allowed from the host machine (localhost), never remotely."""
     host = request.client.host if request.client else ""
     if host not in ("127.0.0.1", "::1", "localhost"):
         raise HTTPException(403, "Atualização só é permitida no próprio computador (localhost).")
+    if os.environ.get("GUARALINGO_DESKTOP", "0") == "1":
+        return version.perform_update_desktop()
     return version.perform_update()
 
 
@@ -195,6 +210,47 @@ def text_to_speech(text: str = Query(..., min_length=1), lang: str = Query("en")
         media_type="audio/wav",
         headers={"Cache-Control": "public, max-age=86400"},
     )
+
+
+# --------------------------------------------------------------------------- #
+# PT-BR: Login LOCAL (modo app desktop, offline). EN: LOCAL login (desktop app).
+# --------------------------------------------------------------------------- #
+def _get_or_create_local_user():
+    """PT-BR: devolve o uid local persistente, criando na 1ª vez. EN: return the persistent
+    local uid, creating it on first use."""
+    try:
+        if LOCAL_USER_PATH.exists():
+            data = json.loads(LOCAL_USER_PATH.read_text(encoding="utf-8"))
+            if data.get("uid"):
+                return data["uid"]
+    except Exception:
+        pass
+    uid = "local-" + uuid.uuid4().hex[:16]
+    try:
+        LOCAL_USER_PATH.parent.mkdir(parents=True, exist_ok=True)
+        LOCAL_USER_PATH.write_text(json.dumps({"uid": uid}), encoding="utf-8")
+    except Exception:
+        pass
+    return uid
+
+
+@app.post("/api/login")
+def login_local(body: LoginLocalIn):
+    """PT-BR: login local do app desktop. Cria o perfil se necessário e devolve o token.
+    EN: local login for the desktop app. Creates the profile if needed and returns the token."""
+    uid = _get_or_create_local_user()
+    prof = db.get_profile(uid)
+    if not prof:
+        name = body.name.strip() or "Aluno(a)"
+        prof = db.create_profile_from_auth(uid, name, "", "")
+    token = auth.create_local_token(uid, name=prof.get("name", ""), email=prof.get("email"),
+                                    picture=prof.get("picture"))
+    return {
+        "token": token,
+        "user": {"uid": uid, "name": prof.get("name"), "email": prof.get("email"),
+                 "picture": prof.get("picture"), "local": True},
+        "profile": prof,
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -626,8 +682,8 @@ def course_task_feedback(body: TaskFeedbackIn):
 
 
 # =========================================================================== #
-# PT-BR: FEATURES ESTILO DUOLINGO — SRS, explicar erro, ditado, roleplay,
-#        histórias, hub de erros e pronúncia. EN: Duolingo-style features.
+# PT-BR: FEATURES DE PRÁTICA — SRS, explicar erro, ditado, roleplay,
+#        histórias, hub de erros e pronúncia. EN: Practice features.
 # =========================================================================== #
 import re as _re
 import difflib

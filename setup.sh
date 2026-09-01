@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# PT-BR: Setup do OpenLingo — cria o modelo do Ollama e baixa as vozes do Piper (obrigatórias).
-# EN:    OpenLingo setup — creates the Ollama model and downloads the (required) Piper voices.
+# PT-BR: Setup do Guaralingo — cria o modelo do Ollama e baixa as vozes do Piper (obrigatórias).
+# EN:    Guaralingo setup — creates the Ollama model and downloads the (required) Piper voices.
 set -e
 cd "$(dirname "$0")"
 

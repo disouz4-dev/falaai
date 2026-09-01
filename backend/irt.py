@@ -1,9 +1,8 @@
 """
 PT-BR: Motor de nivelamento adaptativo baseado em Teoria de Resposta ao Item (TRI).
        Usa o modelo de Rasch (1PL) e estimativa EAP (Expected A Posteriori) da habilidade.
-       É o mesmo princípio matemático de testes reais (EF SET, Cambridge Linguaskill,
-       Duolingo English Test): a dificuldade das questões acompanha a habilidade estimada,
-       maximizando a informação a cada item.
+       É o mesmo princípio matemático de testes de proficiência: a dificuldade das questões
+       acompanha a habilidade estimada, maximizando a informação a cada item.
 EN:    Adaptive placement engine based on Item Response Theory (IRT). Uses the Rasch (1PL)
        model with EAP (Expected A Posteriori) ability estimation — the same math real
        adaptive tests use: item difficulty tracks the estimated ability, maximizing

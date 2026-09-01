@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # =============================================================================
-# PT-BR: Instalador único do OpenLingo para macOS e Linux.
+# PT-BR: Instalador único do Guaralingo para macOS e Linux.
 #        Instala pré-requisitos, baixa o projeto, configura e sobe o app.
 #        Uso (uma linha):
-#          bash <(curl -fsSL https://raw.githubusercontent.com/disouz4-dev/openlingo/main/install.sh)
-# EN:    One-command OpenLingo installer for macOS and Linux.
+#          bash <(curl -fsSL https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.sh)
+# EN:    One-command Guaralingo installer for macOS and Linux.
 # =============================================================================
 set -e
 
-REPO="https://github.com/disouz4-dev/openlingo.git"
-DIR="${OPENLINGO_DIR:-$HOME/openlingo}"
+REPO="https://github.com/disouz4-dev/guaralingo.git"
+DIR="${GUARALINGO_DIR:-$HOME/guaralingo}"
 OS="$(uname -s)"
 
-echo "🦜 Instalando o OpenLingo ($OS)..."
+echo "🦜 Instalando o Guaralingo ($OS)..."
 
 # --- 1. Ollama ---------------------------------------------------------------
 if ! command -v ollama >/dev/null 2>&1; then
@@ -43,5 +43,5 @@ cd "$DIR"
 chmod +x setup.sh run.sh
 ./setup.sh
 echo ""
-echo "✅ Pronto! Iniciando o OpenLingo..."
+echo "✅ Pronto! Iniciando o Guaralingo..."
 exec ./run.sh

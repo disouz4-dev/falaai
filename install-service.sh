@@ -1,37 +1,47 @@
 #!/usr/bin/env bash
 # =============================================================================
-# PT-BR: Instala o OpenLingo como SERVIÇO do sistema (systemd) — sobe no boot, reinicia
-#        sozinho se cair e roda 24/7 sem depender de terminal aberto. Rode uma vez:
-#          ./install-service.sh            (HTTP)
-#          ./install-service.sh --https    (HTTPS, recomendado)
-#        Pede a senha do sudo para instalar o serviço.
-# EN:    Install OpenLingo as a systemd service (starts on boot, auto-restarts, runs 24/7).
+# PT-BR: Instala o Guaralingo como SERVIÇO do sistema (systemd) capaz de abrir a
+#        porta 80 (HTTPS) SEM rodar tudo como root. Usa CAP_NET_BIND_SERVICE:
+#        o processo continua rodando como o usuário normal, mas ganha permissão
+#        só para fazer bind em portas privilegiadas (< 1024). Modo servidor web
+#        (legado); o app desktop atual é autônomo e não precisa disso.
+#        Rode uma vez com sudo:
+#          sudo ./install-service.sh --https
+# EN:    Install Guaralingo as a systemd service able to bind privileged port 80
+#        without running everything as root (CAP_NET_BIND_SERVICE). Keeps file
+#        ownership intact. Legacy web-server mode; the current desktop app is
+#        standalone and does not need this.
 # =============================================================================
 set -e
 cd "$(dirname "$0")"
 
 PROJECT_DIR="$(pwd)"
 RUN_USER="$(id -un)"
-MODE=""
-[ "$1" == "--https" ] && MODE=" --https"
-SERVICE=/etc/systemd/system/openlingo.service
+MODE=" --https"
+SERVICE=/etc/systemd/system/guaralingo.service
 
-echo "==> Instalando o serviço openlingo (usuário: $RUN_USER, pasta: $PROJECT_DIR)…"
+echo "==> Instalando o serviço guaralingo (usuário: $RUN_USER, porta 80 via capability)…"
 
 sudo tee "$SERVICE" >/dev/null <<EOF
 [Unit]
-Description=OpenLingo — servidor local de ensino de inglês
+Description=Guaralingo — servidor local de ensino de inglês (porta 80 HTTPS)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
 User=$RUN_USER
+Group=$(id -gn)
 WorkingDirectory=$PROJECT_DIR
-ExecStart=$PROJECT_DIR/run.sh$MODE
+ExecStart=/bin/bash $PROJECT_DIR/run.sh$MODE
 Restart=always
 RestartSec=3
-# PT-BR: mantém o HOME correto p/ venv/npm. EN: keep HOME for venv/npm.
+# PT-BR: permite abrir a porta 80 (privilegiada) sem rodar o processo como root.
+# EN:    allows binding privileged port 80 without running the process as root.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+# PT-BR: mantém o HOME do usuário p/ venv/npm. EN: keep HOME for venv/npm.
 Environment=HOME=/home/$RUN_USER
 
 [Install]
@@ -40,13 +50,13 @@ EOF
 
 echo "==> Ativando e iniciando…"
 sudo systemctl daemon-reload
-sudo systemctl enable openlingo.service
-sudo systemctl restart openlingo.service
-sleep 2
-sudo systemctl --no-pager status openlingo.service | head -8 || true
+sudo systemctl enable guaralingo.service
+sudo systemctl restart guaralingo.service
+sleep 3
+sudo systemctl --no-pager status guaralingo.service | head -12 || true
 
 echo ""
-echo "✅ OpenLingo agora roda como serviço (sobe no boot e reinicia sozinho)."
-echo "   Acesse:   https://openlingo.local:8000"
-echo "   Comandos: sudo systemctl {status|restart|stop} openlingo"
-echo "   Logs:     journalctl -u openlingo -f"
+echo "✅ Guaralingo roda como serviço (porta 80 HTTPS, sem rodar como root)."
+echo "   Acesse:   https://localhost  /  https://guaralingo.local"
+echo "   Comandos: sudo systemctl {status|restart|stop} guaralingo"
+echo "   Logs:     journalctl -u guaralingo -f"
