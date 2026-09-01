@@ -12,6 +12,7 @@ export default function Roleplay({ back, level }) {
   const [thinking, setThinking] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [ending, setEnding] = useState(false);
+  const [muted, setMuted] = useState(false);
   const historyRef = useRef([]);
   const recogRef = useRef(null);
   const logRef = useRef(null);
@@ -30,7 +31,7 @@ export default function Roleplay({ back, level }) {
     setScenario({ ...sc, ...op });
     setMsgs([{ role: "bot", text: op.opening }]);
     historyRef.current = [{ role: "assistant", content: op.opening }];
-    speak(op.opening);
+    if (!muted) speak(op.opening);
     recogRef.current = createRecognizer({
       onListening: setListening,
       onResult: (text) => handleSpeech(text),
@@ -66,7 +67,7 @@ export default function Roleplay({ back, level }) {
     } catch { full = "[erro]"; }
     historyRef.current.push({ role: "assistant", content: full });
     setThinking(false);
-    speak(full);
+    if (!muted) speak(full);
   }
 
   async function endRoleplay() {
@@ -144,6 +145,10 @@ export default function Roleplay({ back, level }) {
           onPointerLeave={() => recogRef.current?.stop()}
           onContextMenu={(e) => e.preventDefault()}
         >🎤</button>
+        <button className={muted ? "btn-ghost mute-on" : "btn-primary mute-off"}
+          onClick={() => { setMuted(!muted); stopSpeaking(); }}>
+          {muted ? "Desmutar" : "Mutar"}
+        </button>
         <button className="btn-ghost" disabled={ending} onClick={endRoleplay}>
           {ending ? "Avaliando…" : "Encerrar e ver feedback"}
         </button>

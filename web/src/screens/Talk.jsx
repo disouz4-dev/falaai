@@ -10,6 +10,7 @@ export default function Talk({ nav }) {
   const [thinking, setThinking] = useState(false);
   const [hint, setHint] = useState("Segure o microfone para falar");
   const [supported, setSupported] = useState(true);
+  const [muted, setMuted] = useState(false);
 
   const historyRef = useRef([]);
   const recogRef = useRef(null);
@@ -35,7 +36,7 @@ export default function Talk({ nav }) {
     if (!rec.supported) setHint("Seu navegador não suporta reconhecimento de voz (use Chrome).");
     // PT-BR: boas-vindas faladas. EN: spoken welcome.
     setMsgs([{ role: "bot", text: WELCOME }]);
-    speak(WELCOME);
+    if (!muted) speak(WELCOME);
     return () => stopSpeaking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -76,7 +77,7 @@ export default function Talk({ nav }) {
     historyRef.current.push({ role: "assistant", content: full });
     setThinking(false);
     setHint("Segure o microfone para falar");
-    speak(full);
+    if (!muted) speak(full);
   }
 
   const micClass = "mic-btn" + (listening ? " listening" : thinking ? " thinking" : "");
@@ -84,12 +85,12 @@ export default function Talk({ nav }) {
   return (
     <section className="screen active" id="screen-talk">
       <div className="talk-header">
-        <button className="icon-btn" title="Sair" onClick={() => nav("home")}>✕</button>
-        <div className="talk-title">🎙️ Conversação</div>
         <select className="level-select" title="Seu nível" value={level}
           onChange={(e) => setLevel(e.target.value)}>
           {["A1", "A2", "B1", "B2", "C1", "C2"].map((l) => <option key={l}>{l}</option>)}
         </select>
+        <div className="talk-title">🎙️ Conversação</div>
+        <button className="icon-btn" title="Sair" onClick={() => nav("home")}>✕</button>
       </div>
 
       <div className="talk-log" ref={logRef}>
@@ -116,9 +117,12 @@ export default function Talk({ nav }) {
           onPointerDown={(e) => { e.preventDefault(); recogRef.current?.start(); }}
           onPointerUp={(e) => { e.preventDefault(); recogRef.current?.stop(); }}
           onPointerLeave={() => recogRef.current?.stop()}
-          onPointerCancel={() => recogRef.current?.stop()}
           onContextMenu={(e) => e.preventDefault()}
         >🎤</button>
+        <button className={muted ? "btn-ghost mute-on" : "btn-primary mute-off"}
+          onClick={() => { setMuted(!muted); stopSpeaking(); }}>
+          {muted ? "Desmutar" : "Mutar"}
+        </button>
       </div>
     </section>
   );

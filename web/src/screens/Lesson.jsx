@@ -15,13 +15,31 @@ export default function Lesson({ nav, lessonId }) {
   const [explain, setExplain] = useState(null);
   const [explaining, setExplaining] = useState(false);
   const [muted, setMuted] = useState(false);
+  const [playedQuestion, setPlayedQuestion] = useState(null);
   const scoreRef = useRef(0);
 
   useEffect(() => {
     scoreRef.current = 0;
     setIdx(0); setAnswered(null); setTaskAnswer(""); setTaskFb(""); setTaskDone(false); setFinished(null);
+    setPlayedQuestion(null);
     api.get("/api/course/lesson/" + lessonId).then(setData).catch(() => {});
   }, [lessonId]);
+
+  useEffect(() => {
+    if (!muted && stage?.startsWith("ex") && data) {
+      const i = parseInt(stage.slice(2), 10);
+      if (i !== playedQuestion && data.exercises[i]) {
+        setPlayedQuestion(i);
+        speak(data.exercises[i].question);
+      }
+    }
+  }, [stage, data, muted, playedQuestion]);
+
+  useEffect(() => {
+    if (explain && !muted) {
+      speak(explain);
+    }
+  }, [explain, muted]);
 
   const stages = useMemo(
     () => (data ? ["material", ...data.exercises.map((_, i) => "ex" + i), "task"] : []),
@@ -100,7 +118,7 @@ export default function Lesson({ nav, lessonId }) {
     setTaskFb(fb);
     setTaskDone(true);
     setSubmitting(false);
-    if (window.speechSynthesis) speak(fb.replace(/[^A-Za-z0-9 .,!?']/g, " "));
+    if (!muted && window.speechSynthesis) speak(fb.replace(/[^A-Za-z0-9 .,!?']/g, " "));
   }
 
   if (finished !== null) {
@@ -188,6 +206,10 @@ export default function Lesson({ nav, lessonId }) {
                   <button className="btn-primary" onClick={next}>Continuar</button>
                 </div>
               )}
+              <button className={muted ? "btn-ghost mute-on" : "btn-primary mute-off"}
+                onClick={() => { setMuted(!muted); stopSpeaking(); }}>
+                {muted ? "Desmutar" : "Mutar professor"}
+              </button>
             </div>
           );
         })()}
