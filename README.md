@@ -30,26 +30,40 @@ Teste de nível adaptativo (CEFR) · Curso completo A1–C2 · Conversação por
 
 ---
 
-## 🚀 Instalação — app desktop (recomendado)
+## 🚀 Instalação
 
-O Guaralingo é um **app desktop**, com um **instalador `.deb` nativo para Linux** e um instalador **universal (AppImage)**. Baixe a release mais recente na página de **Releases** do GitHub:
+O Guaralingo é um **app desktop** — verifique e instala tudo sozinho.
 
-> https://github.com/disouz4-dev/guaralingo/releases
+### Instalação rápida (um comando, todos os OS)
 
-**🐧 Linux (.deb — recomendado)**
+**Um código só — `install.py` verifica e baixa as dependências automaticamente (git, Ollama, Piper, modelo):**
 
-**Via terminal (um comando):**
+| Sistema | Comando |
+|---|---|
+| **Linux / macOS** | `curl -fsSL https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py \| python3 -` |
+| **Windows (PowerShell)** | `irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py \| python -` |
+
+Wrappers que garantem Python e delegam ao `install.py` (mesma lógica):
+
 ```bash
-# Baixa e instala o .deb da release mais recente (v1.0.1)
+# Linux/macOS
+bash <(curl -fsSL https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.sh)
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.ps1 | iex
+```
+> O instalador detecta o OS, verifica `git`/`ollama`/`python3-venv` e instala o que faltar (via `apt`/`brew`/`winget` + `pip`), clona/atualiza o repo em `~/guaralingo`, cria o modelo `small-english-teacher` e sobe o app.
+
+### Instalador `.deb` (Linux — recomendado para uso diário)
+
+Baixe a release em https://github.com/disouz4-dev/guaralingo/releases
+
+```bash
+# Via terminal (um comando, v1.0.1):
 curl -L https://github.com/disouz4-dev/guaralingo/releases/download/v1.0.1/Guaralingo_1.0.1_amd64.deb -o Guaralingo_1.0.1_amd64.deb && sudo dpkg -i Guaralingo_1.0.1_amd64.deb && sudo apt-get install -f
+# Ou manual:
+sudo dpkg -i Guaralingo_1.0.1_amd64.deb && sudo apt-get install -f
 ```
-Depois procure **Guaralingo** no menu de aplicações para abrir.
-
-**Ou manual:** baixe o `.deb` em https://github.com/disouz4-dev/guaralingo/releases e instale:
-```bash
-sudo dpkg -i Guaralingo_1.0.1_amd64.deb
-sudo apt-get install -f
-```
+Depois procure **Guaralingo** no menu para abrir.
 
 **Desinstalar (Linux)**
 ```bash
