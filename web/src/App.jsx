@@ -118,6 +118,13 @@ export default function App() {
   };
 
   const [loggingIn, setLoggingIn] = useState(false);
+  const [authTab, setAuthTab] = useState("register");
+  const [form, setForm] = useState({ name: "", native_lang: "pt", goal: "", interests: "", gender_preference: "female" });
+  // PT-BR: decide aba inicial: sem token = cadastro, com token = login. EN: initial tab: no token = register.
+  useEffect(() => {
+    if (authUser === null) setAuthTab(getLocalToken() ? "login" : "register");
+  }, [authUser]);
+
   async function handleLogin(name) {
     setLoginError("");
     setLoggingIn(true);
@@ -193,15 +200,8 @@ export default function App() {
     );
   }
 
-  // PT-BR: tela de registro (cadastro inicial). EN: registration screen (initial signup).
-  if (authUser === null && !getLocalToken()) {
-    const [form, setForm] = useState({
-      name: "",
-      native_lang: "pt",
-      goal: "",
-      interests: "",
-      gender_preference: "female"
-    });
+  // PT-BR: tela de auth obrigatória — abas Criar conta / Entrar. EN: mandatory auth — tabs.
+  if (authUser === null) {
     const handleSubmit = (e) => {
       e.preventDefault();
       if (!form.name.trim()) { setLoginError("Digite seu nome."); return; }
@@ -209,86 +209,61 @@ export default function App() {
     };
     return (
       <section className="screen active">
-        <div className="panel center-panel" style={{ maxWidth: 420 }}>
+        <div className="panel center-panel" style={{ maxWidth: 460 }}>
           <div className="brand" style={{ fontSize: 28 }}>🐺 <span>Guaralingo</span></div>
-          <h2>Bem-vindo(a)!</h2>
-          <p className="subtitle" style={{ marginBottom: 20 }}>
-            Vamos criar seu perfil. Seus dados ficam <strong>apenas neste dispositivo</strong>.
-          </p>
-          <form onSubmit={handleSubmit}>
-            <div className="field">
-              <label htmlFor="name">Seu nome</label>
-              <input
-                id="name" type="text" autoComplete="name" required
-                value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-                placeholder="Como devemos te chamar?"
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="native_lang">Seu idioma nativo</label>
-              <select id="native_lang" value={form.native_lang} onChange={e => setForm({...form, native_lang: e.target.value})}>
-                <option value="pt">Português (Brasil)</option>
-                <option value="es">Espanhol</option>
-                <option value="en">Inglês</option>
-                <option value="fr">Francês</option>
-                <option value="de">Alemão</option>
-                <option value="it">Italiano</option>
-              </select>
-            </div>
-            <div className="field">
-              <label htmlFor="goal">Seu objetivo</label>
-              <input
-                id="goal" type="text"
-                value={form.goal} onChange={e => setForm({...form, goal: e.target.value})}
-                placeholder="Ex: viajar, trabalho, estudo, conversação..."
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="interests">Interesses (opcional)</label>
-              <textarea
-                id="interests" rows={3}
-                value={form.interests} onChange={e => setForm({...form, interests: e.target.value})}
-                placeholder="Tópicos que você gosta: tecnologia, esportes, música, viagens..."
-              />
-            </div>
-            <div className="field">
-              <label>Voz do professor</label>
-              <div style={{ display: "flex", gap: 12 }}>
-                <label style={{ flex: 1, display: "flex", alignItems: "center", gap: 6 }}>
-                  <input type="radio" name="gender_preference" value="female" checked={form.gender_preference === "female"} onChange={e => setForm({...form, gender_preference: e.target.value})} />
-                  <span>Professora (voz feminina)</span>
-                </label>
-                <label style={{ flex: 1, display: "flex", alignItems: "center", gap: 6 }}>
-                  <input type="radio" name="gender_preference" value="male" checked={form.gender_preference === "male"} onChange={e => setForm({...form, gender_preference: e.target.value})} />
-                  <span>Professor (voz masculina)</span>
-                </label>
-              </div>
-            </div>
-            <button className="btn-primary" type="submit" disabled={registering} style={{ width: "100%", marginTop: 8 }}>
-              {registering ? "Cadastrando…" : "Começar"}
-            </button>
-            {loginError && <p className="auth-error">{loginError}</p>}
-          </form>
-        </div>
-      </section>
-    );
-  }
-
-  // PT-BR: tela de login (para usuários que já se cadastraram). EN: login screen (for returning users).
-  if (authUser === null) {
-    return (
-      <section className="screen active">
-        <div className="panel center-panel">
-          <div className="brand" style={{ fontSize: 28 }}>🐺 <span>Guaralingo</span></div>
-          <h2>Bem-vindo(a) de volta!</h2>
-          <p className="subtitle" style={{ marginBottom: 20 }}>
-            Entre para continuar seu progresso.
-          </p>
-          <button className="btn-primary" onClick={() => handleLogin("")} disabled={loggingIn}>
-            {loggingIn ? "Entrando…" : "Entrar"}
-          </button>
-          {loginError && <p className="auth-error">{loginError}</p>}
-          {loggingIn && <p className="auth-hint">Conectando ao servidor local…</p>}
+          <div style={{ display: "flex", gap: 8, marginBottom: 16, borderBottom: "2px solid var(--line)" }}>
+            <button onClick={() => setAuthTab("register")} style={{ flex: 1, padding: "10px", border: "none", background: "none", fontWeight: 700, borderBottom: authTab === "register" ? "3px solid var(--guara)" : "3px solid transparent", color: authTab === "register" ? "var(--guara)" : "var(--muted)", cursor: "pointer" }}>Criar conta</button>
+            <button onClick={() => setAuthTab("login")} style={{ flex: 1, padding: "10px", border: "none", background: "none", fontWeight: 700, borderBottom: authTab === "login" ? "3px solid var(--guara)" : "3px solid transparent", color: authTab === "login" ? "var(--guara)" : "var(--muted)", cursor: "pointer" }}>Entrar</button>
+          </div>
+          {authTab === "register" ? (
+            <>
+              <h2 style={{ marginTop: 0 }}>Criar conta</h2>
+              <p className="subtitle" style={{ marginBottom: 16 }}>Seus dados ficam <strong>apenas neste dispositivo</strong> (offline). Login obrigatório para jogar.</p>
+              <form onSubmit={handleSubmit}>
+                <div className="field">
+                  <label htmlFor="name">Seu nome *</label>
+                  <input id="name" type="text" autoComplete="name" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Como devemos te chamar?" />
+                </div>
+                <div className="field">
+                  <label htmlFor="native_lang">Idioma nativo</label>
+                  <select id="native_lang" value={form.native_lang} onChange={e => setForm({...form, native_lang: e.target.value})}>
+                    <option value="pt">Português (Brasil)</option>
+                    <option value="es">Espanhol</option>
+                    <option value="en">Inglês</option>
+                    <option value="fr">Francês</option>
+                    <option value="de">Alemão</option>
+                    <option value="it">Italiano</option>
+                  </select>
+                </div>
+                <div className="field">
+                  <label htmlFor="goal">Objetivo</label>
+                  <input id="goal" type="text" value={form.goal} onChange={e => setForm({...form, goal: e.target.value})} placeholder="Ex: viajar, trabalho, estudo..." />
+                </div>
+                <div className="field">
+                  <label htmlFor="interests">Interesses (opcional)</label>
+                  <textarea id="interests" rows={2} value={form.interests} onChange={e => setForm({...form, interests: e.target.value})} placeholder="Tecnologia, esportes, música..." />
+                </div>
+                <div className="field">
+                  <label>Voz do professor</label>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <label style={{ flex: 1, display: "flex", alignItems: "center", gap: 6 }}><input type="radio" name="gender_preference" value="female" checked={form.gender_preference === "female"} onChange={e => setForm({...form, gender_preference: e.target.value})} /><span>Professora</span></label>
+                    <label style={{ flex: 1, display: "flex", alignItems: "center", gap: 6 }}><input type="radio" name="gender_preference" value="male" checked={form.gender_preference === "male"} onChange={e => setForm({...form, gender_preference: e.target.value})} /><span>Professor</span></label>
+                  </div>
+                </div>
+                <button className="btn-primary" type="submit" disabled={registering} style={{ width: "100%", marginTop: 8 }}>{registering ? "Cadastrando…" : "Criar e entrar"}</button>
+                {loginError && <p className="auth-error">{loginError}</p>}
+              </form>
+            </>
+          ) : (
+            <>
+              <h2 style={{ marginTop: 0 }}>Entrar</h2>
+              <p className="subtitle" style={{ marginBottom: 16 }}>Já tem conta? Clique para entrar (login local, sem senha).</p>
+              <button className="btn-primary" onClick={() => handleLogin("")} disabled={loggingIn} style={{ width: "100%" }}>{loggingIn ? "Entrando…" : "Entrar"}</button>
+              {loginError && <p className="auth-error">{loginError}</p>}
+              {loggingIn && <p className="auth-hint">Conectando ao servidor local…</p>}
+              <p className="subtitle" style={{ marginTop: 12, fontSize: 12 }}>Sem conta? Vá em <strong>Criar conta</strong>.</p>
+            </>
+          )}
         </div>
       </section>
     );
