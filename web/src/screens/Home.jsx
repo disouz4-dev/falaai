@@ -7,7 +7,7 @@ export default function Home({
   return (
     <section className="screen active">
       <div className="hero">
-        <div className="hero-mascot">🦜</div>
+        <div className="hero-mascot">🐺</div>
         <h1>{profile?.name ? `Olá, ${profile.name}! 👋` : "Aprenda inglês do seu jeito"}</h1>
         <p className="subtitle">IA local · seu nível medido com métodos reais (CEFR)</p>
       </div>
