@@ -288,7 +288,6 @@ def install_msi_windows():
             log(f"   msiexec retornou {rc} — tente instalar manualmente: {url}")
             return False
         log("✅ Guaralingo instalado como programa do Windows — procure por 'Guaralingo' no menu Iniciar.")
-        launch_msi_app()
         return True
     except Exception as e:
         log(f"   Falha ao instalar .msi: {e} — caindo para modo dev.")
@@ -341,6 +340,18 @@ def main():
     log(f"🐺 Instalando o Guaralingo ({OS_NAME}) em {DIR}...")
     py = ensure_python()
     if not py: sys.exit(1)
+
+    # PT-BR: Windows: instala o .msi nativo por padrão (programa de verdade). NÃO depende
+    #        de git (o .msi já traz o app). Use --dev para o modo servidor (clone + run.bat).
+    # EN: Windows: install the native .msi by default. Does NOT depend on git.
+    if OS_NAME == "Windows" and not use_dev:
+        ensure_ollama()
+        if install_msi_windows():
+            setup_windows_post_msi(py)
+            launch_msi_app()
+            log("\n✅ Pronto! O Guaralingo foi instalado como um app do Windows.")
+            return
+
     git_cmd = ensure_git()
     if not git_cmd: sys.exit(1)
     ensure_ollama()
@@ -362,14 +373,6 @@ def main():
                         if mf.exists(): run(["ollama", "create", "small-english-teacher", "-f", str(mf)], check=False)
                 except Exception: pass
             log("\n✅ Pronto! Abra o Guaralingo pelo menu de apps ou rode: guaralingo  /  /usr/bin/app")
-            return
-
-    # PT-BR: Windows: instala o .msi nativo por padrão (programa de verdade). Use --dev
-    #        para o modo servidor (clone + run.bat). EN: Windows installs the native .msi.
-    if OS_NAME == "Windows" and not use_dev:
-        if install_msi_windows():
-            setup_windows_post_msi(py)
-            log("\n✅ Pronto! O Guaralingo foi instalado como um app do Windows.")
             return
 
     ensure_venv_deps()
