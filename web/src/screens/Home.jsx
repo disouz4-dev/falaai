@@ -13,15 +13,15 @@ export default function Home({
       </div>
 
       <div className="cards">
-        <button className="big-card primary" onClick={() => nav("course")}>
-          <span className="bc-icon">📚</span>
-          <span className="bc-title">Curso</span>
-          <span className="bc-sub">Módulos, lições e tarefas com métodos reais</span>
-        </button>
-        <button className="big-card" onClick={() => nav("test-intro")}>
+        <button className="big-card primary" onClick={() => nav("test-intro")}>
           <span className="bc-icon">🎯</span>
           <span className="bc-title">Descobrir meu nível</span>
           <span className="bc-sub">Teste adaptativo de 20 questões</span>
+        </button>
+        <button className="big-card" onClick={() => nav("course")}>
+          <span className="bc-icon">📚</span>
+          <span className="bc-title">Curso</span>
+          <span className="bc-sub">Módulos, lições e tarefas com métodos reais</span>
         </button>
         <button className="big-card" onClick={() => nav("talk")}>
           <span className="bc-icon">🎙️</span>

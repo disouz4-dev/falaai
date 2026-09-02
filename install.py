@@ -20,7 +20,7 @@ def run(cmd, **kw): return subprocess.run(cmd, **kw)
 def has(cmd): return shutil.which(cmd) is not None
 
 def ensure_git():
-    if has("git"): return True
+    if has("git"): return "git"
     # PT-BR: no Windows, git pode estar instalado mas não no PATH. EN: check common install paths.
     if OS_NAME == "Windows":
         for p in [
@@ -28,18 +28,18 @@ def ensure_git():
             r"C:\Program Files (x86)\Git\cmd\git.exe",
             Path(os.environ.get("LOCALAPPDATA","")) / r"Programs\Git\cmd\git.exe",
         ]:
-            if Path(p).exists(): return True
+            if Path(p).exists(): return str(p)
     log("==> git não encontrado — tentando instalar...")
     try:
         if OS_NAME == "Linux":
             run(["sudo", "apt-get", "update", "-qq"], check=False)
-            run(["sudo", "apt-get", "install", "-y", "git"], check=True); return has("git")
+            run(["sudo", "apt-get", "install", "-y", "git"], check=True); return "git"
         elif OS_NAME == "Darwin" and has("brew"):
-            run(["brew", "install", "git"], check=True); return has("git")
+            run(["brew", "install", "git"], check=True); return "git"
         elif OS_NAME == "Windows" and has("winget"):
-            run(["winget", "install", "--id", "Git.Git", "-e", "--accept-source-agreements", "--accept-package-agreements"], check=True); return has("git")
+            run(["winget", "install", "--id", "Git.Git", "-e", "--accept-source-agreements", "--accept-package-agreements"], check=True); return "git"
     except Exception as e: log(f"   falha ao instalar git: {e}")
-    log("   Instale o git manualmente: https://git-scm.com/downloads"); return False
+    log("   Instale o git manualmente: https://git-scm.com/downloads"); return None
 
 def ensure_python():
     py = sys.executable
@@ -84,14 +84,14 @@ def ensure_venv_deps():
     try: run(["sudo", "apt-get", "install", "-y", "python3-venv", "python3-pip"], check=True)
     except Exception as e: log(f"   falha: {e} — tente: sudo apt-get install python3-venv")
 
-def clone_or_update():
+def clone_or_update(git_cmd):
     if (DIR / ".git").exists():
         log(f"==> Atualizando {DIR}...")
-        run(["git", "-C", str(DIR), "pull", "--ff-only"], check=False)
+        run([git_cmd, "-C", str(DIR), "pull", "--ff-only"], check=False)
     else:
         log(f"==> Baixando em {DIR}...")
         DIR.parent.mkdir(parents=True, exist_ok=True)
-        run(["git", "clone", REPO, str(DIR)], check=True)
+        run([git_cmd, "clone", REPO, str(DIR)], check=True)
     os.chdir(DIR)
 
 def setup_model_and_voice(py):
@@ -169,7 +169,8 @@ def main():
     log(f"🦜 Instalando o Guaralingo ({OS_NAME}) em {DIR}...")
     py = ensure_python()
     if not py: sys.exit(1)
-    if not ensure_git(): sys.exit(1)
+    git_cmd = ensure_git()
+    if not git_cmd: sys.exit(1)
     ensure_ollama()
 
     # PT-BR: Linux: instala .deb por padrão (aparece no menu). Use --dev para clonar e rodar.
@@ -184,7 +185,7 @@ def main():
                 try:
                     import tempfile as _tf
                     with _tf.TemporaryDirectory() as td:
-                        run(["git", "clone", "--depth", "1", REPO, td], check=False)
+                        run([git_cmd, "clone", "--depth", "1", REPO, td], check=False)
                         mf = Path(td) / "Modelfile"
                         if mf.exists(): run(["ollama", "create", "small-english-teacher", "-f", str(mf)], check=False)
                 except Exception: pass
@@ -192,7 +193,7 @@ def main():
             return
 
     ensure_venv_deps()
-    clone_or_update()
+    clone_or_update(git_cmd)
     setup_model_and_voice(py)
     launch()
 
