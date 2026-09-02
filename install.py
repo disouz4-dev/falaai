@@ -260,6 +260,82 @@ def install_deb_linux():
         log(f"   Falha ao instalar .deb: {e} — caindo para modo dev.")
         return False
 
+def install_msi_windows():
+    """PT-BR: no Windows baixa a última release e instala o .msi nativo (programa de verdade).
+       EN: on Windows download the latest release and install the native .msi."""
+    import tempfile
+    api = "https://api.github.com/repos/disouz4-dev/guaralingo/releases/latest"
+    try:
+        req = urllib.request.Request(api, headers={"User-Agent": "Guaralingo", "Accept": "application/vnd.github+json"})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            d = json.loads(r.read().decode())
+        assets = [a for a in (d.get("assets") or []) if a.get("name", "").endswith(".msi")]
+        if not assets:
+            log("   Nenhum .msi na release — caindo para modo dev (clone).")
+            return False
+        msi = next((a for a in assets if "en-US" in a["name"]), assets[0])
+        url = msi["browser_download_url"]; name = msi["name"]
+        log(f"==> Baixando {name} ...")
+        dest = Path(tempfile.gettempdir()) / name
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Guaralingo"}), timeout=180) as r, open(dest, "wb") as f:
+            while True:
+                chunk = r.read(1 << 20)
+                if not chunk: break
+                f.write(chunk)
+        log("==> Instalando o .msi (o Windows pedirá autorização de administrador)...")
+        rc = run(["msiexec", "/i", str(dest), "/norestart"], check=False).returncode
+        if rc != 0 and rc != 3010:
+            log(f"   msiexec retornou {rc} — tente instalar manualmente: {url}")
+            return False
+        log("✅ Guaralingo instalado como programa do Windows — procure por 'Guaralingo' no menu Iniciar.")
+        launch_msi_app()
+        return True
+    except Exception as e:
+        log(f"   Falha ao instalar .msi: {e} — caindo para modo dev.")
+        return False
+
+def launch_msi_app():
+    """PT-BR: inicia o app instalado via .msi. EN: start the app installed via .msi."""
+    try:
+        for p in [
+            os.path.expandvars(r"%LOCALAPPDATA%\Programs\Guaralingo\Guaralingo.exe"),
+            os.path.expandvars(r"%LOCALAPPDATA%\Guaralingo\Guaralingo.exe"),
+            r"C:\Program Files\Guaralingo\Guaralingo.exe",
+        ]:
+            if os.path.exists(p):
+                subprocess.Popen([p]); return
+        # PT-BR: fallback — procura pelo nome no menu iniciar. EN: search by start menu.
+        shell = "powershell -NoProfile -Command \"Start-Process 'Guaralingo'\""
+        subprocess.run(shell, shell=True, check=False)
+    except Exception as e:
+        log(f"   Não foi possível abrir o app: {e}")
+
+def setup_windows_post_msi(py):
+    """PT-BR: após instalar o .msi, garante o modelo Ollama e as deps do backend
+       (o MSI embute o backend, mas o Python precisa das libs e do modelo).
+       EN: after .msi install, make sure the Ollama model and backend deps exist."""
+    # PT-BR: tenta criar o modelo no Ollama a partir do Modelfile do repo.
+    try:
+        import tempfile as _tf
+        with _tf.TemporaryDirectory() as td:
+            mf = Path(td) / "Modelfile"
+            run(["powershell", "-NoProfile", "-Command",
+                 "Invoke-WebRequest -Uri https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/Modelfile -OutFile " + str(mf)],
+                check=False)
+            if mf.exists():
+                run(["ollama", "create", "small-english-teacher", "-f", str(mf)], check=False)
+            else:
+                run([py, "-c", "import urllib.request; urllib.request.urlretrieve('https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/Modelfile', r'%s')" % str(mf)], check=False)
+                if mf.exists():
+                    run(["ollama", "create", "small-english-teacher", "-f", str(mf)], check=False)
+    except Exception as e:
+        log(f"   Modelo Ollama: {e} — rode depois: ollama create small-english-teacher -f Modelfile")
+    # PT-BR: deps do backend no Python do sistema (o app usa python do PATH).
+    log("==> Instalando dependências do backend...")
+    run([py, "-m", "pip", "install", "-q", "-r", "https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/backend/requirements.txt"], check=False)
+    log("==> Instalando Piper TTS...")
+    run([py, "-m", "pip", "install", "--user", "-q", "piper-tts"], check=False)
+
 def main():
     use_dev = "--dev" in sys.argv
     log(f"🐺 Instalando o Guaralingo ({OS_NAME}) em {DIR}...")
@@ -286,6 +362,14 @@ def main():
                         if mf.exists(): run(["ollama", "create", "small-english-teacher", "-f", str(mf)], check=False)
                 except Exception: pass
             log("\n✅ Pronto! Abra o Guaralingo pelo menu de apps ou rode: guaralingo  /  /usr/bin/app")
+            return
+
+    # PT-BR: Windows: instala o .msi nativo por padrão (programa de verdade). Use --dev
+    #        para o modo servidor (clone + run.bat). EN: Windows installs the native .msi.
+    if OS_NAME == "Windows" and not use_dev:
+        if install_msi_windows():
+            setup_windows_post_msi(py)
+            log("\n✅ Pronto! O Guaralingo foi instalado como um app do Windows.")
             return
 
     ensure_venv_deps()

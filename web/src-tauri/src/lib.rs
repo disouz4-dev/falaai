@@ -11,6 +11,24 @@ fn relaunch_app(app: tauri::AppHandle) {
   app.restart();
 }
 
+// PT-BR: descobre o diretório do backend dentro do pacote/repo. O Tauri mapeia os
+//        resources com prefixo "../.." para <resource_dir>/_up_/_up_/ no bundle.
+// EN:    locate the backend directory inside the bundle/repo. Tauri maps resources
+//        with the "../.." prefix to <resource_dir>/_up_/_up_/ in the bundle.
+fn find_backend_dir(resource_dir: &Option<String>) -> String {
+  if let Some(d) = resource_dir {
+    for cand in [
+      format!("{}/backend", d),
+      format!("{}/_up_/_up_/backend", d),
+    ] {
+      if std::path::Path::new(&cand).is_dir() {
+        return cand;
+      }
+    }
+  }
+  "backend".to_string()
+}
+
 // PT-BR: sobe o backend local (uvicorn) em qualquer OS usando o Python do PATH.
 //        No Linux prefere python3, no Windows "python". Opcionalmente usa o venv
 //        criado no diretório de dados do usuário (gravável), como hoje o sidecar faz.
@@ -68,12 +86,7 @@ fn spawn_backend(app: &tauri::AppHandle) {
       cmd = cmd.env("GUARALINGO_DESKTOP", "1");
       cmd = cmd.env("GUARALINGO_DATA_DIR", &data_dir);
 
-      let backend_dir = resource_dir
-        .as_deref()
-        .map(|d| format!("{}/backend", d))
-        .unwrap_or_else(|| {
-          if cfg!(windows) { "backend".into() } else { "backend".into() }
-        });
+      let backend_dir = find_backend_dir(&resource_dir);
 
       let res = cmd
         .args(["-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"])
