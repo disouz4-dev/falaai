@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { api } from "../../api.js";
+import { playCorrect, playWrong } from "../../sounds.js";
 
 // PT-BR: Ditado — o app fala uma frase (Piper) e você escreve o que ouviu. EN: dictation.
 export default function Listen({ back, level }) {
@@ -27,6 +28,7 @@ export default function Listen({ back, level }) {
     if (!typed.trim()) return;
     const d = await api.post("/api/listen/check", { target, typed });
     setResult(d);
+    if (d.correct) playCorrect(); else playWrong();
   }
 
   return (

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { api } from "../../api.js";
+import { playCorrect, playWrong } from "../../sounds.js";
 
 // PT-BR: Histórias — a IA cria uma mini-história no seu nível, com áudio e perguntas. EN: stories.
 export default function Story({ back, level }) {
@@ -54,7 +55,7 @@ export default function Story({ back, level }) {
                   }
                   return (
                     <button key={oi} className={cls} disabled={chosen !== undefined}
-                      onClick={() => setAnswers({ ...answers, [qi]: oi })}>{opt}</button>
+                      onClick={() => { setAnswers({ ...answers, [qi]: oi }); (oi === q.answer ? playCorrect() : playWrong()); }}>{opt}</button>
                   );
                 })}
               </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { api, mdBlock, mdLite } from "../api.js";
 import { speak, stopSpeaking } from "../speech.js";
+import { playCorrect, playWrong } from "../sounds.js";
 
 export default function Lesson({ nav, lessonId }) {
   const [data, setData] = useState(null);
@@ -82,8 +83,9 @@ export default function Lesson({ nav, lessonId }) {
     if (answered !== null) return;
     setAnswered(oi);
     const ex = data.exercises[i];
-    if (oi === ex.answer) scoreRef.current += 1;
+    if (oi === ex.answer) { scoreRef.current += 1; playCorrect(); }
     else {
+      playWrong();
       // PT-BR: registra o erro no hub de revisão. EN: log the mistake for the review hub.
       api.post("/api/mistakes/log", {
         source: "lição", skill: "grammar", question: ex.question,

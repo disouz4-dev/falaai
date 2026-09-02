@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../../api.js";
+import { playCorrect, playWrong } from "../../sounds.js";
 
 // PT-BR: Revisão espaçada — cartões de vocabulário (mostra a palavra, você diz se lembrou).
 // EN: Spaced review — vocabulary flashcards.
@@ -14,6 +15,7 @@ export default function Srs({ back }) {
   }, []);
 
   function grade(correct) {
+    if (correct) playCorrect(); else playWrong();
     const card = cards[i];
     api.post("/api/srs/review", { term: card.term, correct }).catch(() => {});
     setDone(done + 1);

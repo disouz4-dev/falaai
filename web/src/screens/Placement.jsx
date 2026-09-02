@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { api, skillLabel, mdLite } from "../api.js";
+import { playCorrect, playWrong } from "../sounds.js";
 
 export default function Placement({ nav }) {
   const [phase, setPhase] = useState("intro"); // intro | test | result
@@ -45,6 +46,8 @@ export default function Placement({ nav }) {
     });
     setFeedback(d);
     setProgress(d.progress);
+    if (choice === d.correct_index) playCorrect();
+    else playWrong();
   }
 
   async function next() {
