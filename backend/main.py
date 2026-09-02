@@ -935,7 +935,7 @@ def module_certificate(course_id: str, module_id: str, user: dict = Depends(get_
 def course_task_feedback(body: TaskFeedbackIn):
     """PT-BR: A IA avalia a TAREFA comunicativa do aluno (Task-Based Learning) e dá feedback.
     EN: The AI evaluates the learner's communicative TASK (TBLT) and gives feedback."""
-    _, les = _find_lesson(body.lesson_id)
+    _, _, les = _find_lesson(body.lesson_id)
     if not les:
         raise HTTPException(404, "Lição não encontrada / Lesson not found")
     task = les.get("task", {})

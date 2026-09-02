@@ -19,6 +19,15 @@ export default function Lesson({ nav, lessonId }) {
   const [playedQuestion, setPlayedQuestion] = useState(null);
   const scoreRef = useRef(0);
 
+  const stages = useMemo(
+    () => (data ? ["material", ...data.exercises.map((_, i) => "ex" + i), "task"] : []),
+    [data]
+  );
+
+  const total = stages.length;
+  const stage = stages[idx];
+  const pct = total ? (idx / total) * 100 : 0;
+
   useEffect(() => {
     scoreRef.current = 0;
     setIdx(0); setAnswered(null); setTaskAnswer(""); setTaskFb(""); setTaskDone(false); setFinished(null);
@@ -42,16 +51,7 @@ export default function Lesson({ nav, lessonId }) {
     }
   }, [explain, muted]);
 
-  const stages = useMemo(
-    () => (data ? ["material", ...data.exercises.map((_, i) => "ex" + i), "task"] : []),
-    [data]
-  );
-
   if (!data) return <section className="screen active"><p className="course-intro">Carregando…</p></section>;
-
-  const total = stages.length;
-  const stage = stages[idx];
-  const pct = (idx / total) * 100;
 
   function next() {
     setAnswered(null);
