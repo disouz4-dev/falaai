@@ -36,6 +36,15 @@ export default function Lesson({ nav, lessonId }) {
   }, [lessonId]);
 
   useEffect(() => {
+    if (!muted && stage === "material" && data) {
+      // PT-BR: o professor lê o título e a abertura do material ao iniciar a aula.
+      // EN:    the teacher reads the title and the opening of the lesson material.
+      const intro = (data.title || "") + ". " + (data.can_do || "");
+      speak(intro);
+    }
+  }, [stage, data, muted]);
+
+  useEffect(() => {
     if (!muted && stage?.startsWith("ex") && data) {
       const i = parseInt(stage.slice(2), 10);
       if (i !== playedQuestion && data.exercises[i]) {

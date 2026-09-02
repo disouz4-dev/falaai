@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../api.js";
 
+// PT-BR: escolhe cor de texto legível (escuro ou branco) com base na luminância
+//        percebida do fundo — resolve contraste em módulos de fundo claro.
+// EN:    pick a readable text color (dark or white) from the perceived
+//        luminance of the background — fixes contrast on light module headers.
+function onColor(hex = "#fff") {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return "#fff";
+  const n = parseInt(m[1], 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255; /* eslint-disable-line no-bitwise */
+  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return lum > 0.62 ? "#1a2440" : "#ffffff";
+}
+
 export default function Course({ nav, courseId }) {
   const [course, setCourse] = useState(null);
   const [enrolled, setEnrolled] = useState(true);
@@ -47,13 +60,15 @@ export default function Course({ nav, courseId }) {
           const pct = m.total ? Math.round((m.done / m.total) * 100) : 0;
           return (
             <div className={"module" + (m.locked ? " locked" : "")} key={m.id}>
-              <div className="module-head" style={{ background: m.color }}>
+              <div className="module-head" style={{ background: m.color, color: onColor(m.color) }}>
                 <div className="mh-top"><span>MÓDULO · {m.cefr}</span><span>{m.done}/{m.total}</span></div>
                 <h3>{m.title}</h3>
                 <div className="mh-sub">
                   {m.passed ? "✅ Aprovado" : m.best_score != null ? `Prova: ${m.best_score}%` : ""}
                 </div>
-                <div className="module-bar"><div style={{ width: pct + "%" }} /></div>
+                <div className="module-bar" style={{ background: "rgba(0,0,0,.16)" }}>
+                  <div style={{ width: pct + "%", background: onColor(m.color) }} />
+                </div>
               </div>
 
               {m.coming_soon ? (
@@ -100,7 +115,7 @@ export default function Course({ nav, courseId }) {
         })}
 
         <div className="module">
-          <div className="module-head" style={{ background: course.color }}>
+          <div className="module-head" style={{ background: course.color, color: onColor(course.color) }}>
             <div className="mh-top"><span>🏁</span></div>
             <h3>Prova Final</h3>
             <div className="mh-sub">

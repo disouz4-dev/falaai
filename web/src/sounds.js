@@ -45,11 +45,17 @@ export function playWrong() {
   tone(c, 349.23, 0.12, 0.28, "sine", 0.10);
 }
 
-// PT-BR: clique curto e seco para botões (Web Audio, sem arquivos).
-// EN:    short dry click for buttons (Web Audio, no files).
+// PT-BR: clique de botão — toca o áudio externo /click.mp3 (fornecido pelo usuário).
+// EN:    button click — plays the external /click.mp3 provided by the user.
+let _click = null;
 export function playClick() {
-  const c = audio();
+  const c = audio(); // PT-BR: garante AudioContext destravado/ativo. EN: ensure AudioContext unlocked.
   if (!c) return;
-  tone(c, 900, 0, 0.03, "square", 0.045);
-  tone(c, 450, 0.006, 0.035, "triangle", 0.035);
+  if (!_click) {
+    _click = new Audio("/click.mp3");
+    _click.preload = "auto";
+  }
+  _click.currentTime = 0;
+  const p = _click.play();
+  if (p && p.catch) p.catch(() => {});
 }
