@@ -54,6 +54,10 @@ START_THETA = -1.0  # PT-BR: começa fácil e sobe progressivamente. EN: start e
 with open(ITEMS_PATH, encoding="utf-8") as f:
     ITEM_BANK = json.load(f)["items"]
 
+# PT-BR: banco do teste de nivelamento permanece em INGLÊS (idioma padrão de medida).
+# EN: placement-test bank stays in ENGLISH (default measurement language).
+EN_BANK = [it for it in ITEM_BANK if it.get("lang", "en") == "en"]
+
 # PT-BR: Carrega o currículo do curso. EN: Load the course curriculum.
 COURSE_PATH = BASE_DIR / "data" / "course.json"
 with open(COURSE_PATH, encoding="utf-8") as f:
@@ -74,11 +78,12 @@ def _get_module(course, module_id):
 # PT-BR: Auxiliar de prova adaptativa por módulo (reusa o banco IRT).
 # EN:    Adaptive exam helper per module (reuses the IRT item bank).
 def _exam_items(course, module, count):
-    """PT-BR: sorteia itens do banco calibrados ao nível CEFR do módulo.
-    EN: pick items from the IRT bank tuned to the module's CEFR level."""
-    items = [it for it in ITEM_BANK if it.get("level") == module.get("cefr")]
+    """PT-BR: sorteia itens do banco calibrados ao nível CEFR e idioma do módulo.
+    EN: pick items from the IRT bank tuned to the module's CEFR level and language."""
+    lang = course.get("lang", "en")
+    items = [it for it in ITEM_BANK if it.get("level") == module.get("cefr") and it.get("lang", "en") == lang]
     if len(items) < count:
-        items = [it for it in ITEM_BANK if it.get("b", 0) >= -3.0]
+        items = [it for it in ITEM_BANK if it.get("b", 0) >= -3.0 and it.get("lang", "en") == lang]
     import random
     chosen = random.sample(items, min(count, len(items)))
     # PT-BR: embaralha as opções, recordando a posição da correta.
@@ -359,7 +364,7 @@ def placement_start():
     """PT-BR: Inicia um teste e devolve a 1ª questão. EN: Start a test, return first question."""
     sid = uuid.uuid4().hex
     session = {"responses": [], "used_ids": [], "history": []}
-    first = irt.select_next_item(ITEM_BANK, [], START_THETA)
+    first = irt.select_next_item(EN_BANK, [], START_THETA)
     session["current"] = first["id"]
     SESSIONS[sid] = session
     return {
@@ -379,7 +384,7 @@ def placement_answer(ans: AnswerIn, user: dict = Depends(get_current_user)):
     if session["current"] != ans.item_id:
         raise HTTPException(400, "Item fora de ordem / Out-of-order item")
 
-    item = next((it for it in ITEM_BANK if it["id"] == ans.item_id), None)
+    item = next((it for it in EN_BANK if it["id"] == ans.item_id), None)
     if not item:
         raise HTTPException(404, "Item inexistente / Unknown item")
 
@@ -408,7 +413,7 @@ def placement_answer(ans: AnswerIn, user: dict = Depends(get_current_user)):
         #        já apresentado, para o teste aumentar progressivamente. EN: ramp cap ~1 level.
         hardest_b = max(h["b"] for h in session["history"])
         max_b = hardest_b + 1.0
-        nxt = irt.select_next_item(ITEM_BANK, session["used_ids"], theta, max_b=max_b)
+        nxt = irt.select_next_item(EN_BANK, session["used_ids"], theta, max_b=max_b)
         if nxt is None:
             done = True
         else:
@@ -856,7 +861,8 @@ def course_exam_start(course_id: str, user: dict = Depends(get_current_user)):
             if not ex or not ex["passed"]:
                 raise HTTPException(400, "Conclua e aprove todas as provas dos módulos primeiro.")
     count = c.get("final_exam", {}).get("num_questions", 12)
-    pool = [it for it in ITEM_BANK]
+    lang = c.get("lang", "en")
+    pool = [it for it in ITEM_BANK if it.get("lang", "en") == lang]
     import random
     chosen = random.sample(pool, min(count, len(pool)))
     questions = []

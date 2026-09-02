@@ -1,62 +1,2608 @@
 {
-  "_meta": {
-    "description_pt": "Banco de itens de nivelamento calibrado por nível CEFR. Campo 'b' = dificuldade em logits (modelo de Rasch/TRI). Pontos gramaticais/lexicais reais de cada nível.",
-    "description_en": "Placement item bank calibrated by CEFR level. Field 'b' = difficulty in logits (Rasch/IRT model). Real grammar/lexis targets per level.",
-    "cefr_logit_map": {"A1": -2.5, "A2": -1.5, "B1": -0.5, "B2": 0.5, "C1": 1.5, "C2": 2.5}
+ "_meta": {
+  "description_pt": "Banco de itens de nivelamento calibrado por nível CEFR. Campo 'b' = dificuldade em logits (modelo de Rasch/TRI). Pontos gramaticais/lexicais reais de cada nível.",
+  "description_en": "Placement item bank calibrated by CEFR level. Field 'b' = difficulty in logits (Rasch/IRT model). Real grammar/lexis targets per level.",
+  "cefr_logit_map": {
+   "A1": -2.5,
+   "A2": -1.5,
+   "B1": -0.5,
+   "B2": 0.5,
+   "C1": 1.5,
+   "C2": 2.5
+  }
+ },
+ "items": [
+  {
+   "id": "a1-01",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.6,
+   "target": "verb to be",
+   "question": "My name ___ Ana.",
+   "options": [
+    "am",
+    "is",
+    "are",
+    "be"
+   ],
+   "answer": 1,
+   "explanation_pt": "3ª pessoa do singular do verbo 'to be' é 'is'.",
+   "explanation_en": "Third person singular of 'to be' is 'is'.",
+   "lang": "en"
   },
-  "items": [
-    {"id": "a1-01", "level": "A1", "skill": "grammar", "b": -2.6, "target": "verb to be", "question": "My name ___ Ana.", "options": ["am", "is", "are", "be"], "answer": 1, "explanation_pt": "3ª pessoa do singular do verbo 'to be' é 'is'.", "explanation_en": "Third person singular of 'to be' is 'is'."},
-    {"id": "a1-02", "level": "A1", "skill": "grammar", "b": -2.5, "target": "articles a/an", "question": "She is ___ engineer.", "options": ["a", "an", "the", "-"], "answer": 1, "explanation_pt": "Antes de som de vogal usa-se 'an' (an engineer).", "explanation_en": "Use 'an' before a vowel sound (an engineer)."},
-    {"id": "a1-03", "level": "A1", "skill": "grammar", "b": -2.4, "target": "present simple", "question": "They ___ in London.", "options": ["live", "lives", "living", "to live"], "answer": 0, "explanation_pt": "Com 'they' o present simple não leva -s.", "explanation_en": "With 'they' the present simple has no -s."},
-    {"id": "a1-04", "level": "A1", "skill": "vocabulary", "b": -2.6, "target": "days/numbers", "question": "The day after Monday is ___.", "options": ["Sunday", "Friday", "Tuesday", "March"], "answer": 2, "explanation_pt": "Depois de segunda (Monday) vem terça (Tuesday).", "explanation_en": "After Monday comes Tuesday."},
-    {"id": "a1-05", "level": "A1", "skill": "grammar", "b": -2.3, "target": "plural nouns", "question": "I have two ___.", "options": ["child", "childs", "children", "childrens"], "answer": 2, "explanation_pt": "Plural irregular: child → children.", "explanation_en": "Irregular plural: child → children."},
-    {"id": "a1-06", "level": "A1", "skill": "grammar", "b": -2.5, "target": "possessives", "question": "This is ___ book. (belongs to me)", "options": ["my", "me", "mine's", "I"], "answer": 0, "explanation_pt": "Adjetivo possessivo antes do substantivo: 'my book'.", "explanation_en": "Possessive adjective before the noun: 'my book'."},
-    {"id": "a1-07", "level": "A1", "skill": "vocabulary", "b": -2.4, "target": "basic verbs", "question": "Every morning I ___ coffee.", "options": ["drink", "eat", "read", "drive"], "answer": 0, "explanation_pt": "Café a gente bebe (drink).", "explanation_en": "You drink coffee."},
-    {"id": "a1-08", "level": "A1", "skill": "grammar", "b": -2.2, "target": "there is/are", "question": "___ a cat under the table.", "options": ["There is", "There are", "It has", "Have"], "answer": 0, "explanation_pt": "Singular (a cat) → 'There is'.", "explanation_en": "Singular (a cat) → 'There is'."},
-
-    {"id": "a2-01", "level": "A2", "skill": "grammar", "b": -1.6, "target": "past simple", "question": "Yesterday we ___ to the beach.", "options": ["go", "went", "gone", "goes"], "answer": 1, "explanation_pt": "Passado simples de 'go' é 'went'.", "explanation_en": "Past simple of 'go' is 'went'."},
-    {"id": "a2-02", "level": "A2", "skill": "grammar", "b": -1.5, "target": "comparatives", "question": "This car is ___ than mine.", "options": ["fast", "faster", "fastest", "more fast"], "answer": 1, "explanation_pt": "Adjetivo curto: comparativo com -er (faster).", "explanation_en": "Short adjective: comparative with -er (faster)."},
-    {"id": "a2-03", "level": "A2", "skill": "grammar", "b": -1.4, "target": "going to", "question": "Look at those clouds! It ___ rain.", "options": ["is going to", "go to", "will to", "goes"], "answer": 0, "explanation_pt": "Previsão com evidência: 'be going to'.", "explanation_en": "Prediction from evidence: 'be going to'."},
-    {"id": "a2-04", "level": "A2", "skill": "grammar", "b": -1.5, "target": "some/any", "question": "There isn't ___ milk in the fridge.", "options": ["some", "any", "a", "much of"], "answer": 1, "explanation_pt": "Em frases negativas usa-se 'any'.", "explanation_en": "In negatives we use 'any'."},
-    {"id": "a2-05", "level": "A2", "skill": "vocabulary", "b": -1.3, "target": "collocation", "question": "I need to ___ a decision.", "options": ["do", "make", "take", "have"], "answer": 1, "explanation_pt": "Colocação fixa: 'make a decision'.", "explanation_en": "Fixed collocation: 'make a decision'."},
-    {"id": "a2-06", "level": "A2", "skill": "grammar", "b": -1.6, "target": "adverbs of frequency", "question": "She ___ late for work.", "options": ["is never", "never is", "is not never", "never"], "answer": 0, "explanation_pt": "Advérbio de frequência vem depois do verbo 'to be': 'is never'.", "explanation_en": "Frequency adverb goes after 'to be': 'is never'."},
-    {"id": "a2-07", "level": "A2", "skill": "grammar", "b": -1.4, "target": "countable/uncountable", "question": "How ___ money do you have?", "options": ["many", "much", "some", "few"], "answer": 1, "explanation_pt": "Money é incontável → 'much'.", "explanation_en": "Money is uncountable → 'much'."},
-    {"id": "a2-08", "level": "A2", "skill": "reading", "b": -1.3, "target": "gist", "question": "\"The shop is open from 9 to 6, closed on Sundays.\" When can you NOT go?", "options": ["Monday", "Sunday", "At 10 a.m.", "Friday"], "answer": 1, "explanation_pt": "Fecha aos domingos (closed on Sundays).", "explanation_en": "It's closed on Sundays."},
-
-    {"id": "b1-01", "level": "B1", "skill": "grammar", "b": -0.6, "target": "present perfect", "question": "I ___ never ___ sushi before.", "options": ["have / eaten", "did / eat", "have / ate", "has / eaten"], "answer": 0, "explanation_pt": "Experiência de vida: present perfect 'have + particípio (eaten)'.", "explanation_en": "Life experience: present perfect 'have + past participle (eaten)'."},
-    {"id": "b1-02", "level": "B1", "skill": "grammar", "b": -0.5, "target": "first conditional", "question": "If it rains tomorrow, we ___ at home.", "options": ["stay", "will stay", "would stay", "stayed"], "answer": 1, "explanation_pt": "Primeira condicional: if + presente, will + verbo.", "explanation_en": "First conditional: if + present, will + verb."},
-    {"id": "b1-03", "level": "B1", "skill": "grammar", "b": -0.4, "target": "relative clauses", "question": "That's the woman ___ car was stolen.", "options": ["who", "which", "whose", "whom"], "answer": 2, "explanation_pt": "Posse em oração relativa: 'whose'.", "explanation_en": "Possession in a relative clause: 'whose'."},
-    {"id": "b1-04", "level": "B1", "skill": "grammar", "b": -0.5, "target": "used to", "question": "I ___ smoke, but I quit years ago.", "options": ["use to", "used to", "am used to", "was used"], "answer": 1, "explanation_pt": "Hábito passado que não ocorre mais: 'used to'.", "explanation_en": "Past habit no longer true: 'used to'."},
-    {"id": "b1-05", "level": "B1", "skill": "vocabulary", "b": -0.4, "target": "phrasal verbs", "question": "The meeting was ___ because of the storm.", "options": ["called off", "called on", "called up", "called for"], "answer": 0, "explanation_pt": "'Call off' = cancelar.", "explanation_en": "'Call off' = cancel."},
-    {"id": "b1-06", "level": "B1", "skill": "grammar", "b": -0.6, "target": "gerund/infinitive", "question": "I enjoy ___ to music.", "options": ["listen", "to listen", "listening", "listened"], "answer": 2, "explanation_pt": "Após 'enjoy' usa-se gerúndio (-ing).", "explanation_en": "After 'enjoy' we use the gerund (-ing)."},
-    {"id": "b1-07", "level": "B1", "skill": "grammar", "b": -0.3, "target": "comparatives (much)", "question": "This exam was ___ more difficult than the last one.", "options": ["very", "much", "more", "so"], "answer": 1, "explanation_pt": "Intensificar comparativo: 'much more difficult'.", "explanation_en": "To intensify a comparative: 'much more difficult'."},
-    {"id": "b1-08", "level": "B1", "skill": "reading", "b": -0.4, "target": "inference", "question": "\"Despite the rain, they finished the hike.\" This means they ___.", "options": ["stopped early", "completed it anyway", "cancelled it", "got lost"], "answer": 1, "explanation_pt": "'Despite' = apesar de; concluíram mesmo com chuva.", "explanation_en": "'Despite' = in spite of; they finished it regardless."},
-
-    {"id": "b2-01", "level": "B2", "skill": "grammar", "b": 0.4, "target": "third conditional", "question": "If I ___ earlier, I wouldn't have missed the train.", "options": ["left", "had left", "have left", "would leave"], "answer": 1, "explanation_pt": "Terceira condicional: if + past perfect (had left).", "explanation_en": "Third conditional: if + past perfect (had left)."},
-    {"id": "b2-02", "level": "B2", "skill": "grammar", "b": 0.5, "target": "passive voice", "question": "The bridge ___ in 1932.", "options": ["was built", "built", "has built", "is building"], "answer": 0, "explanation_pt": "Voz passiva no passado: 'was built'.", "explanation_en": "Past passive voice: 'was built'."},
-    {"id": "b2-03", "level": "B2", "skill": "grammar", "b": 0.6, "target": "reported speech", "question": "She said she ___ the report the next day.", "options": ["will finish", "finishes", "would finish", "has finished"], "answer": 2, "explanation_pt": "Discurso indireto: 'will' vira 'would'.", "explanation_en": "Reported speech: 'will' becomes 'would'."},
-    {"id": "b2-04", "level": "B2", "skill": "vocabulary", "b": 0.5, "target": "collocation", "question": "The new policy will have a huge ___ on small businesses.", "options": ["affect", "effect", "impact", "result of"], "answer": 2, "explanation_pt": "'Have an impact on' é a colocação natural aqui.", "explanation_en": "'Have an impact on' is the natural collocation here."},
-    {"id": "b2-05", "level": "B2", "skill": "grammar", "b": 0.4, "target": "present perfect continuous", "question": "My eyes hurt because I ___ at the screen all day.", "options": ["look", "have looked", "have been looking", "am looking"], "answer": 2, "explanation_pt": "Ação contínua com resultado presente: present perfect continuous.", "explanation_en": "Ongoing action with a present result: present perfect continuous."},
-    {"id": "b2-06", "level": "B2", "skill": "grammar", "b": 0.6, "target": "wish + past", "question": "I wish I ___ taller.", "options": ["am", "was", "were", "would be"], "answer": 2, "explanation_pt": "'Wish' + situação presente irreal usa 'were' (subjuntivo).", "explanation_en": "'Wish' + unreal present uses 'were' (subjunctive)."},
-    {"id": "b2-07", "level": "B2", "skill": "vocabulary", "b": 0.5, "target": "phrasal/idiom", "question": "Let's not jump to ___ before we have the facts.", "options": ["decisions", "conclusions", "results", "answers"], "answer": 1, "explanation_pt": "Idiom: 'jump to conclusions' (tirar conclusões precipitadas).", "explanation_en": "Idiom: 'jump to conclusions'."},
-    {"id": "b2-08", "level": "B2", "skill": "reading", "b": 0.4, "target": "attitude", "question": "\"The proposal is ambitious, if somewhat unrealistic.\" The writer is ___.", "options": ["fully supportive", "mildly critical", "openly hostile", "indifferent"], "answer": 1, "explanation_pt": "'if somewhat unrealistic' sinaliza crítica branda.", "explanation_en": "'if somewhat unrealistic' signals mild criticism."},
-
-    {"id": "c1-01", "level": "C1", "skill": "grammar", "b": 1.4, "target": "inversion", "question": "___ had I sat down when the phone rang.", "options": ["No sooner", "Hardly ever", "Rarely", "Never before"], "answer": 0, "explanation_pt": "'No sooner ... than' com inversão: 'No sooner had I...'.", "explanation_en": "'No sooner ... than' with inversion: 'No sooner had I...'."},
-    {"id": "c1-02", "level": "C1", "skill": "grammar", "b": 1.5, "target": "cleft sentence", "question": "___ we need is more time, not more money.", "options": ["That", "What", "Which", "It that"], "answer": 1, "explanation_pt": "Oração clivada com 'What' para dar ênfase.", "explanation_en": "Cleft sentence with 'What' for emphasis."},
-    {"id": "c1-03", "level": "C1", "skill": "vocabulary", "b": 1.6, "target": "collocation (advanced)", "question": "The evidence lends ___ to his theory.", "options": ["weight", "power", "force", "value"], "answer": 0, "explanation_pt": "Colocação: 'lend weight to' (dar respaldo a).", "explanation_en": "Collocation: 'lend weight to' (support)."},
-    {"id": "c1-04", "level": "C1", "skill": "grammar", "b": 1.5, "target": "mixed conditional", "question": "If she had taken the job, she ___ in Paris now.", "options": ["would live", "would have lived", "lived", "will live"], "answer": 0, "explanation_pt": "Condicional mista: causa no passado, resultado no presente ('would live now').", "explanation_en": "Mixed conditional: past cause, present result ('would live now')."},
-    {"id": "c1-05", "level": "C1", "skill": "vocabulary", "b": 1.4, "target": "nuance", "question": "His remarks were rather ___; nobody could tell what he really meant.", "options": ["ambiguous", "obvious", "blunt", "explicit"], "answer": 0, "explanation_pt": "'Ambiguous' = ambíguo, sentido incerto.", "explanation_en": "'Ambiguous' = open to more than one meaning."},
-    {"id": "c1-06", "level": "C1", "skill": "grammar", "b": 1.6, "target": "participle clause", "question": "___ the instructions, she assembled the shelf easily.", "options": ["Having read", "To read", "Read", "She read"], "answer": 0, "explanation_pt": "Oração participial: 'Having read' (após ter lido).", "explanation_en": "Participle clause: 'Having read'."},
-    {"id": "c1-07", "level": "C1", "skill": "reading", "b": 1.5, "target": "tone", "question": "\"One might, generously, call his effort adequate.\" The tone is ___.", "options": ["sincere praise", "faint praise / irony", "neutral report", "enthusiasm"], "answer": 1, "explanation_pt": "'generously' + 'adequate' = elogio irônico/reticente.", "explanation_en": "'generously' + 'adequate' = ironic, faint praise."},
-    {"id": "c1-08", "level": "C1", "skill": "vocabulary", "b": 1.4, "target": "phrasal (formal)", "question": "The committee decided to ___ the new regulations.", "options": ["bring about", "do away with", "get around", "put up with"], "answer": 1, "explanation_pt": "'Do away with' = abolir/eliminar.", "explanation_en": "'Do away with' = abolish/eliminate."},
-
-    {"id": "c2-01", "level": "C2", "skill": "vocabulary", "b": 2.5, "target": "idiom (subtle)", "question": "After the scandal, the minister's career was left ___.", "options": ["in tatters", "on the fence", "under the weather", "over the moon"], "answer": 0, "explanation_pt": "'In tatters' = em frangalhos/arruinada.", "explanation_en": "'In tatters' = ruined."},
-    {"id": "c2-02", "level": "C2", "skill": "grammar", "b": 2.6, "target": "subjunctive (formal)", "question": "The board insists that every member ___ present at the vote.", "options": ["is", "be", "will be", "was"], "answer": 1, "explanation_pt": "Subjuntivo formal após 'insist that': verbo na forma base ('be').", "explanation_en": "Formal subjunctive after 'insist that': base form ('be')."},
-    {"id": "c2-03", "level": "C2", "skill": "vocabulary", "b": 2.5, "target": "register/nuance", "question": "Her prose is admirably ___: not a word is wasted.", "options": ["verbose", "terse", "florid", "convoluted"], "answer": 1, "explanation_pt": "'Terse' = conciso, econômico nas palavras.", "explanation_en": "'Terse' = concise, economical."},
-    {"id": "c2-04", "level": "C2", "skill": "reading", "b": 2.6, "target": "implication", "question": "\"That he succeeded at all is, frankly, a triumph of luck over judgement.\" The writer implies his success was ___.", "options": ["well deserved", "largely fortunate", "carefully planned", "inevitable"], "answer": 1, "explanation_pt": "'luck over judgement' = deveu-se mais à sorte que ao mérito.", "explanation_en": "'luck over judgement' = owed more to luck than to skill."},
-    {"id": "c2-05", "level": "C2", "skill": "grammar", "b": 2.4, "target": "advanced inversion", "question": "Not only ___ the deadline, but he also exceeded every target.", "options": ["he met", "did he meet", "he did meet", "met he"], "answer": 1, "explanation_pt": "'Not only' no início força inversão: 'did he meet'.", "explanation_en": "'Not only' fronted forces inversion: 'did he meet'."},
-    {"id": "c2-06", "level": "C2", "skill": "vocabulary", "b": 2.5, "target": "collocation (rare)", "question": "The negotiations reached an ___ that neither side could break.", "options": ["impasse", "impact", "impulse", "imprint"], "answer": 0, "explanation_pt": "'Impasse' = beco sem saída nas negociações.", "explanation_en": "'Impasse' = deadlock."},
-    {"id": "c2-07", "level": "C2", "skill": "grammar", "b": 2.6, "target": "concessive nuance", "question": "___ his considerable talent, he never quite fulfilled his promise.", "options": ["Owing to", "For all", "Thanks to", "As of"], "answer": 1, "explanation_pt": "'For all' = apesar de todo (concessivo).", "explanation_en": "'For all' = despite (concessive)."},
-    {"id": "c2-08", "level": "C2", "skill": "vocabulary", "b": 2.4, "target": "phrasal (nuanced)", "question": "Don't let his charm ___; he's a ruthless negotiator.", "options": ["take you in", "bring you round", "win you over", "carry you off"], "answer": 0, "explanation_pt": "'Take somebody in' = enganar/iludir.", "explanation_en": "'Take somebody in' = deceive."}
-  ]
+  {
+   "id": "a1-02",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.5,
+   "target": "articles a/an",
+   "question": "She is ___ engineer.",
+   "options": [
+    "a",
+    "an",
+    "the",
+    "-"
+   ],
+   "answer": 1,
+   "explanation_pt": "Antes de som de vogal usa-se 'an' (an engineer).",
+   "explanation_en": "Use 'an' before a vowel sound (an engineer).",
+   "lang": "en"
+  },
+  {
+   "id": "a1-03",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.4,
+   "target": "present simple",
+   "question": "They ___ in London.",
+   "options": [
+    "live",
+    "lives",
+    "living",
+    "to live"
+   ],
+   "answer": 0,
+   "explanation_pt": "Com 'they' o present simple não leva -s.",
+   "explanation_en": "With 'they' the present simple has no -s.",
+   "lang": "en"
+  },
+  {
+   "id": "a1-04",
+   "level": "A1",
+   "skill": "vocabulary",
+   "b": -2.6,
+   "target": "days/numbers",
+   "question": "The day after Monday is ___.",
+   "options": [
+    "Sunday",
+    "Friday",
+    "Tuesday",
+    "March"
+   ],
+   "answer": 2,
+   "explanation_pt": "Depois de segunda (Monday) vem terça (Tuesday).",
+   "explanation_en": "After Monday comes Tuesday.",
+   "lang": "en"
+  },
+  {
+   "id": "a1-05",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.3,
+   "target": "plural nouns",
+   "question": "I have two ___.",
+   "options": [
+    "child",
+    "childs",
+    "children",
+    "childrens"
+   ],
+   "answer": 2,
+   "explanation_pt": "Plural irregular: child → children.",
+   "explanation_en": "Irregular plural: child → children.",
+   "lang": "en"
+  },
+  {
+   "id": "a1-06",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.5,
+   "target": "possessives",
+   "question": "This is ___ book. (belongs to me)",
+   "options": [
+    "my",
+    "me",
+    "mine's",
+    "I"
+   ],
+   "answer": 0,
+   "explanation_pt": "Adjetivo possessivo antes do substantivo: 'my book'.",
+   "explanation_en": "Possessive adjective before the noun: 'my book'.",
+   "lang": "en"
+  },
+  {
+   "id": "a1-07",
+   "level": "A1",
+   "skill": "vocabulary",
+   "b": -2.4,
+   "target": "basic verbs",
+   "question": "Every morning I ___ coffee.",
+   "options": [
+    "drink",
+    "eat",
+    "read",
+    "drive"
+   ],
+   "answer": 0,
+   "explanation_pt": "Café a gente bebe (drink).",
+   "explanation_en": "You drink coffee.",
+   "lang": "en"
+  },
+  {
+   "id": "a1-08",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.2,
+   "target": "there is/are",
+   "question": "___ a cat under the table.",
+   "options": [
+    "There is",
+    "There are",
+    "It has",
+    "Have"
+   ],
+   "answer": 0,
+   "explanation_pt": "Singular (a cat) → 'There is'.",
+   "explanation_en": "Singular (a cat) → 'There is'.",
+   "lang": "en"
+  },
+  {
+   "id": "a2-01",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.6,
+   "target": "past simple",
+   "question": "Yesterday we ___ to the beach.",
+   "options": [
+    "go",
+    "went",
+    "gone",
+    "goes"
+   ],
+   "answer": 1,
+   "explanation_pt": "Passado simples de 'go' é 'went'.",
+   "explanation_en": "Past simple of 'go' is 'went'.",
+   "lang": "en"
+  },
+  {
+   "id": "a2-02",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.5,
+   "target": "comparatives",
+   "question": "This car is ___ than mine.",
+   "options": [
+    "fast",
+    "faster",
+    "fastest",
+    "more fast"
+   ],
+   "answer": 1,
+   "explanation_pt": "Adjetivo curto: comparativo com -er (faster).",
+   "explanation_en": "Short adjective: comparative with -er (faster).",
+   "lang": "en"
+  },
+  {
+   "id": "a2-03",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.4,
+   "target": "going to",
+   "question": "Look at those clouds! It ___ rain.",
+   "options": [
+    "is going to",
+    "go to",
+    "will to",
+    "goes"
+   ],
+   "answer": 0,
+   "explanation_pt": "Previsão com evidência: 'be going to'.",
+   "explanation_en": "Prediction from evidence: 'be going to'.",
+   "lang": "en"
+  },
+  {
+   "id": "a2-04",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.5,
+   "target": "some/any",
+   "question": "There isn't ___ milk in the fridge.",
+   "options": [
+    "some",
+    "any",
+    "a",
+    "much of"
+   ],
+   "answer": 1,
+   "explanation_pt": "Em frases negativas usa-se 'any'.",
+   "explanation_en": "In negatives we use 'any'.",
+   "lang": "en"
+  },
+  {
+   "id": "a2-05",
+   "level": "A2",
+   "skill": "vocabulary",
+   "b": -1.3,
+   "target": "collocation",
+   "question": "I need to ___ a decision.",
+   "options": [
+    "do",
+    "make",
+    "take",
+    "have"
+   ],
+   "answer": 1,
+   "explanation_pt": "Colocação fixa: 'make a decision'.",
+   "explanation_en": "Fixed collocation: 'make a decision'.",
+   "lang": "en"
+  },
+  {
+   "id": "a2-06",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.6,
+   "target": "adverbs of frequency",
+   "question": "She ___ late for work.",
+   "options": [
+    "is never",
+    "never is",
+    "is not never",
+    "never"
+   ],
+   "answer": 0,
+   "explanation_pt": "Advérbio de frequência vem depois do verbo 'to be': 'is never'.",
+   "explanation_en": "Frequency adverb goes after 'to be': 'is never'.",
+   "lang": "en"
+  },
+  {
+   "id": "a2-07",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.4,
+   "target": "countable/uncountable",
+   "question": "How ___ money do you have?",
+   "options": [
+    "many",
+    "much",
+    "some",
+    "few"
+   ],
+   "answer": 1,
+   "explanation_pt": "Money é incontável → 'much'.",
+   "explanation_en": "Money is uncountable → 'much'.",
+   "lang": "en"
+  },
+  {
+   "id": "a2-08",
+   "level": "A2",
+   "skill": "reading",
+   "b": -1.3,
+   "target": "gist",
+   "question": "\"The shop is open from 9 to 6, closed on Sundays.\" When can you NOT go?",
+   "options": [
+    "Monday",
+    "Sunday",
+    "At 10 a.m.",
+    "Friday"
+   ],
+   "answer": 1,
+   "explanation_pt": "Fecha aos domingos (closed on Sundays).",
+   "explanation_en": "It's closed on Sundays.",
+   "lang": "en"
+  },
+  {
+   "id": "b1-01",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.6,
+   "target": "present perfect",
+   "question": "I ___ never ___ sushi before.",
+   "options": [
+    "have / eaten",
+    "did / eat",
+    "have / ate",
+    "has / eaten"
+   ],
+   "answer": 0,
+   "explanation_pt": "Experiência de vida: present perfect 'have + particípio (eaten)'.",
+   "explanation_en": "Life experience: present perfect 'have + past participle (eaten)'.",
+   "lang": "en"
+  },
+  {
+   "id": "b1-02",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.5,
+   "target": "first conditional",
+   "question": "If it rains tomorrow, we ___ at home.",
+   "options": [
+    "stay",
+    "will stay",
+    "would stay",
+    "stayed"
+   ],
+   "answer": 1,
+   "explanation_pt": "Primeira condicional: if + presente, will + verbo.",
+   "explanation_en": "First conditional: if + present, will + verb.",
+   "lang": "en"
+  },
+  {
+   "id": "b1-03",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.4,
+   "target": "relative clauses",
+   "question": "That's the woman ___ car was stolen.",
+   "options": [
+    "who",
+    "which",
+    "whose",
+    "whom"
+   ],
+   "answer": 2,
+   "explanation_pt": "Posse em oração relativa: 'whose'.",
+   "explanation_en": "Possession in a relative clause: 'whose'.",
+   "lang": "en"
+  },
+  {
+   "id": "b1-04",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.5,
+   "target": "used to",
+   "question": "I ___ smoke, but I quit years ago.",
+   "options": [
+    "use to",
+    "used to",
+    "am used to",
+    "was used"
+   ],
+   "answer": 1,
+   "explanation_pt": "Hábito passado que não ocorre mais: 'used to'.",
+   "explanation_en": "Past habit no longer true: 'used to'.",
+   "lang": "en"
+  },
+  {
+   "id": "b1-05",
+   "level": "B1",
+   "skill": "vocabulary",
+   "b": -0.4,
+   "target": "phrasal verbs",
+   "question": "The meeting was ___ because of the storm.",
+   "options": [
+    "called off",
+    "called on",
+    "called up",
+    "called for"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Call off' = cancelar.",
+   "explanation_en": "'Call off' = cancel.",
+   "lang": "en"
+  },
+  {
+   "id": "b1-06",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.6,
+   "target": "gerund/infinitive",
+   "question": "I enjoy ___ to music.",
+   "options": [
+    "listen",
+    "to listen",
+    "listening",
+    "listened"
+   ],
+   "answer": 2,
+   "explanation_pt": "Após 'enjoy' usa-se gerúndio (-ing).",
+   "explanation_en": "After 'enjoy' we use the gerund (-ing).",
+   "lang": "en"
+  },
+  {
+   "id": "b1-07",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.3,
+   "target": "comparatives (much)",
+   "question": "This exam was ___ more difficult than the last one.",
+   "options": [
+    "very",
+    "much",
+    "more",
+    "so"
+   ],
+   "answer": 1,
+   "explanation_pt": "Intensificar comparativo: 'much more difficult'.",
+   "explanation_en": "To intensify a comparative: 'much more difficult'.",
+   "lang": "en"
+  },
+  {
+   "id": "b1-08",
+   "level": "B1",
+   "skill": "reading",
+   "b": -0.4,
+   "target": "inference",
+   "question": "\"Despite the rain, they finished the hike.\" This means they ___.",
+   "options": [
+    "stopped early",
+    "completed it anyway",
+    "cancelled it",
+    "got lost"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Despite' = apesar de; concluíram mesmo com chuva.",
+   "explanation_en": "'Despite' = in spite of; they finished it regardless.",
+   "lang": "en"
+  },
+  {
+   "id": "b2-01",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.4,
+   "target": "third conditional",
+   "question": "If I ___ earlier, I wouldn't have missed the train.",
+   "options": [
+    "left",
+    "had left",
+    "have left",
+    "would leave"
+   ],
+   "answer": 1,
+   "explanation_pt": "Terceira condicional: if + past perfect (had left).",
+   "explanation_en": "Third conditional: if + past perfect (had left).",
+   "lang": "en"
+  },
+  {
+   "id": "b2-02",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.5,
+   "target": "passive voice",
+   "question": "The bridge ___ in 1932.",
+   "options": [
+    "was built",
+    "built",
+    "has built",
+    "is building"
+   ],
+   "answer": 0,
+   "explanation_pt": "Voz passiva no passado: 'was built'.",
+   "explanation_en": "Past passive voice: 'was built'.",
+   "lang": "en"
+  },
+  {
+   "id": "b2-03",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.6,
+   "target": "reported speech",
+   "question": "She said she ___ the report the next day.",
+   "options": [
+    "will finish",
+    "finishes",
+    "would finish",
+    "has finished"
+   ],
+   "answer": 2,
+   "explanation_pt": "Discurso indireto: 'will' vira 'would'.",
+   "explanation_en": "Reported speech: 'will' becomes 'would'.",
+   "lang": "en"
+  },
+  {
+   "id": "b2-04",
+   "level": "B2",
+   "skill": "vocabulary",
+   "b": 0.5,
+   "target": "collocation",
+   "question": "The new policy will have a huge ___ on small businesses.",
+   "options": [
+    "affect",
+    "effect",
+    "impact",
+    "result of"
+   ],
+   "answer": 2,
+   "explanation_pt": "'Have an impact on' é a colocação natural aqui.",
+   "explanation_en": "'Have an impact on' is the natural collocation here.",
+   "lang": "en"
+  },
+  {
+   "id": "b2-05",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.4,
+   "target": "present perfect continuous",
+   "question": "My eyes hurt because I ___ at the screen all day.",
+   "options": [
+    "look",
+    "have looked",
+    "have been looking",
+    "am looking"
+   ],
+   "answer": 2,
+   "explanation_pt": "Ação contínua com resultado presente: present perfect continuous.",
+   "explanation_en": "Ongoing action with a present result: present perfect continuous.",
+   "lang": "en"
+  },
+  {
+   "id": "b2-06",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.6,
+   "target": "wish + past",
+   "question": "I wish I ___ taller.",
+   "options": [
+    "am",
+    "was",
+    "were",
+    "would be"
+   ],
+   "answer": 2,
+   "explanation_pt": "'Wish' + situação presente irreal usa 'were' (subjuntivo).",
+   "explanation_en": "'Wish' + unreal present uses 'were' (subjunctive).",
+   "lang": "en"
+  },
+  {
+   "id": "b2-07",
+   "level": "B2",
+   "skill": "vocabulary",
+   "b": 0.5,
+   "target": "phrasal/idiom",
+   "question": "Let's not jump to ___ before we have the facts.",
+   "options": [
+    "decisions",
+    "conclusions",
+    "results",
+    "answers"
+   ],
+   "answer": 1,
+   "explanation_pt": "Idiom: 'jump to conclusions' (tirar conclusões precipitadas).",
+   "explanation_en": "Idiom: 'jump to conclusions'.",
+   "lang": "en"
+  },
+  {
+   "id": "b2-08",
+   "level": "B2",
+   "skill": "reading",
+   "b": 0.4,
+   "target": "attitude",
+   "question": "\"The proposal is ambitious, if somewhat unrealistic.\" The writer is ___.",
+   "options": [
+    "fully supportive",
+    "mildly critical",
+    "openly hostile",
+    "indifferent"
+   ],
+   "answer": 1,
+   "explanation_pt": "'if somewhat unrealistic' sinaliza crítica branda.",
+   "explanation_en": "'if somewhat unrealistic' signals mild criticism.",
+   "lang": "en"
+  },
+  {
+   "id": "c1-01",
+   "level": "C1",
+   "skill": "grammar",
+   "b": 1.4,
+   "target": "inversion",
+   "question": "___ had I sat down when the phone rang.",
+   "options": [
+    "No sooner",
+    "Hardly ever",
+    "Rarely",
+    "Never before"
+   ],
+   "answer": 0,
+   "explanation_pt": "'No sooner ... than' com inversão: 'No sooner had I...'.",
+   "explanation_en": "'No sooner ... than' with inversion: 'No sooner had I...'.",
+   "lang": "en"
+  },
+  {
+   "id": "c1-02",
+   "level": "C1",
+   "skill": "grammar",
+   "b": 1.5,
+   "target": "cleft sentence",
+   "question": "___ we need is more time, not more money.",
+   "options": [
+    "That",
+    "What",
+    "Which",
+    "It that"
+   ],
+   "answer": 1,
+   "explanation_pt": "Oração clivada com 'What' para dar ênfase.",
+   "explanation_en": "Cleft sentence with 'What' for emphasis.",
+   "lang": "en"
+  },
+  {
+   "id": "c1-03",
+   "level": "C1",
+   "skill": "vocabulary",
+   "b": 1.6,
+   "target": "collocation (advanced)",
+   "question": "The evidence lends ___ to his theory.",
+   "options": [
+    "weight",
+    "power",
+    "force",
+    "value"
+   ],
+   "answer": 0,
+   "explanation_pt": "Colocação: 'lend weight to' (dar respaldo a).",
+   "explanation_en": "Collocation: 'lend weight to' (support).",
+   "lang": "en"
+  },
+  {
+   "id": "c1-04",
+   "level": "C1",
+   "skill": "grammar",
+   "b": 1.5,
+   "target": "mixed conditional",
+   "question": "If she had taken the job, she ___ in Paris now.",
+   "options": [
+    "would live",
+    "would have lived",
+    "lived",
+    "will live"
+   ],
+   "answer": 0,
+   "explanation_pt": "Condicional mista: causa no passado, resultado no presente ('would live now').",
+   "explanation_en": "Mixed conditional: past cause, present result ('would live now').",
+   "lang": "en"
+  },
+  {
+   "id": "c1-05",
+   "level": "C1",
+   "skill": "vocabulary",
+   "b": 1.4,
+   "target": "nuance",
+   "question": "His remarks were rather ___; nobody could tell what he really meant.",
+   "options": [
+    "ambiguous",
+    "obvious",
+    "blunt",
+    "explicit"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Ambiguous' = ambíguo, sentido incerto.",
+   "explanation_en": "'Ambiguous' = open to more than one meaning.",
+   "lang": "en"
+  },
+  {
+   "id": "c1-06",
+   "level": "C1",
+   "skill": "grammar",
+   "b": 1.6,
+   "target": "participle clause",
+   "question": "___ the instructions, she assembled the shelf easily.",
+   "options": [
+    "Having read",
+    "To read",
+    "Read",
+    "She read"
+   ],
+   "answer": 0,
+   "explanation_pt": "Oração participial: 'Having read' (após ter lido).",
+   "explanation_en": "Participle clause: 'Having read'.",
+   "lang": "en"
+  },
+  {
+   "id": "c1-07",
+   "level": "C1",
+   "skill": "reading",
+   "b": 1.5,
+   "target": "tone",
+   "question": "\"One might, generously, call his effort adequate.\" The tone is ___.",
+   "options": [
+    "sincere praise",
+    "faint praise / irony",
+    "neutral report",
+    "enthusiasm"
+   ],
+   "answer": 1,
+   "explanation_pt": "'generously' + 'adequate' = elogio irônico/reticente.",
+   "explanation_en": "'generously' + 'adequate' = ironic, faint praise.",
+   "lang": "en"
+  },
+  {
+   "id": "c1-08",
+   "level": "C1",
+   "skill": "vocabulary",
+   "b": 1.4,
+   "target": "phrasal (formal)",
+   "question": "The committee decided to ___ the new regulations.",
+   "options": [
+    "bring about",
+    "do away with",
+    "get around",
+    "put up with"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Do away with' = abolir/eliminar.",
+   "explanation_en": "'Do away with' = abolish/eliminate.",
+   "lang": "en"
+  },
+  {
+   "id": "c2-01",
+   "level": "C2",
+   "skill": "vocabulary",
+   "b": 2.5,
+   "target": "idiom (subtle)",
+   "question": "After the scandal, the minister's career was left ___.",
+   "options": [
+    "in tatters",
+    "on the fence",
+    "under the weather",
+    "over the moon"
+   ],
+   "answer": 0,
+   "explanation_pt": "'In tatters' = em frangalhos/arruinada.",
+   "explanation_en": "'In tatters' = ruined.",
+   "lang": "en"
+  },
+  {
+   "id": "c2-02",
+   "level": "C2",
+   "skill": "grammar",
+   "b": 2.6,
+   "target": "subjunctive (formal)",
+   "question": "The board insists that every member ___ present at the vote.",
+   "options": [
+    "is",
+    "be",
+    "will be",
+    "was"
+   ],
+   "answer": 1,
+   "explanation_pt": "Subjuntivo formal após 'insist that': verbo na forma base ('be').",
+   "explanation_en": "Formal subjunctive after 'insist that': base form ('be').",
+   "lang": "en"
+  },
+  {
+   "id": "c2-03",
+   "level": "C2",
+   "skill": "vocabulary",
+   "b": 2.5,
+   "target": "register/nuance",
+   "question": "Her prose is admirably ___: not a word is wasted.",
+   "options": [
+    "verbose",
+    "terse",
+    "florid",
+    "convoluted"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Terse' = conciso, econômico nas palavras.",
+   "explanation_en": "'Terse' = concise, economical.",
+   "lang": "en"
+  },
+  {
+   "id": "c2-04",
+   "level": "C2",
+   "skill": "reading",
+   "b": 2.6,
+   "target": "implication",
+   "question": "\"That he succeeded at all is, frankly, a triumph of luck over judgement.\" The writer implies his success was ___.",
+   "options": [
+    "well deserved",
+    "largely fortunate",
+    "carefully planned",
+    "inevitable"
+   ],
+   "answer": 1,
+   "explanation_pt": "'luck over judgement' = deveu-se mais à sorte que ao mérito.",
+   "explanation_en": "'luck over judgement' = owed more to luck than to skill.",
+   "lang": "en"
+  },
+  {
+   "id": "c2-05",
+   "level": "C2",
+   "skill": "grammar",
+   "b": 2.4,
+   "target": "advanced inversion",
+   "question": "Not only ___ the deadline, but he also exceeded every target.",
+   "options": [
+    "he met",
+    "did he meet",
+    "he did meet",
+    "met he"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Not only' no início força inversão: 'did he meet'.",
+   "explanation_en": "'Not only' fronted forces inversion: 'did he meet'.",
+   "lang": "en"
+  },
+  {
+   "id": "c2-06",
+   "level": "C2",
+   "skill": "vocabulary",
+   "b": 2.5,
+   "target": "collocation (rare)",
+   "question": "The negotiations reached an ___ that neither side could break.",
+   "options": [
+    "impasse",
+    "impact",
+    "impulse",
+    "imprint"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Impasse' = beco sem saída nas negociações.",
+   "explanation_en": "'Impasse' = deadlock.",
+   "lang": "en"
+  },
+  {
+   "id": "c2-07",
+   "level": "C2",
+   "skill": "grammar",
+   "b": 2.6,
+   "target": "concessive nuance",
+   "question": "___ his considerable talent, he never quite fulfilled his promise.",
+   "options": [
+    "Owing to",
+    "For all",
+    "Thanks to",
+    "As of"
+   ],
+   "answer": 1,
+   "explanation_pt": "'For all' = apesar de todo (concessivo).",
+   "explanation_en": "'For all' = despite (concessive).",
+   "lang": "en"
+  },
+  {
+   "id": "c2-08",
+   "level": "C2",
+   "skill": "vocabulary",
+   "b": 2.4,
+   "target": "phrasal (nuanced)",
+   "question": "Don't let his charm ___; he's a ruthless negotiator.",
+   "options": [
+    "take you in",
+    "bring you round",
+    "win you over",
+    "carry you off"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Take somebody in' = enganar/iludir.",
+   "explanation_en": "'Take somebody in' = deceive.",
+   "lang": "en"
+  },
+  {
+   "id": "es-a1-01",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.6,
+   "target": "verbo ser/estar (ser)",
+   "question": "Yo ___ estudiante de español.",
+   "options": [
+    "soy",
+    "estoy",
+    "es",
+    "hay"
+   ],
+   "answer": 0,
+   "explanation_pt": "O verbo 'ser' na 1ª pessoa do singular é 'soy'.",
+   "explanation_en": "The verb 'ser' in the first person singular is 'soy'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-a1-02",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.5,
+   "target": "llamarse",
+   "question": "Me ___ María.",
+   "options": [
+    "llamo",
+    "llama",
+    "llamas",
+    "llamó"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Me llamo' é a forma padrão de apresentar o nome em espanhol.",
+   "explanation_en": "'Me llamo' is the standard way to introduce yourself in Spanish.",
+   "lang": "es"
+  },
+  {
+   "id": "es-a1-03",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.4,
+   "target": "presente de indicativo (verbos regulares -ar)",
+   "question": "Ella ___ español todos los días.",
+   "options": [
+    "habla",
+    "hablas",
+    "hablamos",
+    "hablan"
+   ],
+   "answer": 0,
+   "explanation_pt": "Na 3ª pessoa do singular do verbo '-ar', a terminação é '-a' (habla).",
+   "explanation_en": "In the third person singular of '-ar' verbs, the ending is '-a' (habla).",
+   "lang": "es"
+  },
+  {
+   "id": "es-a1-04",
+   "level": "A1",
+   "skill": "vocabulary",
+   "b": -2.6,
+   "target": "artículos definidos",
+   "question": "___ perro es grande.",
+   "options": [
+    "El",
+    "La",
+    "Un",
+    "Lo"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Perro' é masculino singular, então o artigo definido correto é 'El'.",
+   "explanation_en": "'Perro' is masculine singular, so the correct definite article is 'El'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-a1-05",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.3,
+   "target": "plurales regulares",
+   "question": "Tengo dos ___.",
+   "options": [
+    "libros",
+    "libro",
+    "libras",
+    "libroses"
+   ],
+   "answer": 0,
+   "explanation_pt": "Plural regular: 'libro' → 'libros' (adicionar -s).",
+   "explanation_en": "Regular plural: 'libro' → 'libros' (add -s).",
+   "lang": "es"
+  },
+  {
+   "id": "es-a1-06",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.5,
+   "target": "verbo estar (ubicación)",
+   "question": "Nosotros ___ en la oficina.",
+   "options": [
+    "estamos",
+    "somos",
+    "está",
+    "hay"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Estar' na 1ª pessoa do plural é 'estamos'. Usamos 'estar' para localização.",
+   "explanation_en": "'Estar' in the first person plural is 'estamos'. We use 'estar' for location.",
+   "lang": "es"
+  },
+  {
+   "id": "es-a1-07",
+   "level": "A1",
+   "skill": "vocabulary",
+   "b": -2.4,
+   "target": "números y cantidades",
+   "question": "Quiero ___ vasos de agua, por favor.",
+   "options": [
+    "tres",
+    "alla",
+    "cual",
+    "cuyo"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Tres' é o número 3 em espanhol.",
+   "explanation_en": "'Tres' is the number 3 in Spanish.",
+   "lang": "es"
+  },
+  {
+   "id": "es-a1-08",
+   "level": "A1",
+   "skill": "grammar",
+   "b": -2.2,
+   "target": "hay (existencia)",
+   "question": "___ una farmacia cerca de aquí.",
+   "options": [
+    "Hay",
+    "Es",
+    "Está",
+    "Tiene"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Hay' é usado para expressar existência (corresponde a 'there is/are').",
+   "explanation_en": "'Hay' is used to express existence (equivalent to 'there is/are').",
+   "lang": "es"
+  },
+  {
+   "id": "es-a2-01",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.6,
+   "target": "pretérito indefinido",
+   "question": "Ayer nosotros ___ al cine.",
+   "options": [
+    "fuimos",
+    "fuimos",
+    "ir",
+    "iremos"
+   ],
+   "answer": 0,
+   "explanation_pt": "Pretérito indefinido de 'ir' na 1ª pessoa do plural é 'fuimos'.",
+   "explanation_en": "Past simple of 'ir' in the first person plural is 'fuimos'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-a2-02",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.5,
+   "target": "futuro perifrástico (ir a + infinitivo)",
+   "question": "Mañana ___ a la playa.",
+   "options": [
+    "voy a ir",
+    "voy ir",
+    "iré",
+    "iba"
+   ],
+   "answer": 0,
+   "explanation_pt": "Futuro perifrástico: 'ir a' + infinitivo. A conjugação correta é 'voy a ir'.",
+   "explanation_en": "Periphrastic future: 'ir a' + infinitive. The correct conjugation is 'voy a ir'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-a2-03",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.4,
+   "target": "comparativo de superioridad",
+   "question": "Madrid es ___ grande que Barcelona.",
+   "options": [
+    "más",
+    "muy",
+    "mucho",
+    "tan"
+   ],
+   "answer": 0,
+   "explanation_pt": "Comparativo de superioridade: 'más' + adjetivo + 'que'.",
+   "explanation_en": "Comparative of superiority: 'más' + adjective + 'que'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-a2-04",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.5,
+   "target": "estar + gerundio (perífrasis)",
+   "question": "Ahora mismo ___ la cena.",
+   "options": [
+    "estoy cocinando",
+    "cocino",
+    "cociné",
+    "cocinaré"
+   ],
+   "answer": 0,
+   "explanation_pt": "Ação em progresso: 'estar' + gerúndio (-ando/-iendo).",
+   "explanation_en": "Progressive action: 'estar' + gerund (-ando/-iendo).",
+   "lang": "es"
+  },
+  {
+   "id": "es-a2-05",
+   "level": "A2",
+   "skill": "vocabulary",
+   "b": -1.3,
+   "target": "colocación verbal",
+   "question": "Necesito ___ una decisión importante.",
+   "options": [
+    "tomar",
+    "hacer",
+    "poner",
+    "dar"
+   ],
+   "answer": 0,
+   "explanation_pt": "Colocação fixa: 'tomar una decisión' (tomar uma decisão).",
+   "explanation_en": "Fixed collocation: 'tomar una decisión' (make a decision).",
+   "lang": "es"
+  },
+  {
+   "id": "es-a2-06",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.6,
+   "target": "pretérito perfecto compuesto",
+   "question": "Hoy ___ tres cafés.",
+   "options": [
+    "he bebido",
+    "bebí",
+    "bebo",
+    "beberé"
+   ],
+   "answer": 0,
+   "explanation_pt": "Pretérito perfeito com 'hoy' (tempo recente): 'haber' + participio → 'he bebido'.",
+   "explanation_en": "Present perfect with 'today' (recent time): 'haber' + past participle → 'he bebido'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-a2-07",
+   "level": "A2",
+   "skill": "grammar",
+   "b": -1.4,
+   "target": "imperativo afirmativo",
+   "question": "___ la puerta, por favor.",
+   "options": [
+    "Abre",
+    "Abrir",
+    "Abres",
+    "Abrió"
+   ],
+   "answer": 0,
+   "explanation_pt": "Imperativo afirmativo para 'tú': 'abre' (do verbo abrir).",
+   "explanation_en": "Affirmative imperative for 'tú': 'abre' (from the verb abrir).",
+   "lang": "es"
+  },
+  {
+   "id": "es-a2-08",
+   "level": "A2",
+   "skill": "reading",
+   "b": -1.3,
+   "target": "comprensión de anuncio",
+   "question": "\"La tienda abre de lunes a sábado, de 9 a 20 h.\" ¿Cuándo NO puedes ir?",
+   "options": [
+    "el lunes a las 10",
+    "el domingo",
+    "el viernes por la tarde",
+    "el sábado a las 11"
+   ],
+   "answer": 1,
+   "explanation_pt": "La tienda no abre los domingos.",
+   "explanation_en": "The shop is not open on Sundays.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b1-01",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.6,
+   "target": "contraste pretéritos (indefinido vs. perfecto)",
+   "question": "Ayer ___ una película, pero no me gustó mucho.",
+   "options": [
+    "vi",
+    "he visto",
+    "veía",
+    "veré"
+   ],
+   "answer": 0,
+   "explanation_pt": "Com 'ayer' e evento puntual no passado, usa-se o pretérito indefinido: 'vi'.",
+   "explanation_en": "With 'yesterday' and a past specific event, we use the preterite: 'vi'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b1-02",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.5,
+   "target": "condicional simple (1ª condicional)",
+   "question": "Si llueve mañana, ___ en casa.",
+   "options": [
+    "quedaré",
+    "quedría",
+    "quedaba",
+    "quedé"
+   ],
+   "answer": 0,
+   "explanation_pt": "Primeira condicional: se + presente do indicativo, verbo no condicional/futuro → 'quedaré'.",
+   "explanation_en": "First conditional: if + present indicative, future/conditional tense → 'quedaré'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b1-03",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.4,
+   "target": "deber + infinitivo (obligación)",
+   "question": "Los alumnos ___ entregar el trabajo antes del viernes.",
+   "options": [
+    "deben",
+    "pueden",
+    "quieren",
+    "saben"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Deber' + infinitivo expressa obrigação ou dever.",
+   "explanation_en": "'Deber' + infinitive expresses obligation or duty.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b1-04",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.5,
+   "target": "estilo indirecto (discurso indirecto)",
+   "question": "María dijo que ___ al día siguiente.",
+   "options": [
+    "vendría",
+    "viene",
+    "vendrá",
+    "venía"
+   ],
+   "answer": 0,
+   "explanation_pt": "No discurso indireto, o futuro do indicativo se transforma em condicional: 'vendría'.",
+   "explanation_en": "In reported speech, the future indicative becomes conditional: 'vendría'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b1-05",
+   "level": "B1",
+   "skill": "vocabulary",
+   "b": -0.4,
+   "target": "expresiones con tener",
+   "question": "Hoy ___ mucho frío.",
+   "options": [
+    "tengo",
+    "soy",
+    "estoy",
+    "hay"
+   ],
+   "answer": 0,
+   "explanation_pt": "Em espanhol, 'frío' e 'calor' usam 'tener' (tenía frigo), não 'ser/estar'.",
+   "explanation_en": "In Spanish, 'frío' and 'calor' use 'tener' (I'm cold), not 'ser/estar'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b1-06",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.6,
+   "target": "pluscuamperfecto",
+   "question": "Cuando llegué, ellos ___ de cenar.",
+   "options": [
+    "habían terminado",
+    "terminaron",
+    "terminaban",
+    "terminarán"
+   ],
+   "answer": 0,
+   "explanation_pt": "Pluscuamperfecto: 'haber' no pretérito imperfeito + participio → 'habían terminado'.",
+   "explanation_en": "Pluperfect: 'haber' in imperfect + past participle → 'habían terminado'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b1-07",
+   "level": "B1",
+   "skill": "grammar",
+   "b": -0.3,
+   "target": "tener que + infinitivo (necesidad)",
+   "question": "___ estudiar mucho para el examen.",
+   "options": [
+    "Tengo que",
+    "Tengo",
+    "Soy",
+    "Debo"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Tener que' + infinitivo expressa necessidade pessoal.",
+   "explanation_en": "'Tener que' + infinitive expresses personal necessity.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b1-08",
+   "level": "B1",
+   "skill": "reading",
+   "b": -0.4,
+   "target": "inferencia",
+   "question": "\"A pesar de la tormenta, terminaron la excursión.\" Esto significa que ___.",
+   "options": [
+    "se canceló",
+    "la completaron de todos modos",
+    "se perdieron",
+    "empezaron a llover"
+   ],
+   "answer": 1,
+   "explanation_pt": "'A pesar de' = apesar de; eles concluíram a excursão mesmo com a tempestade.",
+   "explanation_en": "'A pesar de' = despite; they finished the excursion anyway.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b2-01",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.4,
+   "target": "condicional compuesto",
+   "question": "Si hubiera estudiado, ___ el examen.",
+   "options": [
+    "habría aprobado",
+    "aprobaría",
+    "aprobó",
+    "aprobará"
+   ],
+   "answer": 0,
+   "explanation_pt": "Condicional compuesto: 'haber' no condicional + participio → 'habría aprobado'.",
+   "explanation_en": "Conditional perfect: 'haber' in conditional + past participle → 'habría aprobado'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b2-02",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.5,
+   "target": "voz pasiva (ser + participio)",
+   "question": "La carta ___ ayer por la mañana.",
+   "options": [
+    "fue enviada",
+    "envió",
+    "ha enviado",
+    "está enviando"
+   ],
+   "answer": 0,
+   "explanation_pt": "Voz passiva no pretérito: 'ser' no indefinido + participio → 'fue enviada'.",
+   "explanation_en": "Past passive voice: 'ser' in preterite + past participle → 'fue enviada'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b2-03",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.6,
+   "target": "subjuntivo (mandato/ordonhance)",
+   "question": "Le pedí que ___ en silencio.",
+   "options": [
+    "hablara",
+    "habla",
+    "hablará",
+    "habló"
+   ],
+   "answer": 0,
+   "explanation_pt": "Subjuntivo imperfeito após verbo de pedido/desejo: 'le pedí que hablara'.",
+   "explanation_en": "Imperfect subjunctive after a verb of request/wish: 'le pedí que hablara'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b2-04",
+   "level": "B2",
+   "skill": "vocabulary",
+   "b": 0.5,
+   "target": "expresiones idiomáticas",
+   "question": "No lo hace bien; siempre busca ___.",
+   "options": [
+    "el rápido y fácil",
+    "el largo y ancho",
+    "el alto y bajo",
+    "el nuevo y viejo"
+   ],
+   "answer": 0,
+   "explanation_pt": "Modismo: 'buscar el rápido y fácil' = querer resultados sem esforço.",
+   "explanation_en": "Idiom: 'buscar el rápido y fácil' = wanting easy results without effort.",
+   "lang": "es"
+  },
+  {
+   "id": "es-b2-05",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.4,
+   "target": "condicional mixto",
+   "question": "Si hubiera aceptado el trabajo, ___ en Berlín ahora.",
+   "options": [
+    "viviría",
+    "habría vivido",
+    "vivía",
+    "viviré"
+   ],
+   "answer": 0,
+   "explanation_pt": "Condicional mista: causa no passado (hubiera aceptado), resultado no presente (viviría).",
+   "explanation_en": "Mixed conditional: past cause (hubiera aceptado), present result (viviría).",
+   "lang": "es"
+  },
+  {
+   "id": "es-b2-06",
+   "level": "B2",
+   "skill": "grammar",
+   "b": 0.6,
+   "target": "relativo cuya/cuyo",
+   "question": "Esa es la profesora ___ hijos estudian conmigo.",
+   "options": [
+    "cuyos",
+    "cuya",
+    "cuyo",
+    "cuyas"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Cuyos' concorda em número e gênero com o substantivo que precede (hijos = masculino plural).",
+   "explanation_en": "'Cuyos' agrees in number and gender with the preceding noun (hijos = masculine plural).",
+   "lang": "es"
+  },
+  {
+   "id": "es-b2-07",
+   "level": "B2",
+   "skill": "vocabulary",
+   "b": 0.5,
+   "target": "conectores causales/concesivos",
+   "question": "___ la lluvia, el evento se realizó con éxito.",
+   "options": [
+    "A pesar de",
+    "Debido a",
+    "Gracias a",
+    "En lugar de"
+   ],
+   "answer": 0,
+   "explanation_pt": "'A pesar de' introduz uma oração concessiva (oposição/contraste).",
+   "explanation_en": "'A pesar de' introduces a concessive clause (opposition/contrast).",
+   "lang": "es"
+  },
+  {
+   "id": "es-b2-08",
+   "level": "B2",
+   "skill": "reading",
+   "b": 0.4,
+   "target": "actitud del autor",
+   "question": "\"La propuesta es ambiciosa, aunque algo poco realista.\" El autor está ___.",
+   "options": [
+    "totalmente a favor",
+    "críticamente moderado",
+    "abiertamente en contra",
+    "indiferente"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Aunque algo poco realista' indica uma crítica moderada.",
+   "explanation_en": "'Aunque algo poco realista' indicates moderate criticism.",
+   "lang": "es"
+  },
+  {
+   "id": "es-c1-01",
+   "level": "C1",
+   "skill": "grammar",
+   "b": 1.4,
+   "target": "inversión con negativos",
+   "question": "No había ___ terminado de comer cuando sonó el teléfono.",
+   "options": [
+    "solo",
+    "nunca",
+    "apenas",
+    "tampoco"
+   ],
+   "answer": 2,
+   "explanation_pt": "'Apenas' pode provocar inversão: 'No había apenas terminado...' (ou 'Apenas había terminado...').",
+   "explanation_en": "'Apenas' can trigger inversion: 'No había apenas terminado...' (or 'Apenas había terminado...').",
+   "lang": "es"
+  },
+  {
+   "id": "es-c1-02",
+   "level": "C1",
+   "skill": "grammar",
+   "b": 1.5,
+   "target": "subjuntivo (consecutivo/emocional)",
+   "question": "Es increíble que ___ tan bien en el examen.",
+   "options": [
+    "haya sacado",
+    "sacó",
+    "sacará",
+    "saca"
+   ],
+   "answer": 0,
+   "explanation_pt": "Após adjetivos emocionais (increíble), usa-se o subjuntivo presente: 'haya sacado'.",
+   "explanation_en": "After emotional adjectives (increíble), we use the present subjunctive: 'haya sacado'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-c1-03",
+   "level": "C1",
+   "skill": "vocabulary",
+   "b": 1.6,
+   "target": "expresión formal",
+   "question": "Los hallazgos ___. la hipótesis inicial del investigador.",
+   "options": [
+    "corroboran",
+    "contradicen",
+    "ignoran",
+    "cuestionan"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Corroborar' = confirmar, dar respaldo (registro formal/acadêmico).",
+   "explanation_en": "'Corroborar' = confirm, support (formal/academic register).",
+   "lang": "es"
+  },
+  {
+   "id": "es-c1-04",
+   "level": "C1",
+   "skill": "grammar",
+   "b": 1.5,
+   "target": "nominalización",
+   "question": "La ___ de las pruebas es esencial para el juicio.",
+   "options": [
+    "presentación",
+    "presentar",
+    "presentándose",
+    "presentadas"
+   ],
+   "answer": 0,
+   "explanation_pt": "Nominalização: o substantivo abstrato 'presentación' (de 'presentar').",
+   "explanation_en": "Nominalization: the abstract noun 'presentación' (from 'presentar').",
+   "lang": "es"
+  },
+  {
+   "id": "es-c1-05",
+   "level": "C1",
+   "skill": "vocabulary",
+   "b": 1.4,
+   "target": "matices semánticos",
+   "question": "Sus palabras fueron bastante ___; nadie entendió qué quería decir.",
+   "options": [
+    "ambiguas",
+    "evidentes",
+    "claras",
+    "explícitas"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Ambiguas' = com sentido incerto, múltiplas interpretações.",
+   "explanation_en": "'Ambiguas' = open to more than one meaning.",
+   "lang": "es"
+  },
+  {
+   "id": "es-c1-06",
+   "level": "C1",
+   "skill": "grammar",
+   "b": 1.6,
+   "target": "condicional (uso en indirecto con concesión)",
+   "question": "Estaría encantado, sin embargo ___ un poco más de tiempo para pensarlo.",
+   "options": [
+    "me gustaría tener",
+    "tengo",
+    "tendré",
+    "tenía"
+   ],
+   "answer": 0,
+   "explanation_pt": "Na oração concessiva subordinada, o condicional suaviza o pedido: 'me gustaría tener'.",
+   "explanation_en": "In a concessive subordinate clause, the conditional softens the request: 'me gustaría tener'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-c1-07",
+   "level": "C1",
+   "skill": "reading",
+   "b": 1.5,
+   "target": "tono",
+   "question": "\"Uno podría, generosamente, llamar su esfuerzo aceptable.\" El tono es ___.",
+   "options": [
+    "elogio sincero",
+    "elogio tímido / irónico",
+    "reporte neutral",
+    "entusiasmo"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Generosamente' + 'aceptable' = elogio irônico e reticente.",
+   "explanation_en": "'Generosamente' + 'aceptable' = ironic, faint praise.",
+   "lang": "es"
+  },
+  {
+   "id": "es-c1-08",
+   "level": "C1",
+   "skill": "vocabulary",
+   "b": 1.4,
+   "target": "phrasal verb formal",
+   "question": "El comité decidió ___ las nuevas regulaciones.",
+   "options": [
+    "hacer cumplir",
+    "pasar por alto",
+    "buscarle la vuelta",
+    "llevar a cabo"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Hacer cumplir' = implementar/impôr (registro formal).",
+   "explanation_en": "'Hacer cumplir' = enforce/impose (formal register).",
+   "lang": "es"
+  },
+  {
+   "id": "es-c2-01",
+   "level": "C2",
+   "skill": "vocabulary",
+   "b": 2.5,
+   "target": "modismo (uso figurado)",
+   "question": "Después del escándalo, la carrera del político quedó ___.",
+   "options": [
+    "en ruinas",
+    "en el aire",
+    "en coma",
+    "en la luna"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Quedar en ruinas' = ficar arruinado/destruído (figurado).",
+   "explanation_en": "'Quedar en ruinas' = to be left in ruins (figurative).",
+   "lang": "es"
+  },
+  {
+   "id": "es-c2-02",
+   "level": "C2",
+   "skill": "grammar",
+   "b": 2.6,
+   "target": "subjuntivo formal (pretérito imperfecto)",
+   "question": "Si yo ___ presidente, cambiaría la ley.",
+   "options": [
+    "fuera",
+    "era",
+    "fue",
+    "sería"
+   ],
+   "answer": 0,
+   "explanation_pt": "Subjuntivo imperfeito com 'si' para situações irrealis: 'si yo fuera presidente'.",
+   "explanation_en": "Imperfect subjunctive with 'si' for unreal situations: 'si yo fuera presidente'.",
+   "lang": "es"
+  },
+  {
+   "id": "es-c2-03",
+   "level": "C2",
+   "skill": "vocabulary",
+   "b": 2.5,
+   "target": "registro y matiz",
+   "question": "Su prosa es admirablemente ___: no sobra una palabra.",
+   "options": [
+    "recortada",
+    "verbosa",
+    " florida",
+    "enrevesada"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Recortada' = concisa, econômica com as palavras (equivalente a 'terse' em inglês).",
+   "explanation_en": "'Recortada' = concise, economical with words (equivalent to 'terse' in English).",
+   "lang": "es"
+  },
+  {
+   "id": "es-c2-04",
+   "level": "C2",
+   "skill": "reading",
+   "b": 2.6,
+   "target": "implicación",
+   "question": "\"Que haya tenido éxito es, francamente, un triunfo de la suerte sobre el criterio.\" El autor implica que su éxito fue ___.",
+   "options": [
+    "bien merecido",
+    "mayormente afortunado",
+    "cuidadosamente planeado",
+    "inevitable"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Suerte sobre criterio' = deveu-se mais à sorte do que ao mérito.",
+   "explanation_en": "'Suerte sobre criterio' = owed more to luck than to skill.",
+   "lang": "es"
+  },
+  {
+   "id": "es-c2-05",
+   "level": "C2",
+   "skill": "grammar",
+   "b": 2.4,
+   "target": "concesión avanzada con subjuntivo",
+   "question": "No obstante lo ___ por expertos, el proyecto fue rechazado.",
+   "options": [
+    "recomendado",
+    "recomendar",
+    "recomendará",
+    "recomendaba"
+   ],
+   "answer": 0,
+   "explanation_pt": "Participio passivo após verbo de agência ('lo recomendado por expertos') = valor adjetivo/concessivo.",
+   "explanation_en": "Past participle after a verb of agency ('lo recomendado por expertos') = adjectival/concessive value.",
+   "lang": "es"
+  },
+  {
+   "id": "es-c2-06",
+   "level": "C2",
+   "skill": "vocabulary",
+   "b": 2.5,
+   "target": "colocación rara",
+   "question": "Las negociaciones llegaron a un ___ que ninguna parte podía romper.",
+   "options": [
+    "punto muerto",
+    "punto de vista",
+    "punto de ebullición",
+    "punto y aparte"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Punto muerto' = impasse/estancamento nas negociações.",
+   "explanation_en": "'Punto muerto' = deadlock/impasse in negotiations.",
+   "lang": "es"
+  },
+  {
+   "id": "es-c2-07",
+   "level": "C2",
+   "skill": "grammar",
+   "b": 2.6,
+   "target": "valor concesivo avanzado",
+   "question": "___ su considerable talento, nunca llegó a cumplir su promesa.",
+   "options": [
+    "A pesar de",
+    "Gracias a",
+    "Debido a",
+    "A causa de"
+   ],
+   "answer": 0,
+   "explanation_pt": "'A pesar de' = apesar de todo (concessão enfática em registro elevado).",
+   "explanation_en": "'A pesar de' = despite all (emphatic concession in formal register).",
+   "lang": "es"
+  },
+  {
+   "id": "es-c2-08",
+   "level": "C2",
+   "skill": "vocabulary",
+   "b": 2.4,
+   "target": "phrasal verb figurado",
+   "question": "No te dejes engañar por su encanto; ___ es un negociador despiadado.",
+   "options": [
+    "debajo del agua",
+    "a simple vista",
+    "sin pelos en la lengua",
+    "por encima de todo"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Debajo del agua' = subterrâneo/oculto (alguém com segundas intenções por trás da aparência).",
+   "explanation_en": "'Debajo del agua' = underground/hidden (someone with hidden intentions behind appearance).",
+   "lang": "es"
+  },
+  {
+   "id": "fr-a1-01",
+   "level": "A1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -2.6,
+   "target": "verbe être (conjugaison)",
+   "question": "Je ___ étudiant.",
+   "options": [
+    "est",
+    "es",
+    "suis",
+    "sommes"
+   ],
+   "answer": 2,
+   "explanation_pt": "Conjugação do verbo 'être' no presente: je suis.",
+   "explanation_en": "Present tense conjugation of 'être': je suis."
+  },
+  {
+   "id": "fr-a1-02",
+   "level": "A1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -2.5,
+   "target": "s'appeler (verbe réfléchi)",
+   "question": "Comment ___-tu ?",
+   "options": [
+    "t'appelles",
+    "t'appelle",
+    "m'appelle",
+    "s'appelle"
+   ],
+   "answer": 0,
+   "explanation_pt": "Interrogação com 'tu': t'appelles (pronome réfléchi 'te' elidido em 't').",
+   "explanation_en": "Question with 'tu': t'appelles (reflexive pronoun 'te' elided to 't')."
+  },
+  {
+   "id": "fr-a1-03",
+   "level": "A1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -2.4,
+   "target": "verbe avoir (conjugaison)",
+   "question": "Nous ___ deux frères.",
+   "options": [
+    "avons",
+    "avez",
+    "as",
+    "ont"
+   ],
+   "answer": 0,
+   "explanation_pt": "Conjugação do verbo 'avoir' no presente: nous avons.",
+   "explanation_en": "Present tense conjugation of 'avoir': nous avons."
+  },
+  {
+   "id": "fr-a1-04",
+   "level": "A1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -2.3,
+   "target": "articles definis (le, la, les)",
+   "question": "___ livre est sur la table.",
+   "options": [
+    "La",
+    "Le",
+    "Les",
+    "Un"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Livre' é masculino singular, então usa-se o artigo definido 'le'.",
+   "explanation_en": "'Livre' (book) is masculine singular, so use the definite article 'le'."
+  },
+  {
+   "id": "fr-a1-05",
+   "level": "A1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -2.2,
+   "target": "adjectif possessif (genre)",
+   "question": "C'est ___ mère.",
+   "options": [
+    "mon",
+    "ma",
+    "mes",
+    "ton"
+   ],
+   "answer": 1,
+   "explanation_pt": "O adjetivo possessivo concorda com o gênero do substantivo possuído: 'ma' para feminino (mère).",
+   "explanation_en": "The possessive adjective agrees with the gender of the possessed noun: 'ma' for feminine (mère)."
+  },
+  {
+   "id": "fr-a1-06",
+   "level": "A1",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": -2.1,
+   "target": "nombres / quantités",
+   "question": "J'ai ___ chats à la maison.",
+   "options": [
+    "trois",
+    "troie",
+    "troisème",
+    "trottoir"
+   ],
+   "answer": 0,
+   "explanation_pt": "O número 'trois' (3) soletra-se t-r-o-i-s.",
+   "explanation_en": "The number 'three' (3) is spelled t-r-o-i-s."
+  },
+  {
+   "id": "fr-a1-07",
+   "level": "A1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -2.0,
+   "target": "verbes réguliers -er (présent)",
+   "question": "Tu ___ le pain au petit-déjeuner.",
+   "options": [
+    "mange",
+    "manges",
+    "mangent",
+    "manger"
+   ],
+   "answer": 0,
+   "explanation_pt": "Verbo regular -er com 'tu': o 'e' mudo do sujeito se funde com o '-e' do radical: tu manges → tu mange.",
+   "explanation_en": "Regular -er verb with 'tu': the mute 'e' of the subject fuses with the '-e' of the stem: tu manges → tu mange."
+  },
+  {
+   "id": "fr-a1-08",
+   "level": "A1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -1.9,
+   "target": "verbe être (ton interrogatif)",
+   "question": "___-tu français ?",
+   "options": [
+    "Êtes",
+    "Es",
+    "Est",
+    "Sont"
+   ],
+   "answer": 1,
+   "explanation_pt": "Interrogação com 'tu' e verbe être: es-tu (2ª pessoa do singular).",
+   "explanation_en": "Question with 'tu' and être: es-tu (2nd person singular)."
+  },
+  {
+   "id": "fr-a2-01",
+   "level": "A2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -1.8,
+   "target": "passé composé (avoir + participe passé)",
+   "question": "J'___ mangé une pomme hier.",
+   "options": [
+    "ai",
+    "as",
+    "avons",
+    "suis"
+   ],
+   "answer": 0,
+   "explanation_pt": "Passé composé com avoir: j'ai mangé (participe passé invariável com avoir).",
+   "explanation_en": "Passé composé with avoir: j'ai mangé (past participle invariable with avoir)."
+  },
+  {
+   "id": "fr-a2-02",
+   "level": "A2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -1.7,
+   "target": "passé composé (être + accord)",
+   "question": "Marie ___ allée au marché.",
+   "options": [
+    "est",
+    "a",
+    "ont",
+    "sont"
+   ],
+   "answer": 0,
+   "explanation_pt": "Verbos de movimento (aller, venir...) usam 'être' no passé composé. O participe concorda: allée (feminino).",
+   "explanation_en": "Movement verbs (aller, venir...) use 'être' in passé composé. The participle agrees: allée (feminine)."
+  },
+  {
+   "id": "fr-a2-03",
+   "level": "A2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -1.6,
+   "target": "futur proche (aller + infinitif)",
+   "question": "Nous ___ partir demain matin.",
+   "options": [
+    "allons",
+    "vont",
+    "allez",
+    "vais"
+   ],
+   "answer": 0,
+   "explanation_pt": "Futur proche: sujet + aller (conjugado) + infinitif. Nous allons partir.",
+   "explanation_en": "Near future: subject + aller (conjugated) + infinitive. Nous allons partir."
+  },
+  {
+   "id": "fr-a2-04",
+   "level": "A2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -1.5,
+   "target": "négation (ne...jamais)",
+   "question": "Je ne mange ___ de viande.",
+   "options": [
+    "jamais",
+    "rien",
+    "personne",
+    "plus"
+   ],
+   "answer": 0,
+   "explanation_pt": "Negação com 'ne...jamais' = nunca. 'Ne...rien' = nada, 'ne...personne' = ninguém.",
+   "explanation_en": "Negation with 'ne...jamais' = never. 'Ne...rien' = nothing, 'ne...personne' = nobody."
+  },
+  {
+   "id": "fr-a2-05",
+   "level": "A2",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": -1.4,
+   "target": "vêtements / couleurs (accord)",
+   "question": "La robe est ___.",
+   "options": [
+    "rouge",
+    "rouges",
+    "rougent",
+    "rougir"
+   ],
+   "answer": 0,
+   "explanation_pt": "O adjetivo 'rouge' já termina em -e, portanto é invariável em gênero e número.",
+   "explanation_en": "The adjective 'rouge' already ends in -e, so it is invariable in gender and number."
+  },
+  {
+   "id": "fr-a2-06",
+   "level": "A2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -1.3,
+   "target": "prépositions avec les jours",
+   "question": "Nous allons au cinéma ___ dimanche.",
+   "options": [
+    "le",
+    "en",
+    "-",
+    "à"
+   ],
+   "answer": 2,
+   "explanation_pt": "Em francês, não se usa artigo antes dos dias da semana quando se refere a um dia específico.",
+   "explanation_en": "In French, no article is used before days of the week when referring to a specific day."
+  },
+  {
+   "id": "fr-a2-07",
+   "level": "A2",
+   "skill": "reading",
+   "lang": "fr",
+   "b": -1.2,
+   "target": "lecture globale (compréhension)",
+   "question": "Annonce : « Vente de livres d'occasion, 5 € la pièce. » Un livre coûte ___.",
+   "options": [
+    "Gratuit",
+    "5 €",
+    "10 €",
+    "Pas indiqué"
+   ],
+   "answer": 1,
+   "explanation_pt": "O anúncio diz '5 € la pièce', ou seja, 5 euros por livro.",
+   "explanation_en": "The ad says '5 € la pièce', meaning 5 euros per book."
+  },
+  {
+   "id": "fr-a2-08",
+   "level": "A2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -1.1,
+   "target": "adverbe de fréquence (placement)",
+   "question": "Il ne ___ sort le soir.",
+   "options": [
+    "jamais",
+    "ne jamais",
+    "pas jamais",
+    "non jamais"
+   ],
+   "answer": 0,
+   "explanation_pt": "O advérbio de frequência 'jamais' vai entre 'ne' e o verbo principal: ne + jamais + verbe.",
+   "explanation_en": "The frequency adverb 'jamais' goes between 'ne' and the main verb: ne + jamais + verbe."
+  },
+  {
+   "id": "fr-b1-01",
+   "level": "B1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -0.8,
+   "target": "imparfait vs passé composé",
+   "question": "Quand il ___, je lisais un livre.",
+   "options": [
+    "pleuvait",
+    "a plu",
+    "pleut",
+    "pleuva"
+   ],
+   "answer": 0,
+   "explanation_pt": "O imparfait descreve ações contínuas/habituals no passado que formam o cenário de outra ação.",
+   "explanation_en": "The imparfait describes continuous/habitual past actions that set the scene for another action."
+  },
+  {
+   "id": "fr-b1-02",
+   "level": "B1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -0.7,
+   "target": "conditionnel (si + imparfait, conditionnel présent)",
+   "question": "Si j'avais le temps, je ___ voyager.",
+   "options": [
+    "vais",
+    "irai",
+    "irais",
+    "allais"
+   ],
+   "answer": 2,
+   "explanation_pt": "Conditionnel de primeira hipótese: si + imparfait + conditionnel présent (j'irais).",
+   "explanation_en": "First conditional hypothesis: si + imparfait + conditionnel présent (I would go)."
+  },
+  {
+   "id": "fr-b1-03",
+   "level": "B1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -0.5,
+   "target": "discours indirect (dire que + conditionnel)",
+   "question": "Il a dit qu'il ___ en retard.",
+   "options": [
+    "sera",
+    "est",
+    "serait",
+    "soit"
+   ],
+   "answer": 2,
+   "explanation_pt": "No discurso indireto, 'sera' (futur simple) torna-se 'serait' (conditionnel) após 'dire que'.",
+   "explanation_en": "In reported speech, 'sera' (futur simple) becomes 'serait' (conditionnel) after 'dire que'."
+  },
+  {
+   "id": "fr-b1-04",
+   "level": "B1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -0.4,
+   "target": "devoir / pouvoir / falloir (modal)",
+   "question": "Tu ___ finir ce rapport avant demain.",
+   "options": [
+    "peux",
+    "dois",
+    "veux",
+    "sais"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Devoir' exprime obrigação: tu dois finir (obrigação). 'Pouvoir' seria possibilidade.",
+   "explanation_en": "'Devoir' expresses obligation: tu dois finir (obligation). 'Pouvoir' would be possibility."
+  },
+  {
+   "id": "fr-b1-05",
+   "level": "B1",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": -0.6,
+   "target": "pronom relatif (dont)",
+   "question": "C'est l'auteur ___ j'ai lu le dernier livre.",
+   "options": [
+    "qui",
+    "que",
+    "dont",
+    "où"
+   ],
+   "answer": 2,
+   "explanation_pt": "'Dont' substitui 'de + qui/quoi': j'ai lu le livre DE cet auteur → dont.",
+   "explanation_en": "'Dont' replaces 'de + qui/quoi': j'ai lu le livre DE cet auteur → dont."
+  },
+  {
+   "id": "fr-b1-06",
+   "level": "B1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": -0.3,
+   "target": "infinitif après verbes de perception",
+   "question": "J'ai entendu les enfants ___ dans le jardin.",
+   "options": [
+    "jouant",
+    "joué",
+    "jouent",
+    "jouer"
+   ],
+   "answer": 3,
+   "explanation_pt": "Após verbos de percepção (entendre, voir) e laisser, usa-se o infinitivo: entendre quelqu'un faire quelque chose.",
+   "explanation_en": "After perception verbs (entendre, voir) and laisser, use the infinitive: entendre quelqu'un faire quelque chose."
+  },
+  {
+   "id": "fr-b1-07",
+   "level": "B1",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": -0.2,
+   "target": "connecteurs (opposition)",
+   "question": "Il pleut dehors, ___ nous sortons quand même.",
+   "options": [
+    "donc",
+    "cependant",
+    "ensuite",
+    "alors"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Cependant' introduz uma oposição entre duas ideias: chuva × sair apesar disso.",
+   "explanation_en": "'Cependant' introduces an opposition between two ideas: rain × going out despite it."
+  },
+  {
+   "id": "fr-b1-08",
+   "level": "B1",
+   "skill": "reading",
+   "lang": "fr",
+   "b": -0.1,
+   "target": "inférence (sens implicite)",
+   "question": "« Les négociations se sont terminées dans l'impasse. » Cela signifie que ___.",
+   "options": [
+    "les discussions ont réussi",
+    "aucun accord n'a été trouvé",
+    "les négociations continuent",
+    "un accord partiel a été signé"
+   ],
+   "answer": 1,
+   "explanation_pt": "'L'impasse' = beco sem saída. As negociações não chegaram a um acordo.",
+   "explanation_en": "'L'impasse' = deadlock. The negotiations did not reach an agreement."
+  },
+  {
+   "id": "fr-b2-01",
+   "level": "B2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 0.2,
+   "target": "voix passive (être + participe passé)",
+   "question": "Le pont ___ en 1932.",
+   "options": [
+    "a construit",
+    "a été construit",
+    "est construisant",
+    "construit"
+   ],
+   "answer": 1,
+   "explanation_pt": "Voz passiva no passé composé: a été construit (passé composé de être + participe passé).",
+   "explanation_en": "Passive voice in passé composé: a été construit (passé composé of être + past participle)."
+  },
+  {
+   "id": "fr-b2-02",
+   "level": "B2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 0.3,
+   "target": "conditionnel passé (2e forme)",
+   "question": "Si j'avais étudié, j'___ l'examen.",
+   "options": [
+    "réussirai",
+    "réussis",
+    "réussirais",
+    "aurais réussi"
+   ],
+   "answer": 3,
+   "explanation_pt": "Condicional pasado (2ª forma): si + plus-que-parfait + aurais + participe passé.",
+   "explanation_en": "Past conditional (2nd form): si + plus-que-parfait + aurais + past participle."
+  },
+  {
+   "id": "fr-b2-03",
+   "level": "B2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 0.4,
+   "target": "pronom relatif (dont)",
+   "question": "Le projet ___ je vous ai parlé est ambitieux.",
+   "options": [
+    "que",
+    "dont",
+    "lequel",
+    "où"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Dont' substitui 'de + lequel': je vous ai parlé DE ce projet → dont.",
+   "explanation_en": "'Dont' replaces 'de + lequel': je vous ai parlé DE ce projet → dont."
+  },
+  {
+   "id": "fr-b2-04",
+   "level": "B2",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": 0.5,
+   "target": "registre (soutenu)",
+   "question": "Il a fallu ___ de nouvelles mesures.",
+   "options": [
+    "mettre en œuvre",
+    "mettre en place",
+    "mettre de côté",
+    "mettre à jour"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Mettre en œuvre' = implementar/pôr em prática. Registo formal adequado a contexto institucional.",
+   "explanation_en": "'Mettre en œuvre' = to implement. Formal register appropriate for institutional context."
+  },
+  {
+   "id": "fr-b2-05",
+   "level": "B2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 0.6,
+   "target": "subjonctif (après 'il est possible que')",
+   "question": "Il est possible qu'il ___ demain.",
+   "options": [
+    "vient",
+    "vienne",
+    "viendra",
+    "venait"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Il est possible que' exige o subjonctivo: que + subjonctif (vienne).",
+   "explanation_en": "'Il est possible que' requires the subjunctive: que + subjonctif (vienne)."
+  },
+  {
+   "id": "fr-b2-06",
+   "level": "B2",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": 0.7,
+   "target": "connecteurs (concession)",
+   "question": "___ les difficultés, ils ont réussi le projet.",
+   "options": [
+    "Malgré",
+    "Grâce à",
+    "À cause de",
+    "Suite à"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Malgré' + nom = apesar de (concessão). 'Grâce à' = graças a (causa positiva).",
+   "explanation_en": "'Malgré' + noun = despite (concession). 'Grâce à' = thanks to (positive cause)."
+  },
+  {
+   "id": "fr-b2-07",
+   "level": "B2",
+   "skill": "reading",
+   "lang": "fr",
+   "b": 0.8,
+   "target": "ton / attitude (implicite)",
+   "question": "« On ne peut que féliciter l'équipe pour son travail... même si le résultat reste modeste. » Le ton est ___.",
+   "options": [
+    "enthousiaste",
+    "élogieux sans réserve",
+    "timide et contrasté",
+    "indifférent"
+   ],
+   "answer": 2,
+   "explanation_pt": "Elogio seguido de 'même si... modeste' revela um tom reticente, equilibrado entre elogio e restrição.",
+   "explanation_en": "Praise followed by 'même si... modeste' reveals a restrained tone, balancing praise with qualification."
+  },
+  {
+   "id": "fr-b2-08",
+   "level": "B2",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": 0.9,
+   "target": "locution figée (expression)",
+   "question": "Ne ___ pas cette information pour argent comptant.",
+   "options": [
+    "prends",
+    "prenez",
+    "prenne",
+    "prenant"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Prendre pour argent comptant' = aceitar sem questionar (locução figurada).",
+   "explanation_en": "'Prendre pour argent comptant' = to take at face value (fixed expression)."
+  },
+  {
+   "id": "fr-c1-01",
+   "level": "C1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 1.1,
+   "target": "inversion (adverbe négatif en tête)",
+   "question": "___ ne suis-je pas venu à la réunion.",
+   "options": [
+    "Souvent",
+    "Rarement",
+    "Toujours",
+    "Quelquefois"
+   ],
+   "answer": 1,
+   "explanation_pt": "Com um advérbio négativo ou restrictivo em tête (rarement, à peine...), a inversão sujeito-verbo é obrigatória.",
+   "explanation_en": "With a negative or restrictive adverb fronted (rarement, à peine...), subject-verb inversion is mandatory."
+  },
+  {
+   "id": "fr-c1-02",
+   "level": "C1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 1.2,
+   "target": "phrase clivée (c'est...qui/que)",
+   "question": "___ l'argent ___ manque dans ce projet.",
+   "options": [
+    "Ce...est",
+    "C'est...qui",
+    "Il est...que",
+    "Qu'est-ce qui"
+   ],
+   "answer": 1,
+   "explanation_pt": "Phrase clivée com 'c'est...qui' para dar ênfase ao sujeito: C'est l'argent qui manque.",
+   "explanation_en": "Cleft sentence with 'c'est...qui' for emphasis on the subject: C'est l'argent qui manque."
+  },
+  {
+   "id": "fr-c1-03",
+   "level": "C1",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": 1.3,
+   "target": "nuance lexicale (registre formel)",
+   "question": "L'entreprise a décidé de ___ le nouveau réglement.",
+   "options": [
+    "apporter",
+    "emporter",
+    "emmagasiner",
+    "appréhender"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Apporter' = trazer/introduzir (no contexto de uma nova regra: apporter un changement).",
+   "explanation_en": "'Apporter' = to bring/introduce (in the context of a new rule: apporter un changement)."
+  },
+  {
+   "id": "fr-c1-04",
+   "level": "C1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 1.4,
+   "target": "conditionnel mixte (passé + présent)",
+   "question": "Si elle avait pris ce emploi, elle ___ à Paris en ce moment.",
+   "options": [
+    "vivrait",
+    "aurait vécu",
+    "vit",
+    "va vivre"
+   ],
+   "answer": 0,
+   "explanation_pt": "Conditionnel misto: causa no passado (avait pris) + resultado no presente (vivrait).",
+   "explanation_en": "Mixed conditional: past cause (avait pris) + present result (vivrait)."
+  },
+  {
+   "id": "fr-c1-05",
+   "level": "C1",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": 1.5,
+   "target": "hedging (atténuation)",
+   "question": "___, la situation s'améliore lentement.",
+   "options": [
+    "Il semblerait que",
+    "Il est certain que",
+    "Il est vrai que",
+    "Il est clair que"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Il semblerait que' exprime incerteza/utiliza o subjonctivo, atenuando a afirmação.",
+   "explanation_en": "'Il semblerait que' expresses uncertainty and uses the subjunctive, hedging the claim."
+  },
+  {
+   "id": "fr-c1-06",
+   "level": "C1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 1.6,
+   "target": "subjonctif après 'bien que'",
+   "question": "Bien qu'il ___ fatigué, il a continué à travailler.",
+   "options": [
+    "est",
+    "ait",
+    "soit",
+    "a"
+   ],
+   "answer": 2,
+   "explanation_pt": "'Bien que' (embora) é seguido obrigatoriamente do subjonctivo: bien qu'il soit fatigué.",
+   "explanation_en": "'Bien que' (although) is always followed by the subjunctive: bien qu'il soit fatigué."
+  },
+  {
+   "id": "fr-c1-07",
+   "level": "C1",
+   "skill": "reading",
+   "lang": "fr",
+   "b": 1.7,
+   "target": "ton / ironie (compréhension fine)",
+   "question": "« Ses discours sont, disons-le poliment, extrêmement originaux. » L'auteur est ___.",
+   "options": [
+    "sincèrement élogieux",
+    "poliment critique",
+    "neutre",
+    "enthousiaste"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Disons-le poliment' + 'extrêmement originaux' = eufemismo para esconder crítica. Tom irônico.",
+   "explanation_en": "'Disons-le poliment' + 'extrêmement originaux' = euphemism to mask criticism. Ironic tone."
+  },
+  {
+   "id": "fr-c1-08",
+   "level": "C1",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 1.8,
+   "target": "nominalisation (structure 'avoir pour but de')",
+   "question": "Le projet a pour but ___ les inégalités.",
+   "options": [
+    "réduire",
+    "réduisant",
+    "la réduction de",
+    "à réduire"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Avoir pour but de + infinitif' é a estrutura nominalizada correta: a pour but de réduire.",
+   "explanation_en": "'Avoir pour but de + infinitive' is the correct nominalized structure: a pour but de réduire."
+  },
+  {
+   "id": "fr-c2-01",
+   "level": "C2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 2.0,
+   "target": "subjonctif formel (il est impératif que)",
+   "question": "Il est impératif que toutes les parties ___ un compromis.",
+   "options": [
+    "trouvent",
+    "trouveront",
+    "trouvaient",
+    "trouveraient"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Il est impératif que' exige o subjonctivo: que + subjonctif (trouvent).",
+   "explanation_en": "'Il est impératif que' requires the subjunctive: que + subjonctif (trouvent)."
+  },
+  {
+   "id": "fr-c2-02",
+   "level": "C2",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": 2.1,
+   "target": "expression idiomatique",
+   "question": "Après le scandale, la carrière du ministre était en ___.",
+   "options": [
+    "lambeaux",
+    "fête",
+    "ordre",
+    "vogue"
+   ],
+   "answer": 0,
+   "explanation_pt": "'En lambeaux' = em frangalhos/arruinado (expressão idiomática para destruição total).",
+   "explanation_en": "'En lambeaux' = in tatters/ruined (idiomatic expression for total destruction)."
+  },
+  {
+   "id": "fr-c2-03",
+   "level": "C2",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": 2.2,
+   "target": "nuance lexicale (registre soutenu)",
+   "question": "Son style est remarquablement ___ : pas un mot n'est superflu.",
+   "options": [
+    "prolixe",
+    "concis",
+    "floride",
+    "confus"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Concis' = breve, econômico em palavras. 'Prolixe' = oposto, wordy.",
+   "explanation_en": "'Concis' = terse, economical in words. 'Prolixe' = verbose, the opposite."
+  },
+  {
+   "id": "fr-c2-04",
+   "level": "C2",
+   "skill": "reading",
+   "lang": "fr",
+   "b": 2.3,
+   "target": "implication (sous-entendu)",
+   "question": "« Que lui ait réussi du tout est, franchement, un triomphe de la chance sur le mérite. » L'auteur implique que son succès était ___.",
+   "options": [
+    "bien mérité",
+    "dû au hasard",
+    "inévitable",
+    "logique"
+   ],
+   "answer": 1,
+   "explanation_pt": "'La chance sur le mérito' = o sucesso deveu-se mais à sorte do que ao talento/competência.",
+   "explanation_en": "'La chance sur le mérite' = success was owed more to luck than to skill."
+  },
+  {
+   "id": "fr-c2-05",
+   "level": "C2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 2.4,
+   "target": "inversion (non seulement...mais aussi)",
+   "question": "Non seulement ___ le délai, mais il a aussi dépassé chaque objectif.",
+   "options": [
+    "il a respecté",
+    "a-t-il respecté",
+    "il respecte",
+    "respecte-t-il"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Non seulement' en tête impose l'inversion: a-t-il respecté (inversion sujet-verbe).",
+   "explanation_en": "'Non seulement' fronted forces inversion: a-t-il respecté (subject-verb inversion)."
+  },
+  {
+   "id": "fr-c2-06",
+   "level": "C2",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": 2.5,
+   "target": "collocation (rare)",
+   "question": "Les négociations ont atteint une ___ que personne ne pouvait briser.",
+   "options": [
+    "impasse",
+    "importance",
+    "impulsion",
+    "empreinte"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Impasse' = ponto mort/sem saída nas negociações. Colocação fixa com 'atteindre une impasse'.",
+   "explanation_en": "'Impasse' = deadlock in negotiations. Fixed collocation with 'atteindre une impasse'."
+  },
+  {
+   "id": "fr-c2-07",
+   "level": "C2",
+   "skill": "grammar",
+   "lang": "fr",
+   "b": 2.55,
+   "target": "concession avancée (quand bien même)",
+   "question": "___ il fasse froid, il sort toujours sans manteau.",
+   "options": [
+    "Quand bien même",
+    "En dépit de",
+    "Grâce à",
+    "À cause de"
+   ],
+   "answer": 0,
+   "explanation_pt": "'Quand bien même' + subjonctivo = mesmo que/conquanto (concessão formal).",
+   "explanation_en": "'Quand bien même' + subjunctive = even if (formal concession)."
+  },
+  {
+   "id": "fr-c2-08",
+   "level": "C2",
+   "skill": "vocabulary",
+   "lang": "fr",
+   "b": 2.6,
+   "target": "ton / prudence (hedging)",
+   "question": "« Il ferait preuve d'une certaine prudence quant aux résultats. » L'auteur est ___.",
+   "options": [
+    "enthousiaste",
+    "prudemment optimiste",
+    "ouvertement sceptique",
+    "indifférent"
+   ],
+   "answer": 1,
+   "explanation_pt": "'Une certaine prudence quant aux résultats' = otimismo cauteloso, sem garantias.",
+   "explanation_en": "'Une certaine prudence quant aux résultats' = cautious optimism, without guarantees."
+  }
+ ]
 }
