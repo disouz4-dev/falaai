@@ -87,6 +87,23 @@ O instalador nativo do **Windows (.msi)** é gerado automaticamente pelo GitHub 
 | WebKitGTK 4.1 | Runtime do app desktop | instalado como dependência do `.deb` |
 | GPU NVIDIA/AMD ou Apple Silicon | Acelera a IA | opcional (funciona em CPU também) |
 
+### Especificações mínimas de hardware
+
+O Guaralingo roda o modelo de IA **`gemma3:4b`** localmente (via Ollama) — é ele que dita o hardware necessário. O restante (backend FastAPI, Piper) é leve.
+
+| Componente | Mínimo (CPU) | Recomendado (com GPU) |
+|---|---|---|
+| **Processador** | 4 núcleos x86-64 | Intel Core i5 / AMD Ryzen 5 ou superior |
+| **Memória RAM** | **8 GB** (dá conta do modelo em CPU, mas respostas mais lentas) | **16 GB** (confortável) |
+| **GPU** | — (opcional) | NVIDIA/AMD com **≥ 6 GB de VRAM** (ou Apple Silicon M1+) |
+| **Disco** | 6 GB livres (modelo ~3 GB + Piper + app) | 6 GB livres |
+| **Sistema** | Windows 10/11, Linux, macOS | — |
+
+**Como o app se comporta em cada hardware:**
+- **Sem GPU / 8 GB de RAM:** roda 100% em CPU. Funciona bem para tudo, mas a conversação por voz tem resposta mais demorada (2–5 s por fala).
+- **Com GPU (≥6 GB de VRAM) / 16 GB de RAM:** a conversa flui em tempo real (~1 s), aproveitando a aceleração da GPU. É a experiência recomendada.
+- O app **detecta automaticamente** a GPU e usa o melhor dispositivo disponível (veja [⚡ GPU e CPU](#-gpu-e-cpu)).
+
 ---
 
 ## 🔐 Login local e cadastro (100% offline)
