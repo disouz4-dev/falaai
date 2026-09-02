@@ -119,9 +119,8 @@ body {
 .hero .subtitle { color: rgba(255,255,255,.82); font-size: 15px; position: relative; z-index: 1; }
 .cards { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
 .big-card {
-  border: none; border-radius: 14px;
-  /* losango da bandeira: corta os quatro cantos para evocar o Losango Nacional */
-  clip-path: polygon(18px 0, calc(100% - 18px) 0, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 18px), 0 18px);
+  border: none; border-radius: 999px;
+  /* extremidades em semicírculo (formato pílula) */
   background: #fff; padding: 18px 22px 18px 24px; text-align: left; cursor: pointer;
   display: grid; grid-template-columns: 52px 1fr; grid-template-rows: auto auto;
   column-gap: 16px; align-items: center;
@@ -140,7 +139,7 @@ body {
   width: 46px; height: 46px; justify-self: center;
   display: grid; place-items: center; font-size: 22px;
   background: linear-gradient(160deg, #fff2b0, #ffdf00);
-  border-radius: 12px; color: var(--band-blue-deep);
+  border-radius: 50%; color: var(--band-blue-deep);
   box-shadow: inset 0 -2px 0 rgba(0,0,0,.12);
 }
 .bc-title { font-weight: 800; font-size: 19px; letter-spacing: -.3px; }
