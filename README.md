@@ -70,7 +70,13 @@ Depois procure **Guaralingo** no menu para abrir.
 sudo apt remove guaralingo
 ```
 
-> **Nota sobre outros sistemas:** o Linux tem builds prontos (`.deb` e AppImage). Builds de **Windows (.msi)** e **macOS (.dmg)** exigem compilação nesse sistema — veja [Compilar do código](#compilar-do-código).
+### Instalador `.msi` (Windows)
+
+O instalador nativo do **Windows (.msi)** é gerado automaticamente pelo GitHub Actions a cada release. Baixe em https://github.com/disouz4-dev/guaralingo/releases (arquivo `Guaralingo_*_x64_en-US.msi`) e execute para instalar como um programa de verdade (ícone no menu Iniciar).
+
+> **Nota:** no Windows, o app depende do [Python](https://python.org) instalado (o instalador do repo também cuida disso).
+
+> **Nota sobre outros sistemas:** o Linux tem builds prontos (`.deb` e AppImage), e o Windows agora tem **`.msi`** gerado automaticamente via GitHub Actions. O **macOS (.dmg)** ainda exige compilação nesse sistema — veja [Compilar do código](#compilar-do-código).
 
 ### Requisitos do sistema
 
@@ -206,11 +212,12 @@ Para gerar builds de **Windows** ou **macOS**, rode `npx tauri build` naquele si
 - [x] **Login local (offline, sem conta)** — progresso guardado no dispositivo
 - [x] **App desktop autônomo** — sobe o backend sozinho (porta 8000)
 - [x] **Instalador .deb nativo (Linux)** — integra ao menu, desinstalável
+- [x] **Instalador .msi nativo (Windows)** — gerado automaticamente via GitHub Actions
 - [x] **Atualização automática** — instala a nova versão por cima, sem desinstalar
 - [x] **TTS Piper corrigido** — vozes naturais EN/PT male/female
 - [x] **Push-to-talk** — segurar para gravar sem cortar
 - [x] **Teste de nivelamento** — questões embaralhadas
-- [ ] Instaladores nativos Windows (`.msi`) e macOS (`.dmg`)
+- [ ] Instalador nativo macOS (`.dmg`)
 - [ ] Repetição espaçada (SRS) ativa do vocabulário na UI
 - [ ] XP, ofensiva (streak) e vidas
 - [ ] Desbloqueio de módulos pelo nível do teste
