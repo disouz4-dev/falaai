@@ -17,11 +17,12 @@ import ollama_client
 
 # PT-BR: pasta-base do vault (pode apontar para um vault do Obsidian via env). Cada usuário tem
 #        sua SUBPASTA aqui (data/memory/<uid>/), mantendo memórias separadas por conta.
-# EN:    base vault dir (env-overridable). Each user gets its own SUBDIR here (data/memory/<uid>/).
-VAULT_BASE = Path(os.environ.get(
+#        No app desktop honramos GUARALINGO_DATA_DIR (gravável). EN: base vault dir (env-overridable).
+_DEFAULT_MEMORY = Path(os.environ.get(
     "GUARALINGO_MEMORY_DIR",
-    str(Path(__file__).resolve().parent / "data" / "memory"),
+    str(Path(os.environ.get("GUARALINGO_DATA_DIR", str(Path(__file__).resolve().parent))) / "data" / "memory"),
 ))
+VAULT_BASE = _DEFAULT_MEMORY
 _DEFAULT_UID = "local"
 
 

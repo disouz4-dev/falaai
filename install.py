@@ -329,11 +329,22 @@ def setup_windows_post_msi(py):
                     run(["ollama", "create", "small-english-teacher", "-f", str(mf)], check=False)
     except Exception as e:
         log(f"   Modelo Ollama: {e} — rode depois: ollama create small-english-teacher -f Modelfile")
-    # PT-BR: deps do backend no Python do sistema (o app usa python do PATH).
+    # PT-BR: cria o venv no lugar EXATO que o app desktop procura (%APPDATA%\guaralingo\venv)
+    #        e instala as deps nele. Sem isso o app cai no python do PATH (que pode não
+    #        existir) e o backend nunca sobe. EN: create the venv where the desktop app
+    #        looks for it and install the backend deps there.
+    data_dir = Path(os.environ.get("APPDATA")) / "guaralingo"
+    venv_py = data_dir / "venv" / "Scripts" / "python.exe"
+    log(f"==> Criando ambiente Python em {data_dir / 'venv'} ...")
+    run([py, "-m", "venv", str(data_dir / "venv")], check=False)
+    if not venv_py.exists():
+        log("   Falha ao criar venv — configurando no Python do sistema.")
+        venv_py = Path(py)
+    reqs = "https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/backend/requirements.txt"
     log("==> Instalando dependências do backend...")
-    run([py, "-m", "pip", "install", "-q", "-r", "https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/backend/requirements.txt"], check=False)
+    run([str(venv_py), "-m", "pip", "install", "-q", "-r", reqs], check=False)
     log("==> Instalando Piper TTS...")
-    run([py, "-m", "pip", "install", "--user", "-q", "piper-tts"], check=False)
+    run([str(venv_py), "-m", "pip", "install", "-q", "piper-tts"], check=False)
 
 def main():
     use_dev = "--dev" in sys.argv
