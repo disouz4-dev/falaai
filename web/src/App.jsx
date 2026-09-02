@@ -72,6 +72,24 @@ export default function App() {
     return () => window.removeEventListener("falaai:auth-required", onAuthRequired);
   }, []);
 
+  // PT-BR: clique audível nos botões. Debounce curto evita sobrepor os sons
+  //        de acerto/erro (que disparam no mesmo gesto) e cliques múltiplos.
+  // EN:    audible click on buttons. Short debounce avoids overlapping the
+  //        correct/wrong sounds (fired on the same gesture) and double-clicks.
+  useEffect(() => {
+    let last = 0;
+    const onClick = (ev) => {
+      const t = ev.target?.closest?.("button, a");
+      if (!t) return;
+      const now = performance.now();
+      if (now - last < 70) return;
+      last = now;
+      import("./sounds.js").then(({ playClick }) => playClick()).catch(() => {});
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
+
   // PT-BR: boot — só dispara DEPOIS de logado. EN: boot — only after login.
   useEffect(() => {
     if (!authUser) return;

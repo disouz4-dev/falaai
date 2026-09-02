@@ -44,3 +44,12 @@ export function playWrong() {
   tone(c, 440, 0, 0.18, "sine", 0.10);
   tone(c, 349.23, 0.12, 0.28, "sine", 0.10);
 }
+
+// PT-BR: clique curto e seco para botões (Web Audio, sem arquivos).
+// EN:    short dry click for buttons (Web Audio, no files).
+export function playClick() {
+  const c = audio();
+  if (!c) return;
+  tone(c, 900, 0, 0.03, "square", 0.045);
+  tone(c, 450, 0.006, 0.035, "triangle", 0.035);
+}
