@@ -58,10 +58,10 @@ irm https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.ps1 | iex
 Baixe a release em https://github.com/disouz4-dev/falaai/releases
 
 ```bash
-# Via terminal (um comando, v1.0.14):
-curl -L https://github.com/disouz4-dev/falaai/releases/download/v1.0.14/falaai_1.0.14_amd64.deb -o falaai_1.0.14_amd64.deb && sudo dpkg -i falaai_1.0.14_amd64.deb && sudo apt-get install -f
+# Via terminal (um comando, v1.0.15):
+curl -L https://github.com/disouz4-dev/falaai/releases/download/v1.0.15/falaai_1.0.15_amd64.deb -o falaai_1.0.15_amd64.deb && sudo dpkg -i falaai_1.0.15_amd64.deb && sudo apt-get install -f
 # Ou manual:
-sudo dpkg -i falaai_1.0.14_amd64.deb && sudo apt-get install -f
+sudo dpkg -i falaai_1.0.15_amd64.deb && sudo apt-get install -f
 ```
 Depois procure **Fala A.I.** no menu para abrir.
 
