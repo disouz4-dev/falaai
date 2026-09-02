@@ -228,6 +228,11 @@ body {
 
 /* ---------- Perfil ---------- */
 .topbar-right { display: flex; align-items: center; gap: 8px; }
+.sync-btn .sync-icon { display: inline-block; font-size: 16px; line-height: 1; transition: transform .4s ease; }
+.sync-btn .sync-icon.spin { animation: syncspin .7s linear infinite; }
+.sync-btn .sync-icon.has-update { color: var(--green); text-shadow: 0 0 6px rgba(0,156,59,.6); }
+@keyframes syncspin { to { transform: rotate(360deg); } }
+.sync-btn:disabled .sync-icon { opacity: .6; }
 .field { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
 .field input {
   display: block; width: 100%; margin-top: 6px; padding: 13px; font-size: 16px;

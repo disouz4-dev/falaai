@@ -64,9 +64,6 @@ export default function Home({
             ✓ Fala A.I. <strong>v{update.current}</strong> — você está na versão mais atual
           </span>
         )}
-        <button className="ver-check" disabled={checking} onClick={recheck}>
-          {checking ? "verificando…" : "Verificar atualizações"}
-        </button>
       </div>
     </section>
   );

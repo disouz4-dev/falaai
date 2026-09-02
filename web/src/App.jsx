@@ -383,6 +383,13 @@ export default function App() {
       <header className="topbar">
         <div className="brand" onClick={() => nav("home")}>🐺 <span>Fala A.I.</span></div>
         <div className="topbar-right">
+          <button className="icon-btn sync-btn" title="Verificar atualizações"
+            onClick={recheck} disabled={checking}>
+            <span className={"sync-icon" + (checking ? " spin" : "") +
+              (update?.update_available ? " has-update" : "")}>
+              🔄
+            </span>
+          </button>
           <button className="icon-btn" title="Meu perfil" onClick={() => nav("profile")}>👤</button>
           {authUser?.picture ? (
             <img className="avatar" src={authUser.picture} alt={authUser.name}
