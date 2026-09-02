@@ -71,9 +71,12 @@ jobs:
 
       - name: Publicar na release
         if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: powershell
         working-directory: web
         run: |
-          $msi = Get-ChildItem "src-tauri/target/release/bundle/msi/*.msi" | Select-Object -First 1
+          # PT-BR: pega o .msi mais recente (ignora MSIs antigos que sobram no cache).
+          # EN: pick the newest .msi (ignore stale cached MSIs).
+          $msi = Get-ChildItem "src-tauri/target/release/bundle/msi/*.msi" |
+                 Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $msi) { throw "Nenhum .msi encontrado" }
           gh release upload "$env:GITHUB_REF_NAME" "$($msi.FullName)" --clobber
