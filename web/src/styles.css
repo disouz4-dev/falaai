@@ -271,6 +271,14 @@ body {
 .lesson-item:active { background: var(--panel); }
 .lesson-dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; background: var(--panel); flex-shrink: 0; }
 .lesson-dot.done { background: var(--green); color: #fff; }
+.lesson-dot.exam { background: var(--yellow); color: var(--band-blue-deep); }
+.lesson-dot.cert { background: var(--band-blue-deep); color: var(--yellow); }
+.exam-entry { background: #fffbe6; }
+.cert-entry { background: #eef5ff; }
+.cert-entry .lm-title { color: var(--band-blue-deep); }
+.btn-primary.outline { background: transparent; color: var(--band-blue-deep); border: 2px solid var(--yellow); box-shadow: none; text-transform: none; }
+.btn-primary.outline:active { transform: translateY(3px); }
+.cert-banner { box-shadow: 0 4px 0 var(--green-dark); }
 .lesson-meta { flex: 1; }
 .lesson-meta .lm-title { font-weight: 800; font-size: 15px; }
 .lesson-meta .lm-sub { font-size: 12px; color: var(--muted); }

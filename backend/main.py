@@ -57,7 +57,46 @@ with open(ITEMS_PATH, encoding="utf-8") as f:
 # PT-BR: Carrega o currículo do curso. EN: Load the course curriculum.
 COURSE_PATH = BASE_DIR / "data" / "course.json"
 with open(COURSE_PATH, encoding="utf-8") as f:
-    COURSE = json.load(f)["modules"]
+    COURSES = json.load(f)["courses"]
+
+def _get_course(course_id):
+    for c in COURSES:
+        if c["id"] == course_id:
+            return c
+    return None
+
+def _get_module(course, module_id):
+    for m in course.get("modules", []):
+        if m["id"] == module_id:
+            return m
+    return None
+
+# PT-BR: Auxiliar de prova adaptativa por módulo (reusa o banco IRT).
+# EN:    Adaptive exam helper per module (reuses the IRT item bank).
+def _exam_items(course, module, count):
+    """PT-BR: sorteia itens do banco calibrados ao nível CEFR do módulo.
+    EN: pick items from the IRT bank tuned to the module's CEFR level."""
+    items = [it for it in ITEM_BANK if it.get("level") == module.get("cefr")]
+    if len(items) < count:
+        items = [it for it in ITEM_BANK if it.get("b", 0) >= -3.0]
+    import random
+    chosen = random.sample(items, min(count, len(items)))
+    # PT-BR: embaralha as opções, recordando a posição da correta.
+    # EN: shuffle options, keep the position of the correct answer.
+    out = []
+    for it in chosen:
+        opts = list(it["options"])
+        ans = it["answer"]  # PT-BR: índice da correta (int). EN: index of the correct one (int).
+        idxs = list(range(len(opts)))
+        random.shuffle(idxs)
+        new_opts = [opts[i] for i in idxs]
+        new_ans = idxs.index(ans)
+        out.append({
+            "id": it["id"], "skill": it.get("skill", "grammar"),
+            "question": it["question"], "options": new_opts,
+            "answer": new_ans, "target": it.get("target", ""),
+        })
+    return out
 
 # PT-BR: Estado das sessões em memória. EN: In-memory session state.
 SESSIONS = {}
@@ -126,6 +165,10 @@ class LoginLocalIn(BaseModel):
 
 class CompleteIn(BaseModel):
     score: int = 100
+
+
+class ExamSubmitIn(BaseModel):
+    score: int
 
 
 class TaskFeedbackIn(BaseModel):
@@ -633,47 +676,112 @@ def chat(body: ChatIn, user: dict = Depends(get_current_user)):
 # PT-BR: CURSO — módulos, lições, material didático e tarefas. EN: COURSE.
 # --------------------------------------------------------------------------- #
 def _find_lesson(lesson_id):
-    for m in COURSE:
-        for les in m["lessons"]:
-            if les["id"] == lesson_id:
-                return m, les
-    return None, None
+    for c in COURSES:
+        for m in c.get("modules", []):
+            for les in m["lessons"]:
+                if les["id"] == lesson_id:
+                    return c, m, les
+    return None, None, None
 
 
-@app.get("/api/course")
-def course(user: dict = Depends(get_current_user)):
-    """PT-BR: Estrutura do curso + progresso + travas de módulo. EN: Course structure + progress + locks."""
+# --------------------------------------------------------------------------- #
+# PT-BR: Catálogo de cursos + matrícula + progresso por curso (com provas).
+# EN:    Course catalog + enrollment + per-course progress (with exams).
+# --------------------------------------------------------------------------- #
+@app.get("/api/courses")
+def courses_list(user: dict = Depends(get_current_user)):
+    """PT-BR: catálogo de cursos com estado de matrícula/progresso do usuário.
+    EN: course catalog with the user's enrollment/progress state."""
+    enrolled = {e["course_id"] for e in db.get_enrolled_courses(user["uid"])}
     done = db.get_lesson_progress(user["uid"])
+    out = []
+    for c in COURSES:
+        modules = c.get("modules", [])
+        total_lessons = sum(len(m.get("lessons", [])) for m in modules)
+        done_lessons = sum(1 for m in modules
+                           for l in m.get("lessons", []) if l["id"] in done)
+        out.append({
+            "id": c["id"], "title": c["title"], "subtitle": c.get("subtitle", ""),
+            "color": c.get("color", "#FFDF00"),
+            "passing_score": c.get("passing_score", 70),
+            "total_modules": len(modules), "total_lessons": total_lessons,
+            "done_lessons": done_lessons,
+            "is_enrolled": c["id"] in enrolled,
+            "certificate": db.has_certificate(user["uid"], c["id"], "", "course"),
+        })
+    return {"courses": out}
+
+
+@app.post("/api/courses/{course_id}/enroll")
+def course_enroll(course_id: str, user: dict = Depends(get_current_user)):
+    """PT-BR: matricula o usuário no curso. EN: enroll the user in a course."""
+    c = _get_course(course_id)
+    if not c:
+        raise HTTPException(404, "Curso não encontrado / Course not found")
+    db.enroll(user["uid"], course_id)
+    return {"ok": True}
+
+
+@app.get("/api/courses/{course_id}")
+def course_detail(course_id: str, user: dict = Depends(get_current_user)):
+    """PT-BR: estrutura + progresso + travas por prova e certificados do curso.
+    EN: structure + progress + exam locks and certificates for the course."""
+    c = _get_course(course_id)
+    if not c:
+        raise HTTPException(404, "Curso não encontrado / Course not found")
+    done = db.get_lesson_progress(user["uid"])
+    prev_passed = True  # PT-BR: 1º módulo liberado. EN: first module unlocked.
     modules_out = []
-    prev_all_done = True  # PT-BR: 1º módulo sempre liberado. EN: first module always unlocked.
-    for m in COURSE:
-        lesson_ids = [l["id"] for l in m["lessons"]]
+    for m in c.get("modules", []):
+        lesson_ids = [l["id"] for l in m.get("lessons", [])]
         completed = [lid for lid in lesson_ids if lid in done]
         has_content = len(lesson_ids) > 0
-        locked = not prev_all_done or not has_content
+        all_lessons_done = has_content and len(completed) == len(lesson_ids)
+        exam = db.latest_exam_result(user["uid"], course_id, m["id"])
+        passed = bool(exam and exam["passed"])
+        locked = not prev_passed or not has_content
+        # PT-BR: a prova libera quando todas as lições do módulo estão concluídas.
+        # EN: exam unlocks when all lessons in the module are done.
+        exam_unlocked = not locked and all_lessons_done
+        cert = db.has_certificate(user["uid"], course_id, m["id"], "module")
         modules_out.append({
             "id": m["id"], "title": m["title"], "cefr": m["cefr"],
             "subtitle": m["subtitle"], "color": m.get("color", "#58cc02"),
+            "exam": m.get("exam", {}),
             "locked": locked, "coming_soon": not has_content,
             "locked_hint": m.get("locked_hint", ""),
+            "exam_unlocked": exam_unlocked,
+            "passed": passed, "best_score": (exam or {}).get("score"),
+            "certificate": cert,
             "total": len(lesson_ids), "done": len(completed),
             "lessons": [
                 {"id": l["id"], "title": l["title"], "method": l["method"],
                  "minutes": l["minutes"], "can_do": l["can_do"],
                  "done": l["id"] in done, "score": done.get(l["id"], {}).get("score")}
-                for l in m["lessons"]
+                for l in m.get("lessons", [])
             ],
         })
-        # PT-BR: próximo módulo libera quando este é 100% concluído.
-        # EN: next module unlocks when this one is fully complete.
-        prev_all_done = has_content and len(completed) == len(lesson_ids)
-    return {"modules": modules_out}
+        # PT-BR: próximo módulo libera apenas se o atual teve prova APROVADA.
+        # EN: next module unlocks only if the current one PASSED its exam.
+        prev_passed = has_content and passed
+
+    final_passed = all(mod["passed"] for mod in modules_out if not mod["coming_soon"]) \
+        if modules_out else False
+    return {
+        "id": c["id"], "title": c["title"], "subtitle": c.get("subtitle", ""),
+        "color": c.get("color", "#FFDF00"),
+        "passing_score": c.get("passing_score", 70),
+        "final_exam": c.get("final_exam", {}),
+        "final_passed": final_passed,
+        "course_certificate": db.has_certificate(user["uid"], course_id, "", "course"),
+        "modules": modules_out,
+    }
 
 
 @app.get("/api/course/lesson/{lesson_id}")
 def course_lesson(lesson_id: str):
     """PT-BR: Conteúdo completo da lição (material, vocabulário, exercícios, tarefa). EN: full lesson."""
-    _, les = _find_lesson(lesson_id)
+    _, _, les = _find_lesson(lesson_id)
     if not les:
         raise HTTPException(404, "Lição não encontrada / Lesson not found")
     return les
@@ -682,7 +790,7 @@ def course_lesson(lesson_id: str):
 @app.post("/api/course/lesson/{lesson_id}/complete")
 def course_complete(lesson_id: str, body: CompleteIn, user: dict = Depends(get_current_user)):
     """PT-BR: Marca a lição como concluída. EN: Mark the lesson as completed."""
-    _, les = _find_lesson(lesson_id)
+    _, _, les = _find_lesson(lesson_id)
     if not les:
         raise HTTPException(404, "Lição não encontrada / Lesson not found")
     db.complete_lesson(user["uid"], lesson_id, body.score)
@@ -692,6 +800,135 @@ def course_complete(lesson_id: str, body: CompleteIn, user: dict = Depends(get_c
     except Exception:
         pass
     return {"ok": True}
+
+
+# --------------------------------------------------------------------------- #
+# PT-BR: Provas de módulo e prova final (com aprovação) + certificados.
+# EN:    Module exams and final exam (pass/fail) + certificates.
+# --------------------------------------------------------------------------- #
+@app.post("/api/courses/{course_id}/module/{module_id}/exam/start")
+def exam_start(course_id: str, module_id: str, user: dict = Depends(get_current_user)):
+    """PT-BR: inicia a prova de um módulo (gera questões adaptativas). EN: start a module exam."""
+    c = _get_course(course_id)
+    if not c:
+        raise HTTPException(404, "Curso não encontrado / Course not found")
+    m = _get_module(c, module_id)
+    if not m:
+        raise HTTPException(404, "Módulo não encontrado / Module not found")
+    count = m.get("exam", {}).get("num_questions", 8)
+    return {"module_id": module_id, "name": m.get("exam", {}).get("name", "Prova de módulo"),
+            "cefr": m.get("cefr", ""), "passing_score": m.get("exam", {}).get("passing_score", 70),
+            "questions": _exam_items(c, m, count)}
+
+
+@app.post("/api/courses/{course_id}/module/{module_id}/exam/result")
+def exam_result(course_id: str, module_id: str, body: ExamSubmitIn, user: dict = Depends(get_current_user)):
+    """PT-BR: registra nota final da prova do módulo e emite certificado se aprovado.
+    EN: record the module exam final score and issue certificate if passed."""
+    c = _get_course(course_id)
+    if not c:
+        raise HTTPException(404, "Curso não encontrado / Course not found")
+    m = _get_module(c, module_id)
+    if not m:
+        raise HTTPException(404, "Módulo não encontrado / Module not found")
+    passing = m.get("exam", {}).get("passing_score", c.get("passing_score", 70))
+    score = body.score
+    passed = score >= passing
+    attempt = db.exam_attempts(user["uid"], course_id, module_id) + 1
+    db.save_exam_result(user["uid"], course_id, module_id, score, passed, attempt)
+    cert = None
+    if passed:
+        cert = db.issue_certificate(user["uid"], course_id, module_id, "module")
+    return {"score": score, "passing": passing, "passed": passed, "attempt": attempt, "certificate": cert}
+
+
+@app.post("/api/courses/{course_id}/exam/start")
+def course_exam_start(course_id: str, user: dict = Depends(get_current_user)):
+    """PT-BR: inicia a PROVA FINAL do curso (itens de todos os módulos/CEFR).
+    EN: starts the FINAL course exam (items across all modules/CEFR)."""
+    c = _get_course(course_id)
+    if not c:
+        raise HTTPException(404, "Curso não encontrado / Course not found")
+    modules = c.get("modules", [])
+    for m in modules:
+        if m.get("lessons"):
+            ex = db.latest_exam_result(user["uid"], course_id, m["id"])
+            if not ex or not ex["passed"]:
+                raise HTTPException(400, "Conclua e aprove todas as provas dos módulos primeiro.")
+    count = c.get("final_exam", {}).get("num_questions", 12)
+    pool = [it for it in ITEM_BANK]
+    import random
+    chosen = random.sample(pool, min(count, len(pool)))
+    questions = []
+    for it in chosen:
+        opts = list(it["options"])
+        ans = it["answer"]  # PT-BR: índice da correta (int). EN: index of the correct one (int).
+        idxs = list(range(len(opts)))
+        random.shuffle(idxs)
+        new_opts = [opts[i] for i in idxs]
+        new_ans = idxs.index(ans)
+        questions.append({
+            "id": it["id"], "skill": it.get("skill", "grammar"),
+            "question": it["question"], "options": new_opts,
+            "answer": new_ans, "target": it.get("target", ""),
+        })
+    return {"course_id": course_id, "name": c.get("final_exam", {}).get("name", "Prova Final"),
+            "passing_score": c.get("final_exam", {}).get("passing_score", c.get("passing_score", 70)),
+            "questions": questions}
+
+
+@app.post("/api/courses/{course_id}/exam/result")
+def course_exam_result(course_id: str, body: ExamSubmitIn, user: dict = Depends(get_current_user)):
+    """PT-BR: registra a PROVA FINAL do curso, exige todos os módulos aprovados.
+    EN: record the FINAL course exam; requires all modules passed."""
+    c = _get_course(course_id)
+    if not c:
+        raise HTTPException(404, "Curso não encontrado / Course not found")
+    modules = c.get("modules", [])
+    for m in modules:
+        if m.get("lessons"):
+            ex = db.latest_exam_result(user["uid"], course_id, m["id"])
+            if not ex or not ex["passed"]:
+                raise HTTPException(400, "Conclua e aprove todas as provas dos módulos primeiro.")
+    passing = c.get("final_exam", {}).get("passing_score", c.get("passing_score", 70))
+    score = body.score
+    passed = score >= passing
+    db.save_exam_result(user["uid"], course_id, "final", score, passed, db.exam_attempts(user["uid"], course_id, "final") + 1)
+    cert = None
+    if passed:
+        cert = db.issue_certificate(user["uid"], course_id, "", "course")
+    return {"score": score, "passing": passing, "passed": passed, "certificate": cert}
+
+
+@app.get("/api/courses/{course_id}/certificate")
+def course_certificate(course_id: str, user: dict = Depends(get_current_user)):
+    """PT-BR: dados do certificado do curso (questionamento; só se emitido).
+    EN: course certificate payload (only if issued)."""
+    c = _get_course(course_id)
+    if not c:
+        raise HTTPException(404, "Curso não encontrado / Course not found")
+    cert = db.has_certificate(user["uid"], course_id, "", "course")
+    if not cert:
+        raise HTTPException(404, "Certificado ainda não emitido / Certificate not issued yet")
+    prof = db.get_profile(user["uid"]) or {}
+    return {"type": "course", "course": c["title"], "student": prof.get("name", "Aluno"),
+            "credential_id": cert["credential_id"], "issued_at": cert["issued_at"]}
+
+
+@app.get("/api/courses/{course_id}/module/{module_id}/certificate")
+def module_certificate(course_id: str, module_id: str, user: dict = Depends(get_current_user)):
+    """PT-BR: dados do certificado do módulo. EN: module certificate payload."""
+    c = _get_course(course_id)
+    m = _get_module(c, module_id) if c else None
+    if not m:
+        raise HTTPException(404, "Módulo não encontrado / Module not found")
+    cert = db.has_certificate(user["uid"], course_id, module_id, "module")
+    if not cert:
+        raise HTTPException(404, "Certificado ainda não emitido / Certificate not issued yet")
+    prof = db.get_profile(user["uid"]) or {}
+    return {"type": "module", "course": c["title"], "module": m["title"], "cefr": m.get("cefr", ""),
+            "student": prof.get("name", "Aluno"),
+            "credential_id": cert["credential_id"], "issued_at": cert["issued_at"]}
 
 
 @app.post("/api/course/task-feedback")

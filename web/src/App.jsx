@@ -5,6 +5,9 @@ import Home from "./screens/Home.jsx";
 import Placement from "./screens/Placement.jsx";
 import Talk from "./screens/Talk.jsx";
 import Course from "./screens/Course.jsx";
+import Catalog from "./screens/Catalog.jsx";
+import Exam from "./screens/Exam.jsx";
+import Certificate from "./screens/Certificate.jsx";
 import Lesson from "./screens/Lesson.jsx";
 import Profile from "./screens/Profile.jsx";
 import Progress from "./screens/Progress.jsx";
@@ -23,6 +26,9 @@ export default function App() {
   const [profile, setProfile] = useState(null);
   const [health, setHealth] = useState(null);
   const [lessonId, setLessonId] = useState(null);
+  const [courseId, setCourseId] = useState(null);
+  const [moduleId, setModuleId] = useState(null);
+  const [certData, setCertData] = useState(null);
   const [deferredInstall, setDeferredInstall] = useState(null);
   const [update, setUpdate] = useState(null);
   const [updating, setUpdating] = useState(false);
@@ -32,7 +38,11 @@ export default function App() {
 
   const nav = (name, arg) => {
     if (name === "lesson") setLessonId(arg);
-    setScreen(name);
+    if (name === "course") setCourseId(arg);
+    if (name === "exam") { setCourseId(arg?.courseId); setModuleId(arg?.moduleId); }
+    if (name === "certificate") setCertData(arg);
+    if (name === "course" && !arg) setScreen("catalog");
+    else setScreen(name);
   };
 
   // PT-BR: no boot, verifica se há token salvo. Se houver, tenta restaurar sessão.
@@ -389,7 +399,13 @@ export default function App() {
           <Placement screen={screen} nav={nav} />
         )}
         {screen === "talk" && <Talk nav={nav} profile={profile} />}
-        {screen === "course" && <Course nav={nav} />}
+        {screen === "catalog" && <Catalog nav={nav} />}
+        {screen === "course" && <Course nav={nav} courseId={courseId} />}
+        {screen === "exam" && <Exam nav={nav} courseId={courseId} moduleId={moduleId} />}
+        {screen === "certificate" && (
+          <Certificate nav={nav} courseId={certData?.courseId} moduleId={certData?.moduleId}
+            type={certData?.type} />
+        )}
         {screen === "lesson" && <Lesson nav={nav} lessonId={lessonId} />}
         {screen === "profile" && <Profile nav={nav} profile={profile} setProfile={setProfile} />}
         {screen === "progress" && <Progress nav={nav} />}

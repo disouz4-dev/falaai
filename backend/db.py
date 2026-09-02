@@ -124,6 +124,39 @@ def init_db():
             )
         """)
         c.execute("""
+            CREATE TABLE IF NOT EXISTS enrollments (
+                uid TEXT,
+                course_id TEXT,
+                enrolled_at TEXT,
+                status TEXT DEFAULT 'active',
+                PRIMARY KEY (uid, course_id)
+            )
+        """)
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS exam_results (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uid TEXT,
+                course_id TEXT,
+                module_id TEXT,
+                score INTEGER,
+                passed INTEGER DEFAULT 0,
+                attempt INTEGER DEFAULT 0,
+                taken_at TEXT
+            )
+        """)
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS certificates (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uid TEXT,
+                course_id TEXT,
+                module_id TEXT,
+                cert_type TEXT,
+                credential_id TEXT,
+                issued_at TEXT,
+                UNIQUE(uid, course_id, module_id, cert_type)
+            )
+        """)
+        c.execute("""
             CREATE TABLE IF NOT EXISTS mistakes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 uid TEXT,
@@ -140,6 +173,8 @@ def init_db():
         # PT-BR: índice de performance por usuário (a maioria das buscas é por uid).
         # EN: performance index by user (most lookups are by uid).
         for tbl in ("attempts", "practice", "lesson_progress", "srs", "mistakes"):
+            c.execute(f"CREATE INDEX IF NOT EXISTS idx_{tbl}_uid ON {tbl}(uid)")
+        for tbl in ("enrollments", "exam_results", "certificates"):
             c.execute(f"CREATE INDEX IF NOT EXISTS idx_{tbl}_uid ON {tbl}(uid)")
 
         # PT-BR: MIGRAÇÃO de schema — bancos antigos criados sem password_hash (ou sem outras
@@ -380,3 +415,105 @@ def mistakes_count(uid):
     with _conn() as c:
         return c.execute("SELECT COUNT(*) n FROM mistakes WHERE uid=? AND resolved=0",
                          (uid,)).fetchone()["n"]
+
+
+# --------------------------------------------------------------------------- #
+# PT-BR: Matrícula/progresso por curso, provas e certificados.
+# EN:    Per-course enrollment/progress, exams and certificates.
+# --------------------------------------------------------------------------- #
+def enroll(uid, course_id):
+    now = datetime.utcnow().isoformat()
+    with _conn() as c:
+        c.execute(
+            "INSERT INTO enrollments (uid, course_id, enrolled_at, status) "
+            "VALUES (?,?,?,'active') "
+            "ON CONFLICT(uid, course_id) DO UPDATE SET status='active'",
+            (uid, course_id, now),
+        )
+
+
+def get_enrolled_courses(uid):
+    with _conn() as c:
+        rows = c.execute(
+            "SELECT course_id, enrolled_at, status FROM enrollments WHERE uid=? ORDER BY enrolled_at",
+            (uid,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def is_enrolled(uid, course_id):
+    with _conn() as c:
+        r = c.execute(
+            "SELECT 1 FROM enrollments WHERE uid=? AND course_id=? AND status='active'",
+            (uid, course_id),
+        ).fetchone()
+    return r is not None
+
+
+def save_exam_result(uid, course_id, module_id, score, passed, attempt):
+    now = datetime.utcnow().isoformat()
+    with _conn() as c:
+        c.execute(
+            "INSERT INTO exam_results (uid, course_id, module_id, score, passed, attempt, taken_at) "
+            "VALUES (?,?,?,?,?,?,?)",
+            (uid, course_id, module_id, int(score), 1 if passed else 0, int(attempt), now),
+        )
+
+
+def latest_exam_result(uid, course_id, module_id):
+    """PT-BR: melhor resultado da prova (maior nota). EN: best exam result (highest score)."""
+    with _conn() as c:
+        r = c.execute(
+            "SELECT MAX(score) score, MAX(CASE WHEN passed=1 THEN 1 ELSE 0 END) passed "
+            "FROM exam_results WHERE uid=? AND course_id=? AND module_id=?",
+            (uid, course_id, module_id),
+        ).fetchone()
+    return {"score": r["score"], "passed": bool(r["passed"])} if r and r["score"] is not None else None
+
+
+def exam_attempts(uid, course_id, module_id):
+    with _conn() as c:
+        r = c.execute(
+            "SELECT COUNT(*) n FROM exam_results WHERE uid=? AND course_id=? AND module_id=?",
+            (uid, course_id, module_id),
+        ).fetchone()
+    return r["n"] if r else 0
+
+
+def list_exam_history(uid, course_id, module_id):
+    with _conn() as c:
+        rows = c.execute(
+            "SELECT score, passed, attempt, taken_at FROM exam_results "
+            "WHERE uid=? AND course_id=? AND module_id=? ORDER BY taken_at DESC",
+            (uid, course_id, module_id),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def issue_certificate(uid, course_id, module_id, cert_type):
+    import uuid as _uuid
+    now = datetime.utcnow().isoformat()
+    credential = "FALAAI-" + _uuid.uuid4().hex[:12].upper()
+    with _conn() as c:
+        c.execute(
+            "INSERT OR IGNORE INTO certificates "
+            "(uid, course_id, module_id, cert_type, credential_id, issued_at) "
+            "VALUES (?,?,?,?,?,?)",
+            (uid, course_id, module_id, cert_type, credential, now),
+        )
+        r = c.execute(
+            "SELECT credential_id, issued_at FROM certificates "
+            "WHERE uid=? AND course_id=? AND module_id=? AND cert_type=?",
+            (uid, course_id, module_id, cert_type),
+        ).fetchone()
+    return {"credential_id": r["credential_id"], "issued_at": r["issued_at"]}
+
+
+def has_certificate(uid, course_id, module_id, cert_type):
+    with _conn() as c:
+        r = c.execute(
+            "SELECT credential_id, issued_at FROM certificates "
+            "WHERE uid=? AND course_id=? AND module_id=? AND cert_type=?",
+            (uid, course_id, module_id, cert_type),
+        ).fetchone()
+    return dict(r) if r else None
