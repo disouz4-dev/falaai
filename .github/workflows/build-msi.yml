@@ -1,0 +1,76 @@
+name: Build Windows MSI
+
+on:
+  workflow_dispatch: # trigger manual: Actions > Build Windows MSI > Run workflow
+  push:
+    tags:
+      - "v*"
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-msi:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Setup Python (para o sidecar do backend)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar Rust (MSVC)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      # PT-BR: o Tauri gera o .msi com o WiX Toolset. EN: Tauri builds .msi using WiX.
+      - name: Instalar WiX Toolset
+        shell: powershell
+        run: |
+          choco install wixtoolset -y --no-progress
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            web/src-tauri/target
+          key: ${{ runner.os }}-tauri-${{ hashFiles('web/src-tauri/Cargo.lock') }}
+
+      - name: Frontend build
+        working-directory: web
+        run: npm install && npm run build
+
+      - name: Instalar Tauri CLI
+        working-directory: web
+        run: npm install -D @tauri-apps/cli
+
+      - name: Build MSI
+        working-directory: web
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ""
+        run: npx tauri build -- --config '{"bundle":{"active":true,"targets":["msi"]}}'
+
+      - name: Upload MSI
+        uses: actions/upload-artifact@v4
+        with:
+          name: guaralingo-msi
+          path: web/src-tauri/target/release/bundle/msi/*.msi
+
+      - name: Publicar na release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: web
+        run: |
+          $msi = Get-ChildItem "src-tauri/target/release/bundle/msi/*.msi" | Select-Object -First 1
+          gh release upload "$env:GITHUB_REF_NAME" "$($msi.FullName)" --clobber
