@@ -57,8 +57,8 @@ jobs:
       - name: Build MSI
         working-directory: web
         env:
-          TAURI_SIGNING_PRIVATE_KEY: ""
-        run: npx tauri build -- --config '{"bundle":{"active":true,"targets":["msi"]}}'
+          NODE_OPTIONS: ""
+        run: npx tauri build --bundles msi
 
       - name: Upload MSI
         uses: actions/upload-artifact@v4
