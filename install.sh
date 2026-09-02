@@ -27,6 +27,6 @@ LOCAL_PY="$(dirname "$0")/install.py"
 if [ -f "$LOCAL_PY" ]; then
   exec python3 "$LOCAL_PY" "$@"
 else
-  echo "🦜 Baixando instalador universal (install.py)..."
+  echo "🐺 Baixando instalador universal (install.py)..."
   curl -fsSL "$URL" | python3 - "$@"
 fi

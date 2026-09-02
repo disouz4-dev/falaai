@@ -108,20 +108,116 @@ def setup_model_and_voice(py):
     log("==> Instalando dependências do backend...")
     run([py, "-m", "pip", "install", "-q", "-r", "backend/requirements.txt"], check=False)
 
+def create_windows_shortcuts():
+    """PT-BR: cria atalhos reais do app no Windows (Menu Iniciar + Desktop),
+       para o Guaralingo aparecer como programa instalado (com ícone e executável).
+       EN: create real app shortcuts on Windows (Start Menu + Desktop)."""
+    try:
+        import win32com.client
+    except Exception:
+        # sem pywin32: fallback para um .bat de iniciar + atalho via PowerShell
+        try:
+            _create_shortcut_powershell()
+            return True
+        except Exception as e:
+            log(f"   Falha ao criar atalhos: {e}")
+            return False
+    try:
+        shell = win32com.client.Dispatch("WScript.Shell")
+        cmd = str(DIR / "run.bat")
+        icon = str(DIR / "web" / "src-tauri" / "icons" / "icon.ico")
+        if not os.path.exists(icon):
+            icon = str(DIR / "web" / "public" / "icon.svg")
+        workdir = str(DIR)
+        # PT-BR: alvos dos atalhos. EN: shortcut targets.
+        desktop = os.path.join(os.path.expanduser("~"), "Desktop", "Guaralingo.lnk")
+        startmenu = os.path.join(
+            os.environ.get("APPDATA", ""),
+            "Microsoft", "Windows", "Start Menu", "Programs", "Guaralingo.lnk",
+        )
+        for target in (desktop, startmenu):
+            lnk = shell.CreateShortcut(target)
+            lnk.TargetPath = "cmd.exe"
+            lnk.Arguments = f'/k ""{cmd}""'
+            lnk.WorkingDirectory = workdir
+            lnk.Description = "Guaralingo — aprenda inglês com IA local"
+            if os.path.exists(icon):
+                lnk.IconLocation = f"{icon},0"
+            lnk.Save()
+            log(f"   Atalho criado: {target}")
+        return True
+    except Exception as e:
+        log(f"   Falha ao criar atalhos: {e}")
+        return False
+
+def _create_shortcut_powershell():
+    """PT-BR: cria os .lnk via PowerShell (sem pywin32). EN: create .lnk via PowerShell."""
+    import tempfile
+    cmd = str(DIR / "run.bat")
+    icon = str(DIR / "web" / "src-tauri" / "icons" / "icon.ico")
+    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    startmenu = os.path.join(
+        os.environ.get("APPDATA", ""),
+        "Microsoft", "Windows", "Start Menu", "Programs",
+    )
+    ps = f'''
+$ws = New-Object -ComObject WScript.Shell
+$cmd = "{cmd}"
+$icon = "{icon}"
+foreach ($dir in @("{desktop}", "{startmenu}")) {{
+  if (Test-Path $dir) {{
+    $lnk = $ws.CreateShortcut("$dir\\Guaralingo.lnk")
+    $lnk.TargetPath = "cmd.exe"
+    $lnk.Arguments = "/k `"$cmd`""
+    $lnk.WorkingDirectory = "{DIR}"
+    $lnk.Description = "Guaralingo - aprenda ingles com IA local"
+    if (Test-Path $icon) {{ $lnk.IconLocation = "$icon,0" }}
+    $lnk.Save()
+  }}
+}}
+'''
+    with tempfile.NamedTemporaryFile("w", suffix=".ps1", delete=False) as f:
+        f.write(ps); tmp = f.name
+    try:
+        subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", tmp], check=True)
+    finally:
+        try: os.unlink(tmp)
+        except Exception: pass
+
 def launch():
     log("\n✅ Pronto! Iniciando o Guaralingo...\n")
     if OS_NAME == "Windows":
-        # PT-BR: usa run.bat. EN: use run.bat.
+        # PT-BR: cria os atalhos de programa (menu iniciar + desktop). EN: create app shortcuts.
+        create_windows_shortcuts()
+        # PT-BR: abre o app em janela própria e não prende o instalador. EN: launch in own window.
         bat = DIR / "run.bat"
-        if bat.exists(): run([str(bat)], check=False)
-        else: run([sys.executable, "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"], cwd=str(DIR / "backend"), check=False)
+        flags = getattr(subprocess, "CREATE_NEW_CONSOLE", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+        if bat.exists():
+            subprocess.Popen(["cmd.exe", "/k", str(bat)], cwd=str(DIR), creationflags=flags)
+            _open_browser()
+        else:
+            subprocess.Popen([sys.executable, "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
+                             cwd=str(DIR / "backend"), creationflags=flags)
+            _open_browser("http://localhost:8000")
     else:
         sh = DIR / "run.sh"
         if sh.exists():
             sh.chmod(0o755)
-            run([str(sh)], check=False)
+            subprocess.Popen(["bash", str(sh)], cwd=str(DIR))
         else:
-            run([sys.executable, "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"], cwd=str(DIR / "backend"), check=False)
+            subprocess.Popen([sys.executable, "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
+                             cwd=str(DIR / "backend"))
+
+def _open_browser(url="http://localhost:8000"):
+    """PT-BR: abre o navegador no endereço da app. EN: open browser on the app address."""
+    try:
+        import webbrowser
+        if OS_NAME == "Windows":
+            subprocess.Popen(["cmd", "/c", "start", "", url])
+        else:
+            webbrowser.open(url)
+    except Exception as e:
+        log(f"   Não foi possível abrir o navegador: {e}")
 
 def install_deb_linux():
     """PT-BR: no Linux instala o .deb (aparece no menu). Tenta baixar a última release.
@@ -166,7 +262,7 @@ def install_deb_linux():
 
 def main():
     use_dev = "--dev" in sys.argv
-    log(f"🦜 Instalando o Guaralingo ({OS_NAME}) em {DIR}...")
+    log(f"🐺 Instalando o Guaralingo ({OS_NAME}) em {DIR}...")
     py = ensure_python()
     if not py: sys.exit(1)
     git_cmd = ensure_git()

@@ -38,4 +38,4 @@ fi
 
 update-desktop-database "$APPS_DIR" 2>/dev/null || true
 echo "✅ Guaralingo instalado no menu de aplicativos e na Área de trabalho."
-echo "   Clique no ícone 🦜 para abrir."
+echo "   Clique no ícone 🐺 para abrir."

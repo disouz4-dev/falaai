@@ -38,10 +38,10 @@ git push origin main
 # PT-BR: cria/atualiza a release no GitHub com notes. EN: create/update release on GitHub.
 if gh release view "v$VER" >/dev/null 2>&1; then
   echo "==> Release v$VER já existe — atualizando notes..."
-  gh release edit "v$VER" --title "Guaralingo v$VER 🦜" --notes "$NOTES"
+  gh release edit "v$VER" --title "Guaralingo v$VER 🐺" --notes "$NOTES"
 else
   echo "==> Criando a release v$VER no GitHub..."
-  gh release create "v$VER" --title "Guaralingo v$VER 🦜" --notes "$NOTES"
+  gh release create "v$VER" --title "Guaralingo v$VER 🐺" --notes "$NOTES"
 fi
 
 echo ""

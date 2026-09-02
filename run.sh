@@ -60,7 +60,7 @@ if [ "$1" == "--https" ]; then
   SSL_ARGS="--ssl-keyfile $KEY --ssl-certfile $CERT"
   OL_HTTPS=1
   echo ""
-  echo "🦜 Guaralingo (HTTPS)"
+  echo "🐺 Guaralingo (HTTPS)"
   if [ "$PORT" = "80" ]; then
     echo "   Nome na rede: https://guaralingo.local   ← use este em qualquer dispositivo"
     echo "   PC:           https://localhost          ← (porta 80, modo servidor web legado)"
@@ -78,7 +78,7 @@ if [ "$1" == "--https" ]; then
   echo ""
 else
   echo ""
-  echo "🦜 Guaralingo (HTTP)"
+  echo "🐺 Guaralingo (HTTP)"
   echo "   Nome na rede: http://guaralingo.local:$PORT   ← use este em qualquer dispositivo"
   echo "   PC:           http://localhost:$PORT"
   echo "   (para microfone no celular rode: ./run.sh --https)"
