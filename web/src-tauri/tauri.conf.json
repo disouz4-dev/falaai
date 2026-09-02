@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Fala A.I.",
   "mainBinaryName": "falaai",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "identifier": "com.falaai.app",
   "build": {
     "frontendDist": "../dist",
