@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { api } from "../api.js";
+import { api, onColor } from "../api.js";
 
 export default function Catalog({ nav }) {
   const [courses, setCourses] = useState(null);
@@ -24,7 +24,7 @@ export default function Catalog({ nav }) {
         {courses == null && <p className="course-intro">Carregando…</p>}
         {courses?.map((c) => (
           <div className="module" key={c.id}>
-            <div className="module-head" style={{ background: c.color }}>
+            <div className="module-head" style={{ background: c.color, color: onColor(c.color) }}>
               <div className="mh-top"><span>🎓 CURSO</span><span>{c.done_lessons}/{c.total_lessons} lições</span></div>
               <h3>{c.title}</h3>
               <div className="mh-sub">{c.subtitle}</div>
