@@ -21,6 +21,14 @@ def has(cmd): return shutil.which(cmd) is not None
 
 def ensure_git():
     if has("git"): return True
+    # PT-BR: no Windows, git pode estar instalado mas não no PATH. EN: check common install paths.
+    if OS_NAME == "Windows":
+        for p in [
+            r"C:\Program Files\Git\cmd\git.exe",
+            r"C:\Program Files (x86)\Git\cmd\git.exe",
+            Path(os.environ.get("LOCALAPPDATA","")) / r"Programs\Git\cmd\git.exe",
+        ]:
+            if Path(p).exists(): return True
     log("==> git não encontrado — tentando instalar...")
     try:
         if OS_NAME == "Linux":

@@ -58,8 +58,8 @@ irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.ps1 | 
 Baixe a release em https://github.com/disouz4-dev/guaralingo/releases
 
 ```bash
-# Via terminal (um comando, v1.0.8):
-curl -L https://github.com/disouz4-dev/guaralingo/releases/download/v1.0.8/Guaralingo_1.0.8_amd64.deb -o Guaralingo_1.0.8_amd64.deb && sudo dpkg -i Guaralingo_1.0.8_amd64.deb && sudo apt-get install -f
+# Via terminal (um comando, v1.0.9):
+curl -L https://github.com/disouz4-dev/guaralingo/releases/download/v1.0.9/Guaralingo_1.0.8_amd64.deb -o Guaralingo_1.0.8_amd64.deb && sudo dpkg -i Guaralingo_1.0.8_amd64.deb && sudo apt-get install -f
 # Ou manual:
 sudo dpkg -i Guaralingo_1.0.8_amd64.deb && sudo apt-get install -f
 ```
