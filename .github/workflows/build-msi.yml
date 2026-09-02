@@ -73,6 +73,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         shell: powershell
         working-directory: web
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # PT-BR: pega o .msi mais recente (ignora MSIs antigos que sobram no cache).
           # EN: pick the newest .msi (ignore stale cached MSIs).
