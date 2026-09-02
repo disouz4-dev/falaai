@@ -35,6 +35,11 @@ export default function Course({ nav, courseId }) {
       </div>
       <p className="course-intro">{course.subtitle}</p>
 
+      <button className="btn-primary outline" style={{ width: "100%", marginBottom: 14 }}
+        onClick={() => nav("course")}>
+        📚 Outros cursos (matricular-se)
+      </button>
+
       {course.course_certificate ? (
         <button className="btn-primary cert-banner" style={{ width: "100%", marginBottom: 14 }}
           onClick={() => nav("certificate", { courseId: course.id, type: "course" })}>
