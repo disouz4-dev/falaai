@@ -1,7 +1,7 @@
 # =============================================================================
-# PT-BR: Script de build do Guaralingo para Windows (.msi).
+# PT-BR: Script de build do Fala A.I. para Windows (.msi).
 #        Execute este script **no Windows** (PowerShell 5+ / PowerShell 7+).
-# EN:    Guaralingo Windows build script (.msi). Run **on Windows**.
+# EN:    Fala A.I. Windows build script (.msi). Run **on Windows**.
 # =============================================================================
 
 # Requisitos no Windows:
@@ -13,14 +13,14 @@
 # - Git para clonar o repo
 
 # Uso (PowerShell como Administrador NÃO é necessário para build):
-#   irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/build-windows.ps1 | iex
+#   irm https://raw.githubusercontent.com/disouz4-dev/falaai/main/build-windows.ps1 | iex
 # Ou clone o repo e rode localmente:
-#   cd guaralingo
+#   cd falaai
 #   .\build-windows.ps1
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "=== Guaralingo - Build Windows (.msi) ===" -ForegroundColor Cyan
+Write-Host "=== Fala A.I. - Build Windows (.msi) ===" -ForegroundColor Cyan
 
 # --- 1. Verificar pré-requisitos ---------------------------------------------
 Write-Host "`n[1/6] Verificando pré-requisitos..."
@@ -52,8 +52,8 @@ if ($targets -notmatch "x86_64-pc-windows") {
 Write-Host "✅ Pré-requisitos OK" -ForegroundColor Green
 
 # --- 2. Clonar/atualizar repo ------------------------------------------------
-$Repo = "https://github.com/disouz4-dev/guaralingo.git"
-$Dir  = if ($env:GUARALINGO_DIR) { $env:GUARALINGO_DIR } else { "$PWD\guaralingo-build" }
+$Repo = "https://github.com/disouz4-dev/falaai.git"
+$Dir  = if ($env:FALA_AI_DIR) { $env:FALA_AI_DIR } else { "$PWD\falaai-build" }
 
 Write-Host "`n[2/6] Preparando código em $Dir..."
 

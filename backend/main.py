@@ -1,8 +1,8 @@
 """
-PT-BR: Guaralingo — backend FastAPI.
+PT-BR: Fala A.I. — backend FastAPI.
        Serve o PWA e expõe a API do teste de nivelamento adaptativo (CEFR/TRI) e do
        modo de conversação por voz em tempo real (streaming via Ollama).
-EN:    Guaralingo — FastAPI backend.
+EN:    Fala A.I. — FastAPI backend.
        Serves the PWA and exposes the adaptive placement-test API (CEFR/IRT) and the
        real-time voice conversation mode (streaming via Ollama).
 """
@@ -10,6 +10,7 @@ EN:    Guaralingo — FastAPI backend.
 import json
 import os
 import uuid
+import hashlib
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query, Request, Depends, Header
@@ -34,16 +35,16 @@ import version
 # PT-BR: detecta a GPU no início e ajusta o Ollama (preferência GPU, fallback CPU).
 # EN: detect the GPU at startup and tune Ollama (prefer GPU, fall back to CPU).
 GPU_INFO = gpu.apply_env()
-print(f"[Guaralingo] Aceleração: {GPU_INFO['device'].upper()} — {GPU_INFO['reason']}")
+print(f"[Fala A.I.] Aceleração: {GPU_INFO['device'].upper()} — {GPU_INFO['reason']}")
 
 BASE_DIR = Path(__file__).resolve().parent
 # PT-BR: frontend React compilado (web/dist). EN: compiled React frontend (web/dist).
 FRONTEND_DIR = BASE_DIR.parent / "web" / "dist"
 ITEMS_PATH = BASE_DIR / "data" / "items.json"
 # PT-BR: arquivo que guarda a identidade local do app desktop (persistente entre execuções).
-#        Usa o diretório de dados (gravável), que respeita GUARALINGO_DATA_DIR no app desktop.
+#        Usa o diretório de dados (gravável), que respeita FALA_AI_DATA_DIR no app desktop.
 # EN: file that persists the local desktop identity across runs. Uses the data dir (writable),
-#     which honors GUARALINGO_DATA_DIR in the desktop app.
+#     which honors FALA_AI_DATA_DIR in the desktop app.
 LOCAL_USER_PATH = Path(db.data_dir()) / "local_user.json"
 
 TEST_LENGTH = 20  # PT-BR: nº de questões do teste. EN: number of questions in the test.
@@ -66,7 +67,7 @@ db.init_db()
 # PT-BR: Garante o vault de memória do professor. EN: ensure the teacher's memory vault.
 memory.ensure_vault()
 
-app = FastAPI(title="Guaralingo API")
+app = FastAPI(title="Fala A.I. API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -74,21 +75,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# PT-BR: nome amigável na rede (guaralingo.local). EN: friendly network name (guaralingo.local).
+# PT-BR: nome amigável na rede (falaai.local). EN: friendly network name (falaai.local).
 FRIENDLY_URL = None
 
 
 @app.on_event("startup")
 def _start_mdns():
-    """PT-BR: anuncia 'guaralingo.local' na rede via mDNS. EN: advertise 'guaralingo.local' via mDNS."""
+    """PT-BR: anuncia 'falaai.local' na rede via mDNS. EN: advertise 'falaai.local' via mDNS."""
     global FRIENDLY_URL
-    if os.environ.get("GUARALINGO_MDNS", "1") == "0":
+    if os.environ.get("FALA_AI_MDNS", "1") == "0":
         return  # PT-BR: mDNS desativado (ex.: ambientes restritos). EN: mDNS disabled.
-    port = int(os.environ.get("GUARALINGO_PORT", "8000"))
-    https = os.environ.get("GUARALINGO_HTTPS", "0") == "1"
+    port = int(os.environ.get("FALA_AI_PORT", "8000"))
+    https = os.environ.get("FALA_AI_HTTPS", "0") == "1"
     FRIENDLY_URL = mdns.start(port=port, https=https)
     if FRIENDLY_URL:
-        print(f"[Guaralingo] Acesse pela rede em: {FRIENDLY_URL}")
+        print(f"[Fala A.I.] Acesse pela rede em: {FRIENDLY_URL}")
 
 
 @app.on_event("shutdown")
@@ -194,7 +195,7 @@ def do_update(request: Request):
     host = request.client.host if request.client else ""
     if host not in ("127.0.0.1", "::1", "localhost"):
         raise HTTPException(403, "Atualização só é permitida no próprio computador (localhost).")
-    if os.environ.get("GUARALINGO_DESKTOP", "0") == "1":
+    if os.environ.get("FALA_AI_DESKTOP", "0") == "1":
         return version.perform_update_desktop()
     return version.perform_update()
 
@@ -235,44 +236,62 @@ def _get_or_create_local_user():
     return uid
 
 
+@app.get("/api/users")
+def list_users():
+    """PT-BR: usuários locais cadastrados (para o pick list da tela de login).
+    EN: registered local users (for the login screen pick list)."""
+    return {"users": db.list_profiles()}
+
+
 @app.post("/api/login")
 def login_local(body: LoginLocalIn):
-    """PT-BR: login local do app desktop. Verifica senha se houver, cria perfil se necessário e devolve o token.
-    EN: local login for the desktop app. Verifies password if set, creates profile if needed, returns token."""
+    """PT-BR: login local do app desktop. Cada NOME é uma conta própria (com sua senha).
+    Cria a conta na 1ª vez, verifica a senha nas seguintes, e devolve o token.
+    EN: local login for the desktop app. Each NAME is its own account (with own password).
+    Creates the account on first use, verifies the password afterwards, returns a token."""
+    name = (body.name or "").strip()
     uid = _get_or_create_local_user()
-    prof = db.get_profile(uid)
-    
-    # Se já existe perfil com senha, verifica a senha
-    if prof and prof.get("password_hash"):
-        if not body.password:
-            raise HTTPException(status_code=401, detail="Senha necessária")
-        if not db.verify_password(uid, body.password):
-            raise HTTPException(status_code=401, detail="Senha incorreta")
-    
-    if not prof:
-        name = body.name.strip() or "Aluno(a)"
-        prof = db.create_profile_from_auth(uid, name, "", "")
-        # Se enviou senha no primeiro login, salva o hash
-        if body.password:
-            db.upsert_profile(uid, name, "Português (Brasil)", "", "", "female", 
-                              email="", picture="", password=body.password)
-            prof = db.get_profile(uid)
-    elif body.password and not prof.get("password_hash"):
-        # Primeira vez definindo senha
-        db.upsert_profile(uid, prof.get("name", ""), prof.get("native_lang", "pt"), 
-                          prof.get("goal", ""), prof.get("interests", ""), 
-                          prof.get("gender_preference", "female"),
-                          email=prof.get("email"), picture=prof.get("picture"),
-                          password=body.password)
+
+    # PT-BR: se veio um nome, resolvemos a conta POR NOME (pick list / múltiplos usuários).
+    #        O uid da 1ª conta legada (local_user.json) é reaproveitado quando o nome bate,
+    #        para não perder progresso de quem já usava o app. EN: if a name was provided,
+    #        resolve the account BY NAME. Legacy single-user uid is reused when name matches.
+    if name:
+        prof = db.get_profile_by_name(name)
+        if prof:
+            uid = prof["uid"]
+        else:
+            # PT-BR: nova conta → uid estável derivado do nome. EN: new account → stable uid.
+            uid = "local-" + hashlib.sha256(name.lower().encode()).hexdigest()[:16]
+    else:
         prof = db.get_profile(uid)
-    
-    token = auth.create_local_token(uid, name=prof.get("name", ""), email=prof.get("email"),
+
+    created = False
+    if prof:
+        if prof.get("password_hash"):
+            if not body.password:
+                raise HTTPException(status_code=401, detail="Senha necessária")
+            if not db.verify_password(uid, body.password):
+                raise HTTPException(status_code=401, detail="Senha incorreta")
+    else:
+        # PT-BR: primeira vez — cria a conta com o nome escolhido. EN: first time — create account.
+        created = True
+        name = name or "Aluno(a)"
+        prof = db.upsert_profile(uid, name, "Português (Brasil)", "", "", "female",
+                                 email="", picture="",
+                                 password=body.password if body.password else None)
+        if not prof.get("password_hash") and body.password:
+            prof = db.upsert_profile(uid, name, "Português (Brasil)", "", "", "female",
+                                     email="", picture="", password=body.password)
+
+    token = auth.create_local_token(uid, name=prof.get("name", name), email=prof.get("email"),
                                     picture=prof.get("picture"))
     return {
         "token": token,
         "user": {"uid": uid, "name": prof.get("name"), "email": prof.get("email"),
                  "picture": prof.get("picture"), "local": True},
         "profile": prof,
+        "created": created,
     }
 
 

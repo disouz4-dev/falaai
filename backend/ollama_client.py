@@ -1,7 +1,7 @@
 """
-PT-BR: Cliente do Ollama para o Guaralingo. Fala com o modelo local 'small-english-teacher'
+PT-BR: Cliente do Ollama para o Fala A.I.. Fala com o modelo local 'small-english-teacher'
        tanto para conversação em tempo real (streaming) quanto para gerar itens/relatórios.
-EN:    Ollama client for Guaralingo. Talks to the local 'small-english-teacher' model for both
+EN:    Ollama client for Fala A.I.. Talks to the local 'small-english-teacher' model for both
        real-time conversation (streaming) and item/report generation.
 """
 
@@ -10,7 +10,7 @@ import os
 import urllib.request
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434")
-MODEL = os.environ.get("GUARALINGO_MODEL", "small-english-teacher")
+MODEL = os.environ.get("FALA_AI_MODEL", "small-english-teacher")
 
 
 def chat_once(messages, temperature=0.6):

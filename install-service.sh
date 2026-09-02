@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # =============================================================================
-# PT-BR: Instala o Guaralingo como SERVIÇO do sistema (systemd) capaz de abrir a
+# PT-BR: Instala o Fala A.I. como SERVIÇO do sistema (systemd) capaz de abrir a
 #        porta 80 (HTTPS) SEM rodar tudo como root. Usa CAP_NET_BIND_SERVICE:
 #        o processo continua rodando como o usuário normal, mas ganha permissão
 #        só para fazer bind em portas privilegiadas (< 1024). Modo servidor web
 #        (legado); o app desktop atual é autônomo e não precisa disso.
 #        Rode uma vez com sudo:
 #          sudo ./install-service.sh --https
-# EN:    Install Guaralingo as a systemd service able to bind privileged port 80
+# EN:    Install Fala A.I. as a systemd service able to bind privileged port 80
 #        without running everything as root (CAP_NET_BIND_SERVICE). Keeps file
 #        ownership intact. Legacy web-server mode; the current desktop app is
 #        standalone and does not need this.
@@ -18,13 +18,13 @@ cd "$(dirname "$0")"
 PROJECT_DIR="$(pwd)"
 RUN_USER="$(id -un)"
 MODE=" --https"
-SERVICE=/etc/systemd/system/guaralingo.service
+SERVICE=/etc/systemd/system/falaai.service
 
-echo "==> Instalando o serviço guaralingo (usuário: $RUN_USER, porta 80 via capability)…"
+echo "==> Instalando o serviço falaai (usuário: $RUN_USER, porta 80 via capability)…"
 
 sudo tee "$SERVICE" >/dev/null <<EOF
 [Unit]
-Description=Guaralingo — servidor local de ensino de inglês (porta 80 HTTPS)
+Description=Fala A.I. — servidor local de ensino de inglês (porta 80 HTTPS)
 After=network-online.target
 Wants=network-online.target
 
@@ -50,13 +50,13 @@ EOF
 
 echo "==> Ativando e iniciando…"
 sudo systemctl daemon-reload
-sudo systemctl enable guaralingo.service
-sudo systemctl restart guaralingo.service
+sudo systemctl enable falaai.service
+sudo systemctl restart falaai.service
 sleep 3
-sudo systemctl --no-pager status guaralingo.service | head -12 || true
+sudo systemctl --no-pager status falaai.service | head -12 || true
 
 echo ""
-echo "✅ Guaralingo roda como serviço (porta 80 HTTPS, sem rodar como root)."
-echo "   Acesse:   https://localhost  /  https://guaralingo.local"
-echo "   Comandos: sudo systemctl {status|restart|stop} guaralingo"
-echo "   Logs:     journalctl -u guaralingo -f"
+echo "✅ Fala A.I. roda como serviço (porta 80 HTTPS, sem rodar como root)."
+echo "   Acesse:   https://localhost  /  https://falaai.local"
+echo "   Comandos: sudo systemctl {status|restart|stop} falaai"
+echo "   Logs:     journalctl -u falaai -f"

@@ -5,7 +5,7 @@ const WELCOME = "Hi! I'm your English teacher. What would you like to talk about
 
 export default function Talk({ nav }) {
   const [msgs, setMsgs] = useState([]);
-  const [level, setLevel] = useState(localStorage.getItem("guaralingo_level") || "B1");
+  const [level, setLevel] = useState(localStorage.getItem("falaai_level") || "B1");
   const [listening, setListening] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [hint, setHint] = useState("Segure o microfone para falar");

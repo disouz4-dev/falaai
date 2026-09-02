@@ -58,8 +58,8 @@ export default function App() {
   // EN:    on a 401 (expired/invalid token), force a clean sign-out.
   useEffect(() => {
     const onAuthRequired = () => { setLoginError("Sessão expirada. Entre novamente."); clearLocalToken(); setAuthUser(null); };
-    window.addEventListener("guaralingo:auth-required", onAuthRequired);
-    return () => window.removeEventListener("guaralingo:auth-required", onAuthRequired);
+    window.addEventListener("falaai:auth-required", onAuthRequired);
+    return () => window.removeEventListener("falaai:auth-required", onAuthRequired);
   }, []);
 
   // PT-BR: boot — só dispara DEPOIS de logado. EN: boot — only after login.
@@ -121,19 +121,30 @@ export default function App() {
   const [authTab, setAuthTab] = useState("register");
   const [form, setForm] = useState({ name: "", native_lang: "pt", goal: "", interests: "", gender_preference: "female", password: "", confirmPassword: "" });
   const [loginPassword, setLoginPassword] = useState("");
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   // PT-BR: decide aba inicial: sem token = cadastro, com token = login. EN: initial tab: no token = register.
   useEffect(() => {
     if (authUser === null) setAuthTab(getLocalToken() ? "login" : "register");
   }, [authUser]);
 
-  async function handleLogin(password) {
+  // PT-BR: carrega os usuários locais cadastrados (pick list da tela de entrar).
+  // EN: load the registered local users (pick list on the login screen).
+  useEffect(() => {
+    if (authUser !== null) return;
+    api.get("/api/users")
+      .then((d) => setUsers(d.users || []))
+      .catch(() => setUsers([]));
+  }, [authUser]);
+
+  async function handleLogin(name, password) {
     setLoginError("");
     setLoggingIn(true);
     try {
       const { loginLocal } = await import("./localauth.js");
       for (let attempt = 0; attempt < 12; attempt++) {
         try {
-          const data = await loginLocal("", password);
+          const data = await loginLocal(name, password);
           setAuthUser(data.user);
           return;
         } catch (e) {
@@ -194,7 +205,7 @@ export default function App() {
     return (
       <section className="screen active">
         <div className="panel center-panel">
-          <div className="brand">🐺 <span>Guaralingo</span></div>
+          <div className="brand">🐺 <span>Fala A.I.</span></div>
           <p className="subtitle">Carregando…</p>
         </div>
       </section>
@@ -211,22 +222,34 @@ export default function App() {
       if (form.password.length < 4) { setLoginError("A senha deve ter pelo menos 4 caracteres."); return; }
       handleRegister(form);
     };
+    const pickUser = (u) => {
+      setSelectedUser(u);
+      setForm((f) => ({ ...f, name: u.name }));
+      setLoginError("");
+    };
     return (
-      <section className="screen active">
-        <div className="panel center-panel" style={{ maxWidth: 460 }}>
-          <div className="brand" style={{ fontSize: 28 }}>🐺 <span>Guaralingo</span></div>
-          <div style={{ display: "flex", gap: 8, marginBottom: 16, borderBottom: "2px solid var(--line)" }}>
-            <button onClick={() => setAuthTab("register")} style={{ flex: 1, padding: "10px", border: "none", background: "none", fontWeight: 700, borderBottom: authTab === "register" ? "3px solid var(--guara)" : "3px solid transparent", color: authTab === "register" ? "var(--guara)" : "var(--muted)", cursor: "pointer" }}>Criar conta</button>
-            <button onClick={() => setAuthTab("login")} style={{ flex: 1, padding: "10px", border: "none", background: "none", fontWeight: 700, borderBottom: authTab === "login" ? "3px solid var(--guara)" : "3px solid transparent", color: authTab === "login" ? "var(--guara)" : "var(--muted)", cursor: "pointer" }}>Entrar</button>
+      <section className="screen active auth-screen">
+        <div className="panel center-panel auth-card">
+          <div className="auth-seal">
+            <span className="seal-wolf">🐺</span>
           </div>
+          <h1 className="auth-brand">Fala A.I.</h1>
+          <p className="auth-sub">Seu professor de idiomas de IA — tudo local e offline.</p>
+
+          <div className="auth-pills">
+            <button className={"auth-pill" + (authTab === "register" ? " on" : "")}
+              onClick={() => setAuthTab("register")}>Criar conta</button>
+            <button className={"auth-pill" + (authTab === "login" ? " on" : "")}
+              onClick={() => setAuthTab("login")}>Entrar</button>
+          </div>
+
           {authTab === "register" ? (
-            <>
-              <h2 style={{ marginTop: 0 }}>Criar conta</h2>
-              <p className="subtitle" style={{ marginBottom: 16 }}>Seus dados ficam <strong>apenas neste dispositivo</strong> (offline). Login obrigatório para jogar.</p>
-              <form onSubmit={handleSubmit}>
-                <div className="field">
-                  <label htmlFor="name">Seu nome *</label>
-                  <input id="name" type="text" autoComplete="name" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Como devemos te chamar?" />
+            <form onSubmit={handleSubmit} className="auth-form">
+              <div className="form-grid">
+                <div className="field span-2">
+                  <label htmlFor="name">Seu nome</label>
+                  <input id="name" type="text" autoComplete="name" required value={form.name}
+                    onChange={e => setForm({...form, name: e.target.value})} placeholder="Como devemos te chamar?" />
                 </div>
                 <div className="field">
                   <label htmlFor="native_lang">Idioma nativo</label>
@@ -240,51 +263,81 @@ export default function App() {
                   </select>
                 </div>
                 <div className="field">
-                  <label htmlFor="goal">Objetivo</label>
-                  <input id="goal" type="text" value={form.goal} onChange={e => setForm({...form, goal: e.target.value})} placeholder="Ex: viajar, trabalho, estudo..." />
+                  <label htmlFor="goal">Meta</label>
+                  <input id="goal" type="text" value={form.goal}
+                    onChange={e => setForm({...form, goal: e.target.value})} placeholder="Ex: viajar, trabalho…" />
                 </div>
-                <div className="field">
+                <div className="field span-2">
                   <label htmlFor="interests">Interesses (opcional)</label>
-                  <textarea id="interests" rows={2} value={form.interests} onChange={e => setForm({...form, interests: e.target.value})} placeholder="Tecnologia, esportes, música..." />
+                  <input id="interests" type="text" value={form.interests}
+                    onChange={e => setForm({...form, interests: e.target.value})} placeholder="Tecnologia, música, esportes…" />
                 </div>
                 <div className="field">
-                  <label htmlFor="password">Senha *</label>
-                  <input id="password" type="password" autoComplete="new-password" required value={form.password} onChange={e => setForm({...form, password: e.target.value})} placeholder="Crie uma senha" />
+                  <label htmlFor="password">Senha</label>
+                  <input id="password" type="password" autoComplete="new-password" required value={form.password}
+                    onChange={e => setForm({...form, password: e.target.value})} placeholder="Crie uma senha" />
                 </div>
                 <div className="field">
-                  <label htmlFor="confirmPassword">Confirmar senha *</label>
-                  <input id="confirmPassword" type="password" autoComplete="new-password" required value={form.confirmPassword} onChange={e => setForm({...form, confirmPassword: e.target.value})} placeholder="Repita a senha" />
+                  <label htmlFor="confirmPassword">Confirmar senha</label>
+                  <input id="confirmPassword" type="password" autoComplete="new-password" required value={form.confirmPassword}
+                    onChange={e => setForm({...form, confirmPassword: e.target.value})} placeholder="Repita a senha" />
                 </div>
-                <div className="field">
+                <div className="field span-2">
                   <label>Voz do professor</label>
                   <div className="radio-group">
                     <label className="radio-option">
-                      <input type="radio" name="gender_preference" value="female" checked={form.gender_preference === "female"} onChange={e => setForm({...form, gender_preference: e.target.value})} />
+                      <input type="radio" name="gender_preference" value="female" checked={form.gender_preference === "female"}
+                        onChange={e => setForm({...form, gender_preference: e.target.value})} />
                       <span className="radio-label">Professora</span>
                     </label>
                     <label className="radio-option">
-                      <input type="radio" name="gender_preference" value="male" checked={form.gender_preference === "male"} onChange={e => setForm({...form, gender_preference: e.target.value})} />
+                      <input type="radio" name="gender_preference" value="male" checked={form.gender_preference === "male"}
+                        onChange={e => setForm({...form, gender_preference: e.target.value})} />
                       <span className="radio-label">Professor</span>
                     </label>
                   </div>
                 </div>
-                <button className="btn-primary" type="submit" disabled={registering} style={{ width: "100%", marginTop: 8 }}>{registering ? "Cadastrando…" : "Criar e entrar"}</button>
-                {loginError && <p className="auth-error">{loginError}</p>}
-              </form>
-            </>
+              </div>
+              <button className="btn-primary" type="submit" disabled={registering}>
+                {registering ? "Cadastrando…" : "Criar e entrar"}
+              </button>
+              {loginError && <p className="auth-error">{loginError}</p>}
+            </form>
           ) : (
-            <>
-              <h2 style={{ marginTop: 0 }}>Entrar</h2>
-              <p className="subtitle" style={{ marginBottom: 16 }}>Já tem conta? Digite sua senha para entrar.</p>
+            <div className="auth-form">
+              {users.length > 0 ? (
+                <div className="user-pick">
+                  <label className="pick-label">Escolha quem está aprendendo</label>
+                  {users.map((u) => (
+                    <button key={u.uid} className={"user-card" + (selectedUser?.uid === u.uid ? " on" : "")}
+                      onClick={() => pickUser(u)}>
+                      <span className="user-avatar">{u.name.charAt(0).toUpperCase()}</span>
+                      <span className="user-name">{u.name}</span>
+                      <span className="user-check">{selectedUser?.uid === u.uid ? "✓" : "→"}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="auth-hint">Nenhuma conta criada ainda — use a aba <strong>Criar conta</strong>.</p>
+              )}
+
+              <div className="field">
+                <label htmlFor="loginName">Usuário</label>
+                <input id="loginName" type="text" autoComplete="username" value={selectedUser?.name || form.name}
+                  onChange={e => { setSelectedUser(null); setForm({...form, name: e.target.value}); }}
+                  placeholder="Seu nome de usuário" />
+              </div>
               <div className="field">
                 <label htmlFor="loginPassword">Senha</label>
-                <input id="loginPassword" type="password" autoComplete="current-password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="Sua senha" />
+                <input id="loginPassword" type="password" autoComplete="current-password" value={loginPassword}
+                  onChange={e => setLoginPassword(e.target.value)} placeholder="Sua senha" />
               </div>
-              <button className="btn-primary" onClick={() => handleLogin(loginPassword)} disabled={loggingIn} style={{ width: "100%" }}>{loggingIn ? "Entrando…" : "Entrar"}</button>
+              <button className="btn-primary" onClick={() => handleLogin(form.name, loginPassword)} disabled={loggingIn}>
+                {loggingIn ? "Entrando…" : "Entrar"}
+              </button>
               {loginError && <p className="auth-error">{loginError}</p>}
               {loggingIn && <p className="auth-hint">Conectando ao servidor local…</p>}
-              <p className="subtitle" style={{ marginTop: 12, fontSize: 12 }}>Sem conta? Vá em <strong>Criar conta</strong>.</p>
-            </>
+            </div>
           )}
         </div>
       </section>
@@ -300,7 +353,7 @@ export default function App() {
   return (
     <>
       <header className="topbar">
-        <div className="brand" onClick={() => nav("home")}>🐺 <span>Guaralingo</span></div>
+        <div className="brand" onClick={() => nav("home")}>🐺 <span>Fala A.I.</span></div>
         <div className="topbar-right">
           <button className="icon-btn" title="Meu perfil" onClick={() => nav("profile")}>👤</button>
           {authUser?.picture ? (

@@ -1,8 +1,8 @@
 """
-PT-BR: Memória permanente do Guaralingo — um "vault" de arquivos .md (estilo Obsidian) onde o
+PT-BR: Memória permanente do Fala A.I. — um "vault" de arquivos .md (estilo Obsidian) onde o
        professor guarda o que aprende sobre o aluno: detalhes pessoais, brincadeiras, gírias e
        outras coisas. Esse contexto é injetado na conversa para o professor soar humano e lembrar.
-EN:    Guaralingo permanent memory — a vault of .md files where the teacher stores what it learns
+EN:    Fala A.I. permanent memory — a vault of .md files where the teacher stores what it learns
        about the student (personal details, inside jokes, slang, misc). Injected into the chat so
        the teacher feels human and remembers.
 """
@@ -17,10 +17,10 @@ import ollama_client
 
 # PT-BR: pasta-base do vault (pode apontar para um vault do Obsidian via env). Cada usuário tem
 #        sua SUBPASTA aqui (data/memory/<uid>/), mantendo memórias separadas por conta.
-#        No app desktop honramos GUARALINGO_DATA_DIR (gravável). EN: base vault dir (env-overridable).
+#        No app desktop honramos FALA_AI_DATA_DIR (gravável). EN: base vault dir (env-overridable).
 _DEFAULT_MEMORY = Path(os.environ.get(
-    "GUARALINGO_MEMORY_DIR",
-    str(Path(os.environ.get("GUARALINGO_DATA_DIR", str(Path(__file__).resolve().parent))) / "data" / "memory"),
+    "FALA_AI_MEMORY_DIR",
+    str(Path(os.environ.get("FALA_AI_DATA_DIR", str(Path(__file__).resolve().parent))) / "data" / "memory"),
 ))
 VAULT_BASE = _DEFAULT_MEMORY
 _DEFAULT_UID = "local"

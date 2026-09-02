@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # =============================================================================
-# PT-BR: Instalador UNIVERSAL do Guaralingo — um código para TODOS os OS.
+# PT-BR: Instalador UNIVERSAL do Fala A.I. — um código para TODOS os OS.
 #        Verifica e baixa automaticamente todas as dependências.
 #        Uso:
-#          Linux/macOS: curl -fsSL https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py | python3 -
-#          Windows:     irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py | python -
+#          Linux/macOS: curl -fsSL https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.py | python3 -
+#          Windows:     irm https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.py | python -
 #          Local:       python3 install.py
-# EN:    UNIVERSAL Guaralingo installer — one code for ALL OS. Auto-downloads deps.
+# EN:    UNIVERSAL Fala A.I. installer — one code for ALL OS. Auto-downloads deps.
 # =============================================================================
 import os, sys, json, shutil, subprocess, platform, urllib.request
 from pathlib import Path
 
-REPO = "https://github.com/disouz4-dev/guaralingo.git"
-DIR = Path(os.environ.get("GUARALINGO_DIR") or (Path.home() / "guaralingo"))
+REPO = "https://github.com/disouz4-dev/falaai.git"
+DIR = Path(os.environ.get("FALA_AI_DIR") or (Path.home() / "falaai"))
 OS_NAME = platform.system()  # Linux, Darwin, Windows
 
 def log(msg): print(msg, flush=True)
@@ -110,7 +110,7 @@ def setup_model_and_voice(py):
 
 def create_windows_shortcuts():
     """PT-BR: cria atalhos reais do app no Windows (Menu Iniciar + Desktop),
-       para o Guaralingo aparecer como programa instalado (com ícone e executável).
+       para o Fala A.I. aparecer como programa instalado (com ícone e executável).
        EN: create real app shortcuts on Windows (Start Menu + Desktop)."""
     try:
         import win32com.client
@@ -130,17 +130,17 @@ def create_windows_shortcuts():
             icon = str(DIR / "web" / "public" / "icon.svg")
         workdir = str(DIR)
         # PT-BR: alvos dos atalhos. EN: shortcut targets.
-        desktop = os.path.join(os.path.expanduser("~"), "Desktop", "Guaralingo.lnk")
+        desktop = os.path.join(os.path.expanduser("~"), "Desktop", "Fala A.I..lnk")
         startmenu = os.path.join(
             os.environ.get("APPDATA", ""),
-            "Microsoft", "Windows", "Start Menu", "Programs", "Guaralingo.lnk",
+            "Microsoft", "Windows", "Start Menu", "Programs", "Fala A.I..lnk",
         )
         for target in (desktop, startmenu):
             lnk = shell.CreateShortcut(target)
             lnk.TargetPath = "cmd.exe"
             lnk.Arguments = f'/k ""{cmd}""'
             lnk.WorkingDirectory = workdir
-            lnk.Description = "Guaralingo — aprenda inglês com IA local"
+            lnk.Description = "Fala A.I. — aprenda inglês com IA local"
             if os.path.exists(icon):
                 lnk.IconLocation = f"{icon},0"
             lnk.Save()
@@ -166,11 +166,11 @@ $cmd = "{cmd}"
 $icon = "{icon}"
 foreach ($dir in @("{desktop}", "{startmenu}")) {{
   if (Test-Path $dir) {{
-    $lnk = $ws.CreateShortcut("$dir\\Guaralingo.lnk")
+    $lnk = $ws.CreateShortcut("$dir\\Fala A.I..lnk")
     $lnk.TargetPath = "cmd.exe"
     $lnk.Arguments = "/k `"$cmd`""
     $lnk.WorkingDirectory = "{DIR}"
-    $lnk.Description = "Guaralingo - aprenda ingles com IA local"
+    $lnk.Description = "Fala A.I. - aprenda ingles com IA local"
     if (Test-Path $icon) {{ $lnk.IconLocation = "$icon,0" }}
     $lnk.Save()
   }}
@@ -185,7 +185,7 @@ foreach ($dir in @("{desktop}", "{startmenu}")) {{
         except Exception: pass
 
 def launch():
-    log("\n✅ Pronto! Iniciando o Guaralingo...\n")
+    log("\n✅ Pronto! Iniciando o Fala A.I....\n")
     if OS_NAME == "Windows":
         # PT-BR: cria os atalhos de programa (menu iniciar + desktop). EN: create app shortcuts.
         create_windows_shortcuts()
@@ -223,9 +223,9 @@ def install_deb_linux():
     """PT-BR: no Linux instala o .deb (aparece no menu). Tenta baixar a última release.
        EN: on Linux install the .deb (shows in app menu). Fetch latest release."""
     import tempfile
-    api = "https://api.github.com/repos/disouz4-dev/guaralingo/releases/latest"
+    api = "https://api.github.com/repos/disouz4-dev/falaai/releases/latest"
     try:
-        req = urllib.request.Request(api, headers={"User-Agent": "Guaralingo", "Accept": "application/vnd.github+json"})
+        req = urllib.request.Request(api, headers={"User-Agent": "Fala A.I.", "Accept": "application/vnd.github+json"})
         with urllib.request.urlopen(req, timeout=10) as r:
             d = json.loads(r.read().decode())
         assets = [a for a in (d.get("assets") or []) if a.get("name", "").endswith(".deb")]
@@ -237,7 +237,7 @@ def install_deb_linux():
         url = deb["browser_download_url"]; name = deb["name"]
         log(f"==> Baixando {name} ...")
         dest = Path(tempfile.gettempdir()) / name
-        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Guaralingo"}), timeout=120) as r, open(dest, "wb") as f:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Fala A.I."}), timeout=120) as r, open(dest, "wb") as f:
             while True:
                 chunk = r.read(1 << 20)
                 if not chunk: break
@@ -248,13 +248,13 @@ def install_deb_linux():
             log("   Corrigindo dependências (sudo apt-get install -f -y)...")
             run(["sudo", "apt-get", "install", "-f", "-y"], check=False)
             # tenta de novo se ainda não instalou
-            if not has("guaralingo") and not Path("/usr/bin/guaralingo").exists():
+            if not has("falaai") and not Path("/usr/bin/falaai").exists():
                 # PT-BR: o binário do .deb é /usr/bin/app; verifica instalação via dpkg
-                out = run(["dpkg", "-l", "guaralingo"], capture_output=True, text=True)
+                out = run(["dpkg", "-l", "falaai"], capture_output=True, text=True)
                 if out.returncode != 0:
                     log("   Falha ao instalar .deb — caindo para modo dev.")
                     return False
-        log("✅ Guaralingo instalado via .deb — procure por 'Guaralingo' no menu de apps.")
+        log("✅ Fala A.I. instalado via .deb — procure por 'Fala A.I.' no menu de apps.")
         return True
     except Exception as e:
         log(f"   Falha ao instalar .deb: {e} — caindo para modo dev.")
@@ -264,9 +264,9 @@ def install_msi_windows():
     """PT-BR: no Windows baixa a última release e instala o .msi nativo (programa de verdade).
        EN: on Windows download the latest release and install the native .msi."""
     import tempfile
-    api = "https://api.github.com/repos/disouz4-dev/guaralingo/releases/latest"
+    api = "https://api.github.com/repos/disouz4-dev/falaai/releases/latest"
     try:
-        req = urllib.request.Request(api, headers={"User-Agent": "Guaralingo", "Accept": "application/vnd.github+json"})
+        req = urllib.request.Request(api, headers={"User-Agent": "Fala A.I.", "Accept": "application/vnd.github+json"})
         with urllib.request.urlopen(req, timeout=10) as r:
             d = json.loads(r.read().decode())
         assets = [a for a in (d.get("assets") or []) if a.get("name", "").endswith(".msi")]
@@ -277,7 +277,7 @@ def install_msi_windows():
         url = msi["browser_download_url"]; name = msi["name"]
         log(f"==> Baixando {name} ...")
         dest = Path(tempfile.gettempdir()) / name
-        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Guaralingo"}), timeout=180) as r, open(dest, "wb") as f:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Fala A.I."}), timeout=180) as r, open(dest, "wb") as f:
             while True:
                 chunk = r.read(1 << 20)
                 if not chunk: break
@@ -287,7 +287,7 @@ def install_msi_windows():
         if rc != 0 and rc != 3010:
             log(f"   msiexec retornou {rc} — tente instalar manualmente: {url}")
             return False
-        log("✅ Guaralingo instalado como programa do Windows — procure por 'Guaralingo' no menu Iniciar.")
+        log("✅ Fala A.I. instalado como programa do Windows — procure por 'Fala A.I.' no menu Iniciar.")
         return True
     except Exception as e:
         log(f"   Falha ao instalar .msi: {e} — caindo para modo dev.")
@@ -297,14 +297,14 @@ def launch_msi_app():
     """PT-BR: inicia o app instalado via .msi. EN: start the app installed via .msi."""
     try:
         for p in [
-            os.path.expandvars(r"%LOCALAPPDATA%\Programs\Guaralingo\Guaralingo.exe"),
-            os.path.expandvars(r"%LOCALAPPDATA%\Guaralingo\Guaralingo.exe"),
-            r"C:\Program Files\Guaralingo\Guaralingo.exe",
+            os.path.expandvars(r"%LOCALAPPDATA%\Programs\Fala A.I.\Fala A.I..exe"),
+            os.path.expandvars(r"%LOCALAPPDATA%\Fala A.I.\Fala A.I..exe"),
+            r"C:\Program Files\Fala A.I.\Fala A.I..exe",
         ]:
             if os.path.exists(p):
                 subprocess.Popen([p]); return
         # PT-BR: fallback — procura pelo nome no menu iniciar. EN: search by start menu.
-        shell = "powershell -NoProfile -Command \"Start-Process 'Guaralingo'\""
+        shell = "powershell -NoProfile -Command \"Start-Process 'Fala A.I.'\""
         subprocess.run(shell, shell=True, check=False)
     except Exception as e:
         log(f"   Não foi possível abrir o app: {e}")
@@ -319,28 +319,28 @@ def setup_windows_post_msi(py):
         with _tf.TemporaryDirectory() as td:
             mf = Path(td) / "Modelfile"
             run(["powershell", "-NoProfile", "-Command",
-                 "Invoke-WebRequest -Uri https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/Modelfile -OutFile " + str(mf)],
+                 "Invoke-WebRequest -Uri https://raw.githubusercontent.com/disouz4-dev/falaai/main/Modelfile -OutFile " + str(mf)],
                 check=False)
             if mf.exists():
                 run(["ollama", "create", "small-english-teacher", "-f", str(mf)], check=False)
             else:
-                run([py, "-c", "import urllib.request; urllib.request.urlretrieve('https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/Modelfile', r'%s')" % str(mf)], check=False)
+                run([py, "-c", "import urllib.request; urllib.request.urlretrieve('https://raw.githubusercontent.com/disouz4-dev/falaai/main/Modelfile', r'%s')" % str(mf)], check=False)
                 if mf.exists():
                     run(["ollama", "create", "small-english-teacher", "-f", str(mf)], check=False)
     except Exception as e:
         log(f"   Modelo Ollama: {e} — rode depois: ollama create small-english-teacher -f Modelfile")
-    # PT-BR: cria o venv no lugar EXATO que o app desktop procura (%APPDATA%\guaralingo\venv)
+    # PT-BR: cria o venv no lugar EXATO que o app desktop procura (%APPDATA%\falaai\venv)
     #        e instala as deps nele. Sem isso o app cai no python do PATH (que pode não
     #        existir) e o backend nunca sobe. EN: create the venv where the desktop app
     #        looks for it and install the backend deps there.
-    data_dir = Path(os.environ.get("APPDATA")) / "guaralingo"
+    data_dir = Path(os.environ.get("APPDATA")) / "falaai"
     venv_py = data_dir / "venv" / "Scripts" / "python.exe"
     log(f"==> Criando ambiente Python em {data_dir / 'venv'} ...")
     run([py, "-m", "venv", str(data_dir / "venv")], check=False)
     if not venv_py.exists():
         log("   Falha ao criar venv — configurando no Python do sistema.")
         venv_py = Path(py)
-    reqs = "https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/backend/requirements.txt"
+    reqs = "https://raw.githubusercontent.com/disouz4-dev/falaai/main/backend/requirements.txt"
     log("==> Instalando dependências do backend...")
     run([str(venv_py), "-m", "pip", "install", "-q", "-r", reqs], check=False)
     log("==> Instalando Piper TTS...")
@@ -348,7 +348,7 @@ def setup_windows_post_msi(py):
 
 def main():
     use_dev = "--dev" in sys.argv
-    log(f"🐺 Instalando o Guaralingo ({OS_NAME}) em {DIR}...")
+    log(f"🐺 Instalando o Fala A.I. ({OS_NAME}) em {DIR}...")
     py = ensure_python()
     if not py: sys.exit(1)
 
@@ -360,7 +360,7 @@ def main():
         if install_msi_windows():
             setup_windows_post_msi(py)
             launch_msi_app()
-            log("\n✅ Pronto! O Guaralingo foi instalado como um app do Windows.")
+            log("\n✅ Pronto! O Fala A.I. foi instalado como um app do Windows.")
             return
 
     git_cmd = ensure_git()
@@ -383,7 +383,7 @@ def main():
                         mf = Path(td) / "Modelfile"
                         if mf.exists(): run(["ollama", "create", "small-english-teacher", "-f", str(mf)], check=False)
                 except Exception: pass
-            log("\n✅ Pronto! Abra o Guaralingo pelo menu de apps ou rode: guaralingo  /  /usr/bin/app")
+            log("\n✅ Pronto! Abra o Fala A.I. pelo menu de apps ou rode: falaai  /  /usr/bin/app")
             return
 
     ensure_venv_deps()

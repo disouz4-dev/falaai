@@ -1,14 +1,14 @@
 """
-PT-BR: Anúncio mDNS/Zeroconf do Guaralingo. Publica o host 'guaralingo.local' e um serviço
-       HTTP na rede local, para qualquer dispositivo achar o app pelo NOME (guaralingo.local:8000)
+PT-BR: Anúncio mDNS/Zeroconf do Fala A.I.. Publica o host 'falaai.local' e um serviço
+       HTTP na rede local, para qualquer dispositivo achar o app pelo NOME (falaai.local:8000)
        sem precisar saber o IP. Funciona nativamente em macOS, Windows 10+, iOS e Linux (Avahi).
-EN:    Guaralingo mDNS/Zeroconf advertising. Publishes the 'guaralingo.local' host and an HTTP
-       service so any device finds the app by NAME (guaralingo.local:8000) without knowing the IP.
+EN:    Fala A.I. mDNS/Zeroconf advertising. Publishes the 'falaai.local' host and an HTTP
+       service so any device finds the app by NAME (falaai.local:8000) without knowing the IP.
 """
 
 import socket
 
-HOSTNAME = "guaralingo"  # PT-BR: vira guaralingo.local. EN: becomes guaralingo.local.
+HOSTNAME = "falaai"  # PT-BR: vira falaai.local. EN: becomes falaai.local.
 
 _zc = None
 _info = None
@@ -28,8 +28,8 @@ def _lan_ip():
 
 def start(port=8000, https=False):
     """
-    PT-BR: Registra 'guaralingo.local' e o serviço na rede. Retorna a URL amigável.
-    EN:    Register 'guaralingo.local' and the service on the network. Returns the friendly URL.
+    PT-BR: Registra 'falaai.local' e o serviço na rede. Retorna a URL amigável.
+    EN:    Register 'falaai.local' and the service on the network. Returns the friendly URL.
     """
     global _zc, _info
     try:
@@ -44,11 +44,11 @@ def start(port=8000, https=False):
         _zc = Zeroconf()
         _info = ServiceInfo(
             service_type,
-            f"Guaralingo.{service_type}",
+            f"Fala A.I..{service_type}",
             addresses=[socket.inet_aton(ip)],
             port=port,
             properties={"path": "/"},
-            server=f"{HOSTNAME}.local.",  # PT-BR: publica o host guaralingo.local. EN: publishes host.
+            server=f"{HOSTNAME}.local.",  # PT-BR: publica o host falaai.local. EN: publishes host.
         )
         _zc.register_service(_info, allow_name_change=True)
         return f"{scheme}://{HOSTNAME}.local:{port}"

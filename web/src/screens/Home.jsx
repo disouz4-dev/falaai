@@ -7,7 +7,7 @@ export default function Home({
   return (
     <section className="screen active">
       <div className="hero">
-        <img src="/guaralingo.png" alt="Guaralingo" className="hero-logo" />
+        <img src="/falaai.png" alt="Fala A.I." className="hero-logo" />
         <h1>{profile?.name ? `Olá, ${profile.name}! 👋` : "Aprenda inglês do seu jeito"}</h1>
         <p className="subtitle">IA local · seu nível medido com métodos reais (CEFR)</p>
       </div>
@@ -41,7 +41,7 @@ export default function Home({
       </div>
 
       {deferredInstall && (
-        <button className="install-btn" onClick={onInstall}>⬇️ Instalar o Guaralingo</button>
+        <button className="install-btn" onClick={onInstall}>⬇️ Instalar o Fala A.I.</button>
       )}
 
       {/* PT-BR: status de versão sempre visível. EN: always-visible version status. */}
@@ -61,7 +61,7 @@ export default function Home({
           </div>
         ) : (
           <span className="ver-line ver-ok">
-            ✓ Guaralingo <strong>v{update.current}</strong> — você está na versão mais atual
+            ✓ Fala A.I. <strong>v{update.current}</strong> — você está na versão mais atual
           </span>
         )}
         <button className="ver-check" disabled={checking} onClick={recheck}>

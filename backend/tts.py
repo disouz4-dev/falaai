@@ -1,8 +1,8 @@
 """
-PT-BR: Síntese de voz (TTS) no servidor para o Guaralingo. Gera o áudio da fala do professor
+PT-BR: Síntese de voz (TTS) no servidor para o Fala A.I.. Gera o áudio da fala do professor
        localmente com o Piper (voz neural) e, se faltar, com o espeak-ng. Assim a voz funciona
        em QUALQUER aparelho, sem depender de voz instalada no navegador/celular.
-EN:    Server-side TTS for Guaralingo. Generates the teacher's speech locally with Piper
+EN:    Server-side TTS for Fala A.I.. Generates the teacher's speech locally with Piper
        (neural voice), falling back to espeak-ng. Works on ANY device regardless of the
        browser/phone having a TTS voice installed.
 """
@@ -15,7 +15,7 @@ from pathlib import Path
 
 # PT-BR: locais onde procurar modelos de voz Piper (.onnx). EN: where to look for Piper voices.
 _VOICE_DIRS = [
-    os.environ.get("GUARALINGO_VOICE_DIR", ""),
+    os.environ.get("FALA_AI_VOICE_DIR", ""),
     str(Path.home() / ".local/share/praxis/voices"),
     str(Path.home() / ".local/share/piper/voices"),
     str(Path(__file__).resolve().parent / "voices"),

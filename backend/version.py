@@ -1,8 +1,8 @@
 """
-PT-BR: Verificador de versão do Guaralingo. Compara a versão local (arquivo VERSION) com a
+PT-BR: Verificador de versão do Fala A.I.. Compara a versão local (arquivo VERSION) com a
        última release no GitHub e diz se há atualização. Também executa a atualização
        (git pull + rebuild + reinício) a pedido do app.
-EN:    Guaralingo version checker. Compares the local version (VERSION file) with the latest
+EN:    Fala A.I. version checker. Compares the local version (VERSION file) with the latest
        GitHub release and reports whether an update exists. Also performs the update.
 """
 
@@ -15,7 +15,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-REPO = os.environ.get("GUARALINGO_REPO", "disouz4-dev/guaralingo")
+REPO = os.environ.get("FALA_AI_REPO", "disouz4-dev/falaai")
 ROOT = Path(__file__).resolve().parent.parent
 VERSION_FILE = ROOT / "VERSION"
 
@@ -62,7 +62,7 @@ def check(force=False):
     try:
         req = urllib.request.Request(
             f"https://api.github.com/repos/{REPO}/releases/latest",
-            headers={"Accept": "application/vnd.github+json", "User-Agent": "Guaralingo"},
+            headers={"Accept": "application/vnd.github+json", "User-Agent": "Fala A.I."},
         )
         with urllib.request.urlopen(req, timeout=6) as r:
             d = json.loads(r.read().decode("utf-8"))
@@ -136,7 +136,7 @@ def _latest_release():
     try:
         req = urllib.request.Request(
             f"https://api.github.com/repos/{REPO}/releases/latest",
-            headers={"Accept": "application/vnd.github+json", "User-Agent": "Guaralingo"},
+            headers={"Accept": "application/vnd.github+json", "User-Agent": "Fala A.I."},
         )
         with urllib.request.urlopen(req, timeout=8) as r:
             d = json.loads(r.read().decode("utf-8"))
@@ -193,11 +193,11 @@ def perform_update_desktop():
         return {"ok": False, "error": "Nenhum pacote .deb encontrado no release."}
 
     # PT-BR: baixa o .deb para um diretório gravável pelo usuário. EN: download it to a writable dir.
-    dl_dir = Path(os.path.expanduser("~/.cache/guaralingo"))
+    dl_dir = Path(os.path.expanduser("~/.cache/falaai"))
     dl_dir.mkdir(parents=True, exist_ok=True)
     dest = dl_dir / deb["name"]
     try:
-        req = urllib.request.Request(deb["browser_download_url"], headers={"User-Agent": "Guaralingo"})
+        req = urllib.request.Request(deb["browser_download_url"], headers={"User-Agent": "Fala A.I."})
         with urllib.request.urlopen(req, timeout=120) as r, open(dest, "wb") as f:
             # PT-BR: copia em blocos para não carregar tudo em memória. EN: copy in chunks.
             while True:

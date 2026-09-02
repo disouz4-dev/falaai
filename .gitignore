@@ -6,13 +6,15 @@ __pycache__/
 .DS_Store
 # PT-BR: banco local com dados do aluno (perfil/progresso). EN: local user-data DB.
 backend/data/*.db
+# PT-BR: identidade local de runtime (uid do usuário nesta máquina). EN: per-machine local identity.
+backend/data/local_user.json
 # PT-BR: vozes do Piper (grandes; baixadas pelo setup). EN: Piper voices (large; downloaded by setup).
 backend/voices/
 # PT-BR: artefatos de build do desktop. EN: desktop build artifacts.
 desktop/dist/
 desktop/node_modules/
 # PT-BR: CA local do mkcert (por máquina). EN: local mkcert CA (per machine).
-web/public/guaralingo-ca.crt
+web/public/falaai-ca.crt
 # PT-BR: vault de memoria do aluno (dados pessoais). EN: student memory vault (personal data).
 backend/data/memory/
 

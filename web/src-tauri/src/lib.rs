@@ -47,13 +47,13 @@ fn spawn_backend(app: &tauri::AppHandle) {
 
       // PT-BR: encontra o python certo (na dev usa o do PATH; no bundle pode haver um venv).
       // EN: find the right python (dev uses PATH python; bundle may have a venv).
-      let data_dir = std::env::var("GUARALINGO_DATA_DIR")
+      let data_dir = std::env::var("FALA_AI_DATA_DIR")
         .ok()
         .unwrap_or_else(|| {
           if cfg!(windows) {
-            format!("{}\\guaralingo", std::env::var("APPDATA").unwrap_or_default())
+            format!("{}\\falaai", std::env::var("APPDATA").unwrap_or_default())
           } else {
-            format!("{}/.local/share/guaralingo", std::env::var("HOME").unwrap_or_default())
+            format!("{}/.local/share/falaai", std::env::var("HOME").unwrap_or_default())
           }
         });
 
@@ -80,11 +80,11 @@ fn spawn_backend(app: &tauri::AppHandle) {
       if let Some(dir) = &resource_dir {
         cmd = cmd.env("TAURI_RESOURCE_DIR", dir);
       }
-      cmd = cmd.env("GUARALINGO_HTTPS", "0");
-      cmd = cmd.env("GUARALINGO_PORT", "8000");
-      cmd = cmd.env("GUARALINGO_MDNS", "0");
-      cmd = cmd.env("GUARALINGO_DESKTOP", "1");
-      cmd = cmd.env("GUARALINGO_DATA_DIR", &data_dir);
+      cmd = cmd.env("FALA_AI_HTTPS", "0");
+      cmd = cmd.env("FALA_AI_PORT", "8000");
+      cmd = cmd.env("FALA_AI_MDNS", "0");
+      cmd = cmd.env("FALA_AI_DESKTOP", "1");
+      cmd = cmd.env("FALA_AI_DATA_DIR", &data_dir);
 
       let backend_dir = find_backend_dir(&resource_dir);
 
@@ -95,7 +95,7 @@ fn spawn_backend(app: &tauri::AppHandle) {
 
       match res {
         Ok((mut rx, _child)) => {
-          log::info!("Guaralingo backend started via {}", python);
+          log::info!("Fala A.I. backend started via {}", python);
           tauri::async_runtime::spawn(async move {
             while let Some(event) = rx.recv().await {
               if let CommandEvent::Stdout(line) = event {
@@ -104,7 +104,7 @@ fn spawn_backend(app: &tauri::AppHandle) {
                 log::info!("[backend] {}", String::from_utf8_lossy(&line).trim());
               }
             }
-            log::info!("Guaralingo backend exited");
+            log::info!("Fala A.I. backend exited");
           });
         }
         Err(e) => {

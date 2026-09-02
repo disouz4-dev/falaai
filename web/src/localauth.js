@@ -3,7 +3,7 @@
 // EN:    LOCAL auth for the Tauri desktop app. We use 100% local/offline login: the backend
 //        creates a local profile/uid and returns a signed token. No accounts and no cloud.
 
-const KEY = "guaralingo_local_token";
+const KEY = "falaai_local_token";
 
 // PT-BR: porta do backend local do app desktop (não-HTTPS, sem root). EN: local backend port.
 export const LOCAL_PORT = 8000;

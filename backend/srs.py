@@ -1,9 +1,9 @@
 """
-PT-BR: Repetição espaçada do Guaralingo, baseada no modelo Half-Life Regression
+PT-BR: Repetição espaçada do Fala A.I., baseada no modelo Half-Life Regression
        (Settles & Meeder, 2016). Cada palavra tem uma "meia-vida" de memória (em dias); a
        probabilidade de lembrar cai como 2^(-Δ/meia-vida). Acertou → a meia-vida cresce
        (revê mais tarde); errou → volta ao início (revê logo).
-EN:    Guaralingo spaced repetition, based on the Half-Life Regression model (Settles &
+EN:    Fala A.I. spaced repetition, based on the Half-Life Regression model (Settles &
        Meeder, 2016). Each word has a memory half-life (days); recall probability decays as
        2^(-Δ/half-life). Correct → half-life grows; wrong → resets.
 """

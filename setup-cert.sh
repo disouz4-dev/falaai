@@ -2,7 +2,7 @@
 # =============================================================================
 # PT-BR: HTTPS confiável (cadeado verde, sem aviso "não seguro") com mkcert.
 #        Cria uma Autoridade Certificadora LOCAL confiável e um certificado para
-#        guaralingo.local. Rode UMA vez:   ./setup-cert.sh
+#        falaai.local. Rode UMA vez:   ./setup-cert.sh
 #        (pede a senha do sudo para instalar o certutil e confiar na CA)
 # EN:    Trusted local HTTPS via mkcert. Run once: ./setup-cert.sh
 # =============================================================================
@@ -33,28 +33,28 @@ fi
 echo "==> Instalando a Autoridade Certificadora local (mkcert -install)..."
 mkcert -install
 
-# PT-BR: gera o certificado confiável para os nomes/IPs do Guaralingo.
-# EN: generate the trusted certificate for Guaralingo's names/IPs.
+# PT-BR: gera o certificado confiável para os nomes/IPs do Fala A.I..
+# EN: generate the trusted certificate for Fala A.I.'s names/IPs.
 mkdir -p certs
 LAN_IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
-echo "==> Gerando certificado confiável para guaralingo.local..."
-mkcert -cert-file certs/guaralingo.local.pem -key-file certs/guaralingo.local-key.pem \
-  guaralingo.local localhost 127.0.0.1 ${LAN_IP:+$LAN_IP}
+echo "==> Gerando certificado confiável para falaai.local..."
+mkcert -cert-file certs/falaai.local.pem -key-file certs/falaai.local-key.pem \
+  falaai.local localhost 127.0.0.1 ${LAN_IP:+$LAN_IP}
 
 # PT-BR: disponibiliza a CA para o celular baixar do próprio servidor (web/public persiste no build;
 #        web/dist serve na hora se já houver build). EN: expose the CA for the phone to download.
 mkdir -p web/public
-cp "$(mkcert -CAROOT)/rootCA.pem" web/public/guaralingo-ca.crt 2>/dev/null || true
-[ -d web/dist ] && cp "$(mkcert -CAROOT)/rootCA.pem" web/dist/guaralingo-ca.crt 2>/dev/null || true
+cp "$(mkcert -CAROOT)/rootCA.pem" web/public/falaai-ca.crt 2>/dev/null || true
+[ -d web/dist ] && cp "$(mkcert -CAROOT)/rootCA.pem" web/dist/falaai-ca.crt 2>/dev/null || true
 
 echo ""
-echo "✅ Pronto! Reinicie o servidor (./run.sh --https) e abra https://guaralingo.local:8000"
+echo "✅ Pronto! Reinicie o servidor (./run.sh --https) e abra https://falaai.local:8000"
 echo "   No PC o cadeado fica verde, sem aviso."
 echo ""
 echo "📱 Para o CELULAR ficar seguro também (uma vez só):"
-echo "   1) No celular, abra:  https://guaralingo.local:8000/guaralingo-ca.crt"
+echo "   1) No celular, abra:  https://falaai.local:8000/falaai-ca.crt"
 echo "      (aceite o aviso desta vez só, para baixar o certificado)"
 echo "   2) Instale o certificado baixado:"
 echo "      Android: Config > Segurança > Mais > Instalar certificado > Certificado de CA."
 echo "      iOS: instale o perfil e ative em Ajustes > Geral > Sobre > Confiança de certificados."
-echo "   3) Reabra https://guaralingo.local:8000 — agora sem aviso e com o microfone."
+echo "   3) Reabra https://falaai.local:8000 — agora sem aviso e com o microfone."

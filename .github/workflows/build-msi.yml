@@ -66,7 +66,7 @@ jobs:
       - name: Upload MSI
         uses: actions/upload-artifact@v4
         with:
-          name: guaralingo-msi
+          name: falaai-msi
           path: web/src-tauri/target/release/bundle/msi/*.msi
 
       - name: Publicar na release
@@ -76,9 +76,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # PT-BR: pega o .msi mais recente (ignora MSIs antigos que sobram no cache).
-          # EN: pick the newest .msi (ignore stale cached MSIs).
+          # PT-BR: pega o .msi mais recente (ignora MSIs antigos que sobram no cache),
+          #        e renomeia para o slug "falaai" (artifact final sem espaços).
+          # EN: pick the newest .msi (ignore stale cached MSIs) and rename to "falaai".
           $msi = Get-ChildItem "src-tauri/target/release/bundle/msi/*.msi" |
                  Sort-Object LastWriteTime -Descending | Select-Object -First 1
           if (-not $msi) { throw "Nenhum .msi encontrado" }
-          gh release upload "$env:GITHUB_REF_NAME" "$($msi.FullName)" --clobber
+          $ver = $env:GITHUB_REF_NAME
+          $ver = if ($ver -match "^v") { $ver.Substring(1) } else { $ver }
+          $renamed = Join-Path $msi.DirectoryName "falaai_$ver.msi"
+          Move-Item $msi.FullName $renamed -Force
+          gh release upload "$env:GITHUB_REF_NAME" "$renamed" --clobber

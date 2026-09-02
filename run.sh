@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# PT-BR: Sobe o Guaralingo. Use HTTPS (--https) para liberar o microfone no CELULAR.
-# EN:    Starts Guaralingo. Use HTTPS (--https) to unlock the microphone on your PHONE.
+# PT-BR: Sobe o Fala A.I.. Use HTTPS (--https) para liberar o microfone no CELULAR.
+# EN:    Starts Fala A.I.. Use HTTPS (--https) to unlock the microphone on your PHONE.
 set -e
 cd "$(dirname "$0")"
 
@@ -45,28 +45,28 @@ OL_HTTPS=0
 if [ "$1" == "--https" ]; then
   # PT-BR: prefere o certificado CONFIÁVEL do mkcert; senão, autoassinado. EN: prefer mkcert, else self-signed.
   mkdir -p certs
-  if [ -f certs/guaralingo.local.pem ] && [ -f certs/guaralingo.local-key.pem ]; then
-    CERT="certs/guaralingo.local.pem"; KEY="certs/guaralingo.local-key.pem"; TRUSTED=1
+  if [ -f certs/falaai.local.pem ] && [ -f certs/falaai.local-key.pem ]; then
+    CERT="certs/falaai.local.pem"; KEY="certs/falaai.local-key.pem"; TRUSTED=1
   else
     CERT="certs/cert.pem"; KEY="certs/key.pem"; TRUSTED=0
     if [ ! -f certs/key.pem ]; then
       echo "==> Gerando certificado autoassinado…"
       openssl req -x509 -newkey rsa:2048 -nodes -days 825 \
         -keyout certs/key.pem -out certs/cert.pem \
-        -subj "/CN=guaralingo.local" \
-        -addext "subjectAltName=DNS:guaralingo.local,DNS:localhost,IP:127.0.0.1${LAN_IP:+,IP:$LAN_IP}" >/dev/null 2>&1
+        -subj "/CN=falaai.local" \
+        -addext "subjectAltName=DNS:falaai.local,DNS:localhost,IP:127.0.0.1${LAN_IP:+,IP:$LAN_IP}" >/dev/null 2>&1
     fi
   fi
   SSL_ARGS="--ssl-keyfile $KEY --ssl-certfile $CERT"
   OL_HTTPS=1
   echo ""
-  echo "🐺 Guaralingo (HTTPS)"
+  echo "🐺 Fala A.I. (HTTPS)"
   if [ "$PORT" = "80" ]; then
-    echo "   Nome na rede: https://guaralingo.local   ← use este em qualquer dispositivo"
+    echo "   Nome na rede: https://falaai.local   ← use este em qualquer dispositivo"
     echo "   PC:           https://localhost          ← (porta 80, modo servidor web legado)"
     [ -n "$LAN_IP" ] && echo "   (ou por IP:   https://$LAN_IP)"
   else
-    echo "   Nome na rede: https://guaralingo.local:$PORT   ← use este em qualquer dispositivo"
+    echo "   Nome na rede: https://falaai.local:$PORT   ← use este em qualquer dispositivo"
     echo "   PC:           https://localhost:$PORT"
     [ -n "$LAN_IP" ] && echo "   (ou por IP:   https://$LAN_IP:$PORT)"
   fi
@@ -78,8 +78,8 @@ if [ "$1" == "--https" ]; then
   echo ""
 else
   echo ""
-  echo "🐺 Guaralingo (HTTP)"
-  echo "   Nome na rede: http://guaralingo.local:$PORT   ← use este em qualquer dispositivo"
+  echo "🐺 Fala A.I. (HTTP)"
+  echo "   Nome na rede: http://falaai.local:$PORT   ← use este em qualquer dispositivo"
   echo "   PC:           http://localhost:$PORT"
   echo "   (para microfone no celular rode: ./run.sh --https)"
   echo ""
@@ -91,7 +91,7 @@ fi
 #     rebuild the React app and relaunch with the new code.
 set +e
 while true; do
-  GUARALINGO_HTTPS="$OL_HTTPS" GUARALINGO_PORT="$PORT" \
+  FALA_AI_HTTPS="$OL_HTTPS" FALA_AI_PORT="$PORT" \
     uvicorn main:app --app-dir backend --host "$HOST" --port "$PORT" $SSL_ARGS
   code=$?
   if [ -f .restart ]; then

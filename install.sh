@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # =============================================================================
-# PT-BR: Instalador do Guaralingo para macOS e Linux — wrapper fino que garante
+# PT-BR: Instalador do Fala A.I. para macOS e Linux — wrapper fino que garante
 #        Python 3.10+ e delega tudo ao instalador universal install.py (um código só).
 #        Uso (uma linha):
-#          bash <(curl -fsSL https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.sh)
-#          ou:  curl -fsSL https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py | python3 -
-# EN:    Guaralingo installer for macOS/Linux — thin wrapper that ensures Python 3.10+
+#          bash <(curl -fsSL https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.sh)
+#          ou:  curl -fsSL https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.py | python3 -
+# EN:    Fala A.I. installer for macOS/Linux — thin wrapper that ensures Python 3.10+
 #        and delegates to the universal install.py (one code for all OS).
 # =============================================================================
 set -e
 OS="$(uname -s)"
-URL="https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py"
+URL="https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.py"
 
 # PT-BR: garante Python 3.10+; tenta instalar se faltar. EN: ensure Python 3.10+.
 if ! command -v python3 >/dev/null 2>&1; then

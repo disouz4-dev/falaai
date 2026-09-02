@@ -1,9 +1,9 @@
 {
-  "name": "guaralingo-web",
+  "name": "falaai-web",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Guaralingo — frontend em React + Vite (PWA)",
+  "description": "Fala A.I. — frontend em React + Vite (PWA)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

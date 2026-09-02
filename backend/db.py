@@ -1,8 +1,8 @@
 """
-PT-BR: Camada de persistência do Guaralingo (SQLite local, MULTI-USUÁRIO).
+PT-BR: Camada de persistência do Fala A.I. (SQLite local, MULTI-USUÁRIO).
        Todas as funções recebem um `uid` (identidade local do usuário) e chaveiam perfil,
        tentativas do teste, prática, progresso do curso, vocabulário SRS e erros por usuário.
-EN:    Guaralingo persistence layer (local SQLite, MULTI-USER).
+EN:    Fala A.I. persistence layer (local SQLite, MULTI-USER).
        All functions take a `uid` (local user identity) and key profile, test attempts,
        practice, course progress, SRS vocabulary and mistakes per user.
 """
@@ -16,18 +16,18 @@ from pathlib import Path
 import hashlib
 import secrets
 
-# PT-BR: se GUARALINGO_DATA_DIR estiver definido (app desktop), guarda o banco em local
+# PT-BR: se FALA_AI_DATA_DIR estiver definido (app desktop), guarda o banco em local
 #        gravável do usuário. Senão, usa backend/data (modo servidor web).
-# EN:    if GUARALINGO_DATA_DIR is set (desktop app), keep the DB in a user-writable path.
+# EN:    if FALA_AI_DATA_DIR is set (desktop app), keep the DB in a user-writable path.
 #        Otherwise use backend/data (web server mode).
-_DATA_DIR = os.environ.get("GUARALINGO_DATA_DIR")
+_DATA_DIR = os.environ.get("FALA_AI_DATA_DIR")
 if _DATA_DIR:
     DATA_DIR = Path(_DATA_DIR)
 else:
     DATA_DIR = Path(__file__).resolve().parent / "data"
     _DATA_DIR = str(DATA_DIR)
 
-DB_PATH = DATA_DIR / "guaralingo.db"
+DB_PATH = DATA_DIR / "falaai.db"
 
 
 def data_dir() -> str:
@@ -142,6 +142,25 @@ def init_db():
         for tbl in ("attempts", "practice", "lesson_progress", "srs", "mistakes"):
             c.execute(f"CREATE INDEX IF NOT EXISTS idx_{tbl}_uid ON {tbl}(uid)")
 
+        # PT-BR: MIGRAÇÃO de schema — bancos antigos criados sem password_hash (ou sem outras
+        #        colunas recentes) não são atualizados pelo "CREATE TABLE IF NOT EXISTS".
+        #        Adicionamos as colunas faltantes dinamicamente. EN: schema migration — older
+        #        DBs created without password_hash (or other new columns) are not touched by
+        #        "CREATE TABLE IF NOT EXISTS"; add any missing columns here.
+        def _add_column(table, col, ddl):
+            cols = {r["name"] for r in c.execute(f"PRAGMA table_info({table})").fetchall()}
+            if col not in cols:
+                c.execute(f"ALTER TABLE {table} ADD COLUMN {col} {ddl}")
+
+        _add_column("profile", "password_hash", "TEXT")
+        _add_column("profile", "native_lang", "TEXT")
+        _add_column("profile", "goal", "TEXT")
+        _add_column("profile", "interests", "TEXT")
+        _add_column("profile", "gender_preference", "TEXT DEFAULT 'female'")
+        _add_column("profile", "email", "TEXT")
+        _add_column("profile", "picture", "TEXT")
+        _add_column("profile", "created_at", "TEXT")
+
 
 # --------------------------------------------------------------------------- #
 # PT-BR: Perfil. EN: Profile.
@@ -149,6 +168,25 @@ def init_db():
 def get_profile(uid):
     with _conn() as c:
         row = c.execute("SELECT * FROM profile WHERE uid=?", (uid,)).fetchone()
+    return dict(row) if row else None
+
+
+def list_profiles():
+    """PT-BR: lista os perfis locais cadastrados (para o pick list do login).
+    EN: list the registered local profiles (for the login pick list)."""
+    with _conn() as c:
+        rows = c.execute(
+            "SELECT uid, name FROM profile ORDER BY name COLLATE NOCASE"
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def get_profile_by_name(name):
+    """PT-BR: acha um perfil pelo nome (sem diferenciar maiúsculas). EN: find profile by name."""
+    with _conn() as c:
+        row = c.execute(
+            "SELECT * FROM profile WHERE lower(name)=lower(?) LIMIT 1", (name,)
+        ).fetchone()
     return dict(row) if row else None
 
 

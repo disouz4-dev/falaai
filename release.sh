@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # =============================================================================
-# PT-BR: Lança uma nova versão do Guaralingo. Uso:  ./release.sh 1.0.1 "notas"
+# PT-BR: Lança uma nova versão do Fala A.I.. Uso:  ./release.sh 1.0.1 "notas"
 #        Atualiza VERSION, tauri.conf.json e README automaticamente,
 #        faz commit + push e cria a release no GitHub (gh).
 #        Os usuários passam a ver a notificação de atualização no app.
-# EN:    Ship a new Guaralingo version. Usage: ./release.sh 1.0.1 "notes"
+# EN:    Ship a new Fala A.I. version. Usage: ./release.sh 1.0.1 "notes"
 # =============================================================================
 set -e
 cd "$(dirname "$0")"
 
 VER="$1"
-NOTES="${2:-Nova versão do Guaralingo.}"
+NOTES="${2:-Nova versão do Fala A.I..}"
 if [ -z "$VER" ]; then
   echo "Uso: ./release.sh <versão> [notas]   ex.: ./release.sh 1.0.1 \"Correções e melhorias\""
   exit 1
@@ -27,7 +27,7 @@ sed -i "s/\"version\": *\"[^\"]*\"/\"version\": \"$VER\"/" web/src-tauri/tauri.c
 echo "   tauri.conf.json → version $VER"
 
 # PT-BR: atualiza todas as referências de versão no README. EN: update all version refs in README.
-sed -i -E "s/v[0-9]+\.[0-9]+\.[0-9]+/v$VER/g; s/Guaralingo_[0-9]+\.[0-9]+\.[0-9]+_amd64\.deb/Guaralingo_$VER\_amd64.deb/g" README.md
+sed -i -E "s/v[0-9]+\.[0-9]+\.[0-9]+/v$VER/g; s/falaai_[0-9]+\.[0-9]+\.[0-9]+_amd64\.deb/falaai_$VER\_amd64.deb/g" README.md
 echo "   README.md → v$VER"
 
 echo "==> Commit + push..."
@@ -38,12 +38,16 @@ git push origin main
 # PT-BR: cria/atualiza a release no GitHub com notes. EN: create/update release on GitHub.
 if gh release view "v$VER" >/dev/null 2>&1; then
   echo "==> Release v$VER já existe — atualizando notes..."
-  gh release edit "v$VER" --title "Guaralingo v$VER 🐺" --notes "$NOTES"
+  gh release edit "v$VER" --title "Fala A.I. v$VER 🐺" --notes "$NOTES"
 else
   echo "==> Criando a release v$VER no GitHub..."
-  gh release create "v$VER" --title "Guaralingo v$VER 🐺" --notes "$NOTES"
+  gh release create "v$VER" --title "Fala A.I. v$VER 🐺" --notes "$NOTES"
 fi
 
 echo ""
 echo "✅ Release v$VER publicada. Os usuários verão a notificação de atualização no app."
-echo "   Para gerar e subir o .deb, rode: cd web && npx tauri build && gh release upload v$VER web/src-tauri/target/release/bundle/deb/Guaralingo_$VER\_amd64.deb --clobber"
+echo "   Para gerar e subir o .deb (renomeado para o slug 'falaai'):"
+echo "   cd web && npx tauri build --bundles deb"
+echo "   DEB=\$(ls src-tauri/target/release/bundle/deb/*.deb | head -1)"
+echo "   cp \"\$DEB\" \"\$DEB.orig\" && mv \"\$DEB\" src-tauri/target/release/bundle/deb/falaai_${VER}_amd64.deb"
+echo "   gh release upload v$VER src-tauri/target/release/bundle/deb/falaai_${VER}_amd64.deb --clobber"

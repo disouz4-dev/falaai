@@ -1,8 +1,9 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Guaralingo",
+  "productName": "Fala A.I.",
+  "mainBinaryName": "falaai",
   "version": "1.0.14",
-  "identifier": "com.guaralingo.app",
+  "identifier": "com.falaai.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -12,7 +13,7 @@
   "app": {
     "windows": [
       {
-        "title": "Guaralingo",
+        "title": "Fala A.I.",
         "width": 1024,
         "height": 768,
         "minWidth": 800,
@@ -28,7 +29,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "appimage"],
+    "targets": ["deb"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -48,9 +49,6 @@
     "linux": {
       "deb": {
         "depends": ["python3", "python3-venv", "libwebkit2gtk-4.1-0"]
-      },
-      "appimage": {
-        "bundleMediaFramework": true
       }
     },
     "macOS": {

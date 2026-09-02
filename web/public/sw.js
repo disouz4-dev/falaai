@@ -1,9 +1,9 @@
 /*
-  PT-BR: Service worker do Guaralingo — cache do "shell" para funcionar offline e instalar como app.
-  EN:    Guaralingo service worker — caches the app shell for offline use / installability.
+  PT-BR: Service worker do Fala A.I. — cache do "shell" para funcionar offline e instalar como app.
+  EN:    Fala A.I. service worker — caches the app shell for offline use / installability.
   Obs: chamadas /api/* nunca são cacheadas (precisam do Ollama ao vivo).
 */
-const CACHE = "guaralingo-react-v1";
+const CACHE = "falaai-react-v1";
 // PT-BR: no React os assets têm hash; o cache é network-first em runtime. Precache só o essencial.
 // EN: React assets are hashed; caching is network-first at runtime. Precache only the essentials.
 const SHELL = ["/", "/manifest.webmanifest", "/icon.svg"];

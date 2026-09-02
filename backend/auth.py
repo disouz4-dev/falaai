@@ -1,9 +1,9 @@
 """
-PT-BR: Autenticação LOCAL do Guaralingo (app desktop, sem contas nem nuvem).
+PT-BR: Autenticação LOCAL do Fala A.I. (app desktop, sem contas nem nuvem).
        O app usa apenas login local: gera um token assinado (HMAC) quando o usuário
        clica em "Entrar" e valida esse token a cada requisição. Tudo fica neste
        dispositivo: nenhuma conta externa, criação de conta nem envio de dados para a internet.
-EN:    LOCAL authentication for Guaralingo (desktop app, no accounts and no cloud).
+EN:    LOCAL authentication for Fala A.I. (desktop app, no accounts and no cloud).
        The app uses local login only: it mints a signed (HMAC) token when the user clicks
        "Entrar" and validates that token on every request. Everything stays on this
        device: no external account, no account creation, and no data sent to the internet.
@@ -19,7 +19,7 @@ import os
 #        Só serve para não deixar qualquer uid forjado passar sem assinatura.
 # EN: fixed app secret that signs LOCAL tokens (desktop local login). It only keeps a
 #     forged uid from passing without a signature.
-LOCAL_SECRET = os.environ.get("GUARALINGO_LOCAL_SECRET", "guaralingo.local-desktop-secret-v1")
+LOCAL_SECRET = os.environ.get("FALA_AI_LOCAL_SECRET", "falaai.local-desktop-secret-v1")
 
 
 def _sign(msg: str) -> str:

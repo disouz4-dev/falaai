@@ -1,5 +1,5 @@
-# PT-BR: Dependências do backend Guaralingo. EN: Guaralingo backend dependencies.
+# PT-BR: Dependências do backend Fala A.I.. EN: Fala A.I. backend dependencies.
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 pydantic==2.10.4
-zeroconf==0.151.1  # PT-BR: nome na rede (guaralingo.local). EN: network name (guaralingo.local).
+zeroconf==0.151.1  # PT-BR: nome na rede (falaai.local). EN: network name (falaai.local).

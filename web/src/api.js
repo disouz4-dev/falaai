@@ -17,7 +17,7 @@ async function _fetch(path, options = {}) {
   const res = await fetch(apiBase() + path, { ...options, headers });
   // PT-BR: 401 = token inválido/expirado; deixa o App saber. EN: 401 = invalid/expired token.
   if (res.status === 401) {
-    window.dispatchEvent(new CustomEvent("guaralingo:auth-required"));
+    window.dispatchEvent(new CustomEvent("falaai:auth-required"));
   }
   return res;
 }

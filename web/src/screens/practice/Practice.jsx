@@ -12,7 +12,7 @@ export default function Practice({ nav, profile }) {
   const [mode, setMode] = useState("menu");
   const [srsStats, setSrsStats] = useState(null);
   const [mistakes, setMistakes] = useState(null);
-  const level = localStorage.getItem("guaralingo_level") || "B1";
+  const level = localStorage.getItem("falaai_level") || "B1";
 
   useEffect(() => {
     if (mode !== "menu") return;

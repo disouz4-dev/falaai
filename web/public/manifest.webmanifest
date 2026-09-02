@@ -1,6 +1,6 @@
 {
-  "name": "Guaralingo",
-  "short_name": "Guaralingo",
+  "name": "Fala A.I.",
+  "short_name": "Fala A.I.",
   "description": "Aprenda inglês com IA local — teste de nível adaptativo e conversação por voz.",
   "start_url": "./",
   "display": "standalone",

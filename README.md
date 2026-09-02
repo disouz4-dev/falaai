@@ -1,14 +1,14 @@
 <div align="center">
 
-# 🐺 Guaralingo
+# 🐺 Fala A.I.
 
 **Plataforma de ensino de inglês — 100% local, com IA via [Ollama](https://ollama.com).**
 
-O mascote e logo do Guaralingo é o **lobo-guará** 🐺 — símbolo da fauna brasileira, escolhido para representar o projeto.
+O mascote e logo do Fala A.I. é o **lobo-guará** 🐺 — símbolo da fauna brasileira, escolhido para representar o projeto.
 
 Teste de nível adaptativo (CEFR) · Curso completo A1–C2 · Conversação por voz em tempo real · Relatórios de evolução · **Login local (offline) · App desktop autônomo · Atualização automática**
 
-<!-- EN: Guaralingo — an English learning platform, 100% local with local AI via Ollama. The logo and mascot is the maned wolf (lobo-guará). -->
+<!-- EN: Fala A.I. — an English learning platform, 100% local with local AI via Ollama. The logo and mascot is the maned wolf (lobo-guará). -->
 
 </div>
 
@@ -32,7 +32,7 @@ Teste de nível adaptativo (CEFR) · Curso completo A1–C2 · Conversação por
 
 ## 🚀 Instalação
 
-O Guaralingo é um **app desktop** — verifique e instala tudo sozinho.
+O Fala A.I. é um **app desktop** — verifique e instala tudo sozinho.
 
 ### Instalação rápida (um comando, todos os OS)
 
@@ -40,43 +40,43 @@ O Guaralingo é um **app desktop** — verifique e instala tudo sozinho.
 
 | Sistema | Comando |
 |---|---|
-| **Linux / macOS** | `curl -fsSL https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py \| python3 -` |
-| **Windows (PowerShell)** | `irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.ps1 \| iex` |
+| **Linux / macOS** | `curl -fsSL https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.py \| python3 -` |
+| **Windows (PowerShell)** | `irm https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.ps1 \| iex` |
 
 Wrappers que garantem Python e delegam ao `install.py` (mesma lógica):
 
 ```bash
 # Linux/macOS
-bash <(curl -fsSL https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.sh)
 # Windows (PowerShell)
-irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.ps1 | iex
 ```
-> O instalador detecta o OS, verifica `git`/`ollama`/`python3-venv` e instala o que faltar (via `apt`/`brew`/`winget` + `pip`), clona/atualiza o repo em `~/guaralingo`, cria o modelo `small-english-teacher` e sobe o app.
+> O instalador detecta o OS, verifica `git`/`ollama`/`python3-venv` e instala o que faltar (via `apt`/`brew`/`winget` + `pip`), clona/atualiza o repo em `~/falaai`, cria o modelo `small-english-teacher` e sobe o app.
 
 ### Instalador `.deb` (Linux — recomendado para uso diário)
 
-Baixe a release em https://github.com/disouz4-dev/guaralingo/releases
+Baixe a release em https://github.com/disouz4-dev/falaai/releases
 
 ```bash
 # Via terminal (um comando, v1.0.14):
-curl -L https://github.com/disouz4-dev/guaralingo/releases/download/v1.0.14/Guaralingo_1.0.14_amd64.deb -o Guaralingo_1.0.14_amd64.deb && sudo dpkg -i Guaralingo_1.0.14_amd64.deb && sudo apt-get install -f
+curl -L https://github.com/disouz4-dev/falaai/releases/download/v1.0.14/falaai_1.0.14_amd64.deb -o falaai_1.0.14_amd64.deb && sudo dpkg -i falaai_1.0.14_amd64.deb && sudo apt-get install -f
 # Ou manual:
-sudo dpkg -i Guaralingo_1.0.14_amd64.deb && sudo apt-get install -f
+sudo dpkg -i falaai_1.0.14_amd64.deb && sudo apt-get install -f
 ```
-Depois procure **Guaralingo** no menu para abrir.
+Depois procure **Fala A.I.** no menu para abrir.
 
 **Desinstalar (Linux)**
 ```bash
-sudo apt remove guaralingo
+sudo apt remove falaai
 ```
 
 ### Instalador `.msi` (Windows)
 
-O instalador nativo do **Windows (.msi)** é gerado automaticamente pelo GitHub Actions a cada release. Baixe em https://github.com/disouz4-dev/guaralingo/releases (arquivo `Guaralingo_*_x64_en-US.msi`) e execute para instalar como um programa de verdade (ícone no menu Iniciar).
+O instalador nativo do **Windows (.msi)** é gerado automaticamente pelo GitHub Actions a cada release. Baixe em https://github.com/disouz4-dev/falaai/releases (arquivo `falaai_*_x64_en-US.msi`) e execute para instalar como um programa de verdade (ícone no menu Iniciar).
 
 > **Nota:** no Windows, o app depende do [Python](https://python.org) instalado (o instalador do repo também cuida disso).
 
-> **Nota sobre outros sistemas:** o Linux tem builds prontos (`.deb` e AppImage), e o Windows agora tem **`.msi`** gerado automaticamente via GitHub Actions. O **macOS (.dmg)** ainda exige compilação nesse sistema — veja [Compilar do código](#compilar-do-código).
+> **Nota sobre outros sistemas:** o Linux gera o instalador `.deb`, e o Windows agora tem **`.msi`** gerado automaticamente via GitHub Actions. O **macOS (.dmg)** ainda exige compilação nesse sistema — veja [Compilar do código](#compilar-do-código).
 
 ### Requisitos do sistema
 
@@ -89,7 +89,7 @@ O instalador nativo do **Windows (.msi)** é gerado automaticamente pelo GitHub 
 
 ### Especificações mínimas de hardware
 
-O Guaralingo roda o modelo de IA **`gemma3:4b`** localmente (via Ollama) — é ele que dita o hardware necessário. O restante (backend FastAPI, Piper) é leve.
+O Fala A.I. roda o modelo de IA **`gemma3:4b`** localmente (via Ollama) — é ele que dita o hardware necessário. O restante (backend FastAPI, Piper) é leve.
 
 | Componente | Mínimo (CPU) | Recomendado (com GPU) |
 |---|---|---|
@@ -108,19 +108,19 @@ O Guaralingo roda o modelo de IA **`gemma3:4b`** localmente (via Ollama) — é 
 
 ## 🔐 Login local e cadastro (100% offline)
 
-O Guaralingo é **100% local/offline** — nenhum dado vai para a nuvem, sem contas nem e-mail. O acesso é sempre local:
+O Fala A.I. é **100% local/offline** — nenhum dado vai para a nuvem, sem contas nem e-mail. O acesso é sempre local:
 
 1. **1º acesso — cadastro obrigatório.** Ao abrir o app, aparece uma tela de **registro** com: nome, idioma nativo, objetivo, interesses e voz do professor (feminina/masculina). Preencha e clique em **Começar**. O perfil é criado localmente e salvo neste dispositivo.
 2. **Próximos acessos — login simples.** O app lembra o token local e mostra um botão **Entrar**. Sem formulário, sem senha.
 3. Seu progresso (perfil, testes, lições, vocabulário, conversas) fica **guardado neste dispositivo**, sem precisar de internet para autenticar.
 
-> **Privacidade:** o Guaralingo é 100% local/offline. Nenhum dado é enviado para a nuvem. Só acessa a internet para (opcionalmente) baixar **atualizações** e, se você instalar o Ollama, o Ollama baixa o modelo da IA na primeira vez.
+> **Privacidade:** o Fala A.I. é 100% local/offline. Nenhum dado é enviado para a nuvem. Só acessa a internet para (opcionalmente) baixar **atualizações** e, se você instalar o Ollama, o Ollama baixa o modelo da IA na primeira vez.
 
 ---
 
 ## 🔄 Atualização automática
 
-O Guaralingo avisa quando há **nova versão** disponível (botão **Atualizar** na tela inicial). Ao atualizar:
+O Fala A.I. avisa quando há **nova versão** disponível (botão **Atualizar** na tela inicial). Ao atualizar:
 
 1. O app baixa o novo **`.deb`** da release do GitHub.
 2. Instala **por cima** do atual (via `pkexec` — o sistema pede a senha de administrador uma vez) — **não desinstala nem perde seus dados**.
@@ -132,7 +132,7 @@ Assim você se mantém na versão mais recente **sem ficar desinstalando e insta
 
 ## ⚡ GPU e CPU
 
-A IA roda **em CPU ou GPU**. O Guaralingo detecta o hardware no início e escolhe o melhor dispositivo:
+A IA roda **em CPU ou GPU**. O Fala A.I. detecta o hardware no início e escolhe o melhor dispositivo:
 - **Tem GPU com VRAM suficiente** → usa a **GPU** (mais rápido).
 - **GPU pequena para o modelo** → offload parcial GPU+CPU.
 - **Sem GPU / VRAM insuficiente** → usa a **CPU** (funciona igual, só mais devagar).
@@ -148,7 +148,7 @@ O estado também aparece em `GET /api/health` e no log de inicialização do ser
 ## 🏗️ Arquitetura
 
 ```
-guaralingo/
+falaai/
 ├── backend/               # FastAPI (Python)
 │   ├── main.py            # API: login local, teste, curso, conversa, TTS, progresso, perfil, update
 │   ├── auth.py            # token LOCAL assinado (HMAC) + validação
@@ -156,7 +156,7 @@ guaralingo/
 │   ├── ollama_client.py   # cliente Ollama (streaming e não-streaming)
 │   ├── tts.py             # síntese de voz local bilíngue (Piper en_US + pt_BR)
 │   ├── gpu.py             # detector de GPU (preferência GPU, fallback CPU)
-│   ├── db.py              # persistência SQLite (suporta GUARALINGO_DATA_DIR)
+│   ├── db.py              # persistência SQLite (suporta FALA_AI_DATA_DIR)
 │   ├── srs.py / memory.py # repetição espaçada / vault .md interno do professor
 │   └── version.py         # checagem de versão + auto-update (.deb por cima)
 ├── web/                   # frontend React + Vite (PWA)
@@ -166,7 +166,7 @@ guaralingo/
 │   │   ├── api.js         # chamadas de API com token local (Bearer)
 │   │   ├── speech.js      # push-to-talk (hold to record)
 │   │   └── screens/       # Home, Placement, Talk, Course, Lesson, Profile, Progress, Practice
-│   ├── src-tauri/         # app desktop (Rust) — gera .deb / AppImage
+│   ├── src-tauri/         # app desktop (Rust) — gera o .deb
 │   │   ├── sidecar/       # sobe o backend local na porta 8000 (cria venv próprio)
 │   │   └── src/lib.rs     # spawn do sidecar + command de reinício após atualizar
 │   └── dist/              # build servido (gerado por npm run build)
@@ -177,8 +177,8 @@ guaralingo/
 
 ### 🗄️ Banco de dados (dados do aluno)
 
-**SQLite** (`guaralingo.db`), via `sqlite3` puro (sem ORM), no diretório de dados do usuário
-(`~/.local/share/guaralingo/` no app desktop — gravável, sem precisar de root).
+**SQLite** (`falaai.db`), via `sqlite3` puro (sem ORM), no diretório de dados do usuário
+(`~/.local/share/falaai/` no app desktop — gravável, sem precisar de root).
 
 | Tabela | Chave | O que guarda |
 |---|---|---|
@@ -210,13 +210,13 @@ O conteúdo segue métodos reais e atuais de ensino de línguas:
 ## 🛠️ Compilar do código
 
 ```bash
-git clone https://github.com/disouz4-dev/guaralingo.git
-cd guaralingo
+git clone https://github.com/disouz4-dev/falaai.git
+cd falaai
 
-# Frontend + app desktop (gera .deb / AppImage em web/src-tauri/target/release/bundle/)
+# Frontend + app desktop (gera o .deb em web/src-tauri/target/release/bundle/)
 cd web
 npm install
-npx tauri build                       # gera o .deb e o AppImage (Linux)
+npx tauri build --bundles deb            # gera o .deb (Linux)
 ```
 
 Para gerar builds de **Windows** ou **macOS**, rode `npx tauri build` naquele sistema

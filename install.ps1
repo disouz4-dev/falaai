@@ -1,16 +1,16 @@
 # =============================================================================
-# PT-BR: Instalador do Guaralingo para Windows — um código só.
+# PT-BR: Instalador do Fala A.I. para Windows — um código só.
 #        Garante Python 3.10+ e delega ao install.py universal.
 #        Uso (uma linha):
-#          irm https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.ps1 | iex
-# EN:    Guaralingo installer for Windows — one code for all.
+#          irm https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.ps1 | iex
+# EN:    Fala A.I. installer for Windows — one code for all.
 # =============================================================================
 $ErrorActionPreference = "Stop"
-$Url = "https://raw.githubusercontent.com/disouz4-dev/guaralingo/main/install.py"
+$Url = "https://raw.githubusercontent.com/disouz4-dev/falaai/main/install.py"
 
 # PT-BR: se rodou via pipe (irm | iex), $PSScriptRoot fica vazio — usa o temp.
 # EN: if piped (irm | iex), $PSScriptRoot is empty — use temp dir.
-$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { "$env:TEMP\guaralingo" }
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { "$env:TEMP\falaai" }
 if (-not (Test-Path $scriptDir)) { New-Item -ItemType Directory -Path $scriptDir -Force | Out-Null }
 
 # PT-BR: encontra Python 3.10+ que REALMENTE funciona. EN: find Python 3.10+ that actually works.

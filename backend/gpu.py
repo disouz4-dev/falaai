@@ -1,9 +1,9 @@
 """
-PT-BR: Detector de GPU do Guaralingo. Detecta GPU (NVIDIA / AMD / Apple Silicon) e a VRAM
+PT-BR: Detector de GPU do Fala A.I.. Detecta GPU (NVIDIA / AMD / Apple Silicon) e a VRAM
        disponível, e decide o dispositivo: dá PREFERÊNCIA à GPU e cai para CPU quando a GPU
        não suporta o modelo (VRAM insuficiente). O Ollama já usa a GPU por padrão e faz
        offload parcial; aqui detectamos, reportamos e ajustamos quando necessário.
-EN:    Guaralingo GPU detector. Detects the GPU (NVIDIA / AMD / Apple Silicon) and available
+EN:    Fala A.I. GPU detector. Detects the GPU (NVIDIA / AMD / Apple Silicon) and available
        VRAM, then decides the device: PREFERS the GPU and falls back to CPU when the GPU can't
        fit the model. Ollama already uses the GPU by default with partial offload; here we
        detect, report and adjust when needed.
@@ -16,7 +16,7 @@ import shutil
 import subprocess
 
 # PT-BR: tamanho aproximado do modelo em GB (para decidir GPU x CPU). EN: approx model size (GB).
-MODEL_SIZE_GB = float(os.environ.get("GUARALINGO_MODEL_GB", "3.6"))  # gemma3:4b ~3.3-3.6 GB
+MODEL_SIZE_GB = float(os.environ.get("FALA_AI_MODEL_GB", "3.6"))  # gemma3:4b ~3.3-3.6 GB
 _OVERHEAD_GB = 1.2  # PT-BR: margem p/ contexto/KV cache. EN: headroom for context/KV cache.
 
 
